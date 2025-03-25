@@ -21,4 +21,3 @@ To run this project, you will need the following:
 - POSTGRES_PASSWORD
 - POSTGRES_SSLMODE
 - DATABASE_URL
-# app
