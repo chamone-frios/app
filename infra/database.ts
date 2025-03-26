@@ -1,5 +1,7 @@
 import { Pool } from 'pg';
 
+const IS_POOL_MODE = process.env.POSTGRES_POOL_MODE === 'transaction';
+
 const pool = new Pool({
   host: process.env.POSTGRES_HOST,
   port: parseInt(process.env.POSTGRES_PORT),
@@ -10,10 +12,10 @@ const pool = new Pool({
     process.env.POSTGRES_SSLMODE === 'require'
       ? { rejectUnauthorized: false }
       : false,
-  max: 20,
+  max: IS_POOL_MODE ? 20 : 1,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 2000,
-  options: `-c pool_mode=${process.env.POSTGRES_POOL_MODE || 'session'}`,
+  options: IS_POOL_MODE ? '-c pool_mode=transaction' : undefined,
 });
 
 async function query(
