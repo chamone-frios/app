@@ -32,7 +32,7 @@ const migrations = async (req: NextApiRequest, res: NextApiResponse) => {
     res.status(500).json({ error: 'Internal server error' });
     throw error;
   } finally {
-    await dbClient.end();
+    await dbClient.release();
   }
 };
 
