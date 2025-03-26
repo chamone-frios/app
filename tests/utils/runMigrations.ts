@@ -1,10 +1,10 @@
 export const runMigrations = async (): Promise<void> => {
   try {
     const migrationsResponse = await fetch(
-      "http://localhost:3000/api/v1/migrations",
+      'http://localhost:3000/api/v1/migrations',
       {
-        method: "POST",
-      },
+        method: 'POST',
+      }
     );
 
     if (
@@ -13,11 +13,11 @@ export const runMigrations = async (): Promise<void> => {
     ) {
       const body = await migrationsResponse.text();
       throw new Error(
-        `Failed to run migrations: ${migrationsResponse.status} ${body}`,
+        `Failed to run migrations: ${migrationsResponse.status} ${body}`
       );
     }
   } catch (error) {
-    console.error("Error running migrations:", error);
+    console.error('Error running migrations:', error);
     throw error;
   }
 };

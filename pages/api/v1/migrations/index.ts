@@ -1,24 +1,25 @@
-import { getClient } from "infra/database";
-import { NextApiRequest, NextApiResponse } from "next";
-import node_pg_migration from "node-pg-migrate";
-import { join } from "node:path";
+import { join } from 'node:path';
+
+import { getClient } from 'infra/database';
+import { NextApiRequest, NextApiResponse } from 'next';
+import node_pg_migration from 'node-pg-migrate';
 
 const migrations = async (req: NextApiRequest, res: NextApiResponse) => {
-  const alowedMethods = ["GET", "POST"];
+  const alowedMethods = ['GET', 'POST'];
   if (!alowedMethods.includes(req.method)) {
-    res.status(405).json({ error: "Method not allowed" });
+    res.status(405).json({ error: 'Method not allowed' });
     return;
   }
 
   const dbClient = await getClient();
-  const dryRun = req.method === "GET";
+  const dryRun = req.method === 'GET';
 
   try {
     const migrations = await node_pg_migration({
       dbClient,
-      migrationsTable: "pgmigrations",
-      dir: join("infra", "migrations"),
-      direction: "up",
+      migrationsTable: 'pgmigrations',
+      dir: join('infra', 'migrations'),
+      direction: 'up',
       dryRun,
       verbose: true,
     });
@@ -28,7 +29,7 @@ const migrations = async (req: NextApiRequest, res: NextApiResponse) => {
     res.status(200).json(migrations);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ error: 'Internal server error' });
     throw error;
   } finally {
     await dbClient.end();

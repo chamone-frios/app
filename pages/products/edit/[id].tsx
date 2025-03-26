@@ -1,9 +1,9 @@
-import { useRouter } from "next/router";
-import { Alert, CircularProgress, Stack, Typography } from "@mui/material";
-import { updateProduct, useGetProductById } from "../_api/http";
-import { ProductForm } from "../_components/product-form";
-import { useMutation } from "@tanstack/react-query";
-import { Product } from "pages/api/v1/products/_constants/types";
+import { Alert, CircularProgress, Stack, Typography } from '@mui/material';
+import { useMutation } from '@tanstack/react-query';
+import { useRouter } from 'next/router';
+import { updateProduct, useGetProductById } from 'src/api/products/http';
+import { ProductForm } from 'src/components';
+import { Product } from 'src/constants/types';
 
 const EditProduct = () => {
   const router = useRouter();
@@ -17,12 +17,12 @@ const EditProduct = () => {
   return (
     <Stack spacing={4}>
       <Typography variant="hero-sm">Editar produto</Typography>
-      <Alert severity={isSuccess ? "success" : isError ? "error" : "info"}>
+      <Alert severity={isSuccess ? 'success' : isError ? 'error' : 'info'}>
         {isSuccess
-          ? "Produto editado!"
+          ? 'Produto editado!'
           : isError
-            ? "Erro ao editar produto."
-            : "Preencha corretamente antes de editar o produto."}
+            ? 'Erro ao editar produto.'
+            : 'Preencha corretamente antes de editar o produto.'}
       </Alert>
       {isFetching ? (
         <Stack alignItems="center" justifyContent="center" height="300px">

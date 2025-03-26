@@ -1,26 +1,15 @@
 import {
-  Card,
-  CardContent,
-  Typography,
-  Box,
-  Chip,
   Stack,
-  CircularProgress,
-  Container,
   Button,
-  Modal,
-  Paper,
   Divider,
-} from "@mui/material";
-import { ProductMetric } from "../api/v1/products/_constants/types";
-import { deleteProductById, useGetProducts } from "./_api/http";
-import { numberToCurrency } from "pages/_utils/number";
-import { Delete, Edit } from "@mui/icons-material";
-import { useRouter } from "next/router";
-import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
-import { ProductCard } from "./_components/product-card";
-import { DeleteModal } from "pages/_shared/components";
+  Typography,
+  CircularProgress,
+} from '@mui/material';
+import { useMutation } from '@tanstack/react-query';
+import { useRouter } from 'next/router';
+import { useState } from 'react';
+import { deleteProductById, useGetProducts } from 'src/api/products/http';
+import { DeleteModal, ProductCard } from 'src/components';
 
 const ProductList = () => {
   const router = useRouter();
@@ -63,7 +52,7 @@ const ProductList = () => {
             <Button
               variant="contained"
               color="primary"
-              onClick={() => router.push("/products/add")}
+              onClick={() => router.push('/products/add')}
             >
               Adicionar
             </Button>
@@ -87,7 +76,7 @@ const ProductList = () => {
             <Button
               variant="contained"
               color="primary"
-              onClick={() => router.push("/products/add")}
+              onClick={() => router.push('/products/add')}
             >
               Novo produto
             </Button>

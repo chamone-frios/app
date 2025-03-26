@@ -1,10 +1,8 @@
-import { clearDatabase, runMigrations } from "tests/utils";
-import {
-  Product,
-  ProductMetric,
-} from "../../../../../pages/api/v1/products/_constants/types";
+import { clearDatabase, runMigrations } from 'tests/utils';
 
-describe("GET /api/v1/products", () => {
+import { Product, ProductMetric } from '../../../../../src/constants/types';
+
+describe('GET /api/v1/products', () => {
   beforeAll(async () => {
     await clearDatabase();
     await runMigrations();
@@ -14,42 +12,42 @@ describe("GET /api/v1/products", () => {
     await clearDatabase().then(async () => await runMigrations());
   });
 
-  it("should return an empty array when no products exist", async () => {
-    const response = await fetch("http://localhost:3000/api/v1/products");
+  it('should return an empty array when no products exist', async () => {
+    const response = await fetch('http://localhost:3000/api/v1/products');
 
     expect(response.status).toBe(200);
 
     const data = await response.json();
-    expect(data).toHaveProperty("products");
+    expect(data).toHaveProperty('products');
     expect(Array.isArray(data.products)).toBe(true);
     expect(data.products.length).toBe(0);
   });
 
-  it("should return all products when products exist", async () => {
-    const productsToCreate: Omit<Product, "id">[] = [
+  it('should return all products when products exist', async () => {
+    const productsToCreate: Omit<Product, 'id'>[] = [
       {
-        name: "Test Product 1",
-        img: "test-image-1.jpg",
-        description: "First test product",
-        maker: "Test Maker",
+        name: 'Test Product 1',
+        img: 'test-image-1.jpg',
+        description: 'First test product',
+        maker: 'Test Maker',
         metric: ProductMetric.UNIT,
         stock: 10,
         price: 100,
       },
       {
-        name: "Test Product 2",
-        img: "test-image-2.jpg",
-        description: "Second test product",
-        maker: "Another Maker",
+        name: 'Test Product 2',
+        img: 'test-image-2.jpg',
+        description: 'Second test product',
+        maker: 'Another Maker',
         metric: ProductMetric.KG,
         stock: 5,
         price: 100,
       },
       {
-        name: "Test Product 3",
-        img: "test-image-3.jpg",
-        description: "Third test product",
-        maker: "Yet Another Maker",
+        name: 'Test Product 3',
+        img: 'test-image-3.jpg',
+        description: 'Third test product',
+        maker: 'Yet Another Maker',
         metric: ProductMetric.L,
         stock: 20,
         price: 200,
@@ -60,14 +58,14 @@ describe("GET /api/v1/products", () => {
 
     for (const product of productsToCreate) {
       const createResponse = await fetch(
-        "http://localhost:3000/api/v1/products",
+        'http://localhost:3000/api/v1/products',
         {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify(product),
-        },
+        }
       );
 
       expect(createResponse.status).toBe(201);
@@ -79,20 +77,20 @@ describe("GET /api/v1/products", () => {
       createdProductIds.push(createData.id);
     }
 
-    const response = await fetch("http://localhost:3000/api/v1/products");
+    const response = await fetch('http://localhost:3000/api/v1/products');
 
     expect(response.status).toBe(200);
 
     const data = await response.json();
-    expect(data).toHaveProperty("products");
+    expect(data).toHaveProperty('products');
     expect(Array.isArray(data.products)).toBe(true);
     expect(data.products.length).toBeGreaterThanOrEqual(
-      productsToCreate.length,
+      productsToCreate.length
     );
 
     for (let i = 0; i < createdProductIds.length; i++) {
       const foundProduct = data.products.find(
-        (p) => p.id === createdProductIds[i],
+        (p) => p.id === createdProductIds[i]
       );
       expect(foundProduct).toBeDefined();
       expect(foundProduct.name).toBe(productsToCreate[i].name);
@@ -103,8 +101,8 @@ describe("GET /api/v1/products", () => {
     }
   });
 
-  it("should return the correct product structure", async () => {
-    const response = await fetch("http://localhost:3000/api/v1/products");
+  it('should return the correct product structure', async () => {
+    const response = await fetch('http://localhost:3000/api/v1/products');
 
     expect(response.status).toBe(200);
 
@@ -114,34 +112,34 @@ describe("GET /api/v1/products", () => {
 
     const product = data.products[0];
 
-    expect(product).toHaveProperty("id");
-    expect(product).toHaveProperty("name");
-    expect(product).toHaveProperty("img");
-    expect(product).toHaveProperty("description");
-    expect(product).toHaveProperty("maker");
-    expect(product).toHaveProperty("metric");
-    expect(product).toHaveProperty("stock");
-    expect(product).toHaveProperty("price");
+    expect(product).toHaveProperty('id');
+    expect(product).toHaveProperty('name');
+    expect(product).toHaveProperty('img');
+    expect(product).toHaveProperty('description');
+    expect(product).toHaveProperty('maker');
+    expect(product).toHaveProperty('metric');
+    expect(product).toHaveProperty('stock');
+    expect(product).toHaveProperty('price');
 
-    expect(typeof product.id).toBe("string");
-    expect(typeof product.name).toBe("string");
-    expect(typeof product.img).toBe("string");
-    expect(typeof product.description).toBe("string");
-    expect(typeof product.maker).toBe("string");
-    expect(typeof product.metric).toBe("number");
-    expect(typeof product.stock).toBe("number");
-    expect(typeof product.price).toBe("number");
+    expect(typeof product.id).toBe('string');
+    expect(typeof product.name).toBe('string');
+    expect(typeof product.img).toBe('string');
+    expect(typeof product.description).toBe('string');
+    expect(typeof product.maker).toBe('string');
+    expect(typeof product.metric).toBe('number');
+    expect(typeof product.stock).toBe('number');
+    expect(typeof product.price).toBe('number');
   });
 
-  it("should handle method not allowed", async () => {
-    const response = await fetch("http://localhost:3000/api/v1/products", {
-      method: "PUT",
+  it('should handle method not allowed', async () => {
+    const response = await fetch('http://localhost:3000/api/v1/products', {
+      method: 'PUT',
     });
 
     expect(response.status).toBe(405);
 
     const data = await response.json();
-    expect(data).toHaveProperty("error");
-    expect(data.error).toBe("Method not allowed");
+    expect(data).toHaveProperty('error');
+    expect(data.error).toBe('Method not allowed');
   });
 });

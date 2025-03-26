@@ -1,7 +1,7 @@
-import { clearDatabase, runMigrations } from "tests/utils";
-import { Product, ProductMetric } from "pages/api/v1/products/_constants/types";
+import { Product, ProductMetric } from 'src/constants/types';
+import { clearDatabase, runMigrations } from 'tests/utils';
 
-describe("POST /api/v1/products", () => {
+describe('POST /api/v1/products', () => {
   beforeAll(async () => {
     await clearDatabase();
     await runMigrations();
@@ -11,21 +11,21 @@ describe("POST /api/v1/products", () => {
     await clearDatabase().then(async () => await runMigrations());
   });
 
-  it("should create a new product when all fields are valid", async () => {
-    const productData: Omit<Product, "id"> = {
-      name: "Test Product",
-      img: "test-image.jpg",
-      description: "Test product description",
-      maker: "Test Maker",
+  it('should create a new product when all fields are valid', async () => {
+    const productData: Omit<Product, 'id'> = {
+      name: 'Test Product',
+      img: 'test-image.jpg',
+      description: 'Test product description',
+      maker: 'Test Maker',
       metric: ProductMetric.UNIT,
       stock: 10,
       price: 100,
     };
 
-    const response = await fetch("http://localhost:3000/api/v1/products", {
-      method: "POST",
+    const response = await fetch('http://localhost:3000/api/v1/products', {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(productData),
     });
@@ -43,7 +43,7 @@ describe("POST /api/v1/products", () => {
     expect(Array.isArray(products.products)).toBeTruthy();
 
     const createdProduct = products.products.find(
-      (p) => p.id === responseData.id,
+      (p) => p.id === responseData.id
     );
     expect(createdProduct).toBeDefined();
     expect(createdProduct.name).toBe(productData.name);
@@ -52,15 +52,15 @@ describe("POST /api/v1/products", () => {
     expect(createdProduct.stock).toBe(productData.stock);
   });
 
-  it("should return 400 when required fields are missing", async () => {
+  it('should return 400 when required fields are missing', async () => {
     const incompleteData = {
-      name: "Incomplete Product",
+      name: 'Incomplete Product',
     };
 
-    const response = await fetch("http://localhost:3000/api/v1/products", {
-      method: "POST",
+    const response = await fetch('http://localhost:3000/api/v1/products', {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(incompleteData),
     });
@@ -68,24 +68,24 @@ describe("POST /api/v1/products", () => {
     expect(response.status).toBe(400);
 
     const responseData = await response.json();
-    expect(responseData.error).toBe("Missing required fields");
+    expect(responseData.error).toBe('Missing required fields');
   });
 
-  it("should return 400 when metric is invalid", async () => {
+  it('should return 400 when metric is invalid', async () => {
     const invalidMetricData = {
-      name: "Invalid Metric Product",
-      img: "invalid-metric.jpg",
-      description: "Product with invalid metric",
-      maker: "Test Maker",
+      name: 'Invalid Metric Product',
+      img: 'invalid-metric.jpg',
+      description: 'Product with invalid metric',
+      maker: 'Test Maker',
       metric: 99,
       stock: 5,
       price: 99,
     };
 
-    const response = await fetch("http://localhost:3000/api/v1/products", {
-      method: "POST",
+    const response = await fetch('http://localhost:3000/api/v1/products', {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(invalidMetricData),
     });
@@ -93,10 +93,10 @@ describe("POST /api/v1/products", () => {
     expect(response.status).toBe(400);
 
     const responseData = await response.json();
-    expect(responseData.error).toBe("Invalid metric value");
+    expect(responseData.error).toBe('Invalid metric value');
   });
 
-  it("should accept all valid metric types", async () => {
+  it('should accept all valid metric types', async () => {
     for (const metricType of [
       ProductMetric.UNIT,
       ProductMetric.KG,
@@ -105,18 +105,18 @@ describe("POST /api/v1/products", () => {
     ]) {
       const productData = {
         name: `Metric Test ${ProductMetric[metricType]}`,
-        img: "metric-test.jpg",
+        img: 'metric-test.jpg',
         description: `Testing metric type: ${ProductMetric[metricType]}`,
-        maker: "Metric Tester",
+        maker: 'Metric Tester',
         metric: metricType,
         stock: 15,
         price: 100,
       };
 
-      const response = await fetch("http://localhost:3000/api/v1/products", {
-        method: "POST",
+      const response = await fetch('http://localhost:3000/api/v1/products', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(productData),
       });
@@ -128,18 +128,18 @@ describe("POST /api/v1/products", () => {
     }
   });
 
-  it("should return 405 for non-POST methods", async () => {
-    const response = await fetch("http://localhost:3000/api/v1/products", {
-      method: "PUT",
+  it('should return 405 for non-POST methods', async () => {
+    const response = await fetch('http://localhost:3000/api/v1/products', {
+      method: 'PUT',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ test: "data" }),
+      body: JSON.stringify({ test: 'data' }),
     });
 
     expect(response.status).toBe(405);
 
     const responseData = await response.json();
-    expect(responseData.error).toBe("Method not allowed");
+    expect(responseData.error).toBe('Method not allowed');
   });
 });

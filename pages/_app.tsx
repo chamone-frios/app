@@ -1,9 +1,9 @@
-import { AppProps } from "next/app";
-import { ThemeProvider } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
-import { theme } from "./_shared/theme";
-import { PageWrapper } from "./_shared/components";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import CssBaseline from '@mui/material/CssBaseline';
+import { ThemeProvider } from '@mui/material/styles';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { AppProps } from 'next/app';
+import { PageWrapper } from 'src/components';
+import { theme } from 'src/theme';
 
 const queryClient = new QueryClient();
 const MyApp = ({ Component, pageProps }: AppProps) => {
