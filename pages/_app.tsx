@@ -3,8 +3,8 @@ import { AppProps } from 'next/app';
 
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
-import { PageWrapper } from 'infra/components';
-import { theme } from 'infra/theme';
+import { PageWrapper } from 'src/frontend/components';
+import { theme } from 'src/frontend/theme';
 
 const queryClient = new QueryClient();
 const MyApp = ({ Component, pageProps }: AppProps) => {

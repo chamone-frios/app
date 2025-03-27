@@ -9,8 +9,11 @@ import {
   Typography,
   CircularProgress,
 } from '@mui/material';
-import { deleteProductById, useGetProducts } from 'infra/api/products/http';
-import { DeleteModal, ProductCard } from 'infra/components';
+import {
+  deleteProductById,
+  useGetProducts,
+} from 'src/frontend/api/products/http';
+import { DeleteModal, ProductCard } from 'src/frontend/components';
 
 const ProductList = () => {
   const router = useRouter();

@@ -1,11 +1,9 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import { query } from 'infra/db';
+import { query } from 'src/integrations/database';
 
 const status = async (req: NextApiRequest, res: NextApiResponse) => {
-  console.log('tracking status');
   const now = new Date().toISOString();
-  console.log('tracking status', now);
 
   const versionResult = await query('SHOW server_version;');
   const version = versionResult.rows[0].server_version;

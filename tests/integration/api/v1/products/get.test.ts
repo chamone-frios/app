@@ -1,6 +1,6 @@
 import { clearDatabase, runMigrations } from 'tests/utils';
 
-import { Product, ProductMetric } from '../../../../../infra/constants/types';
+import { Product, ProductMetric } from '../../../../../src/constants/types';
 
 describe('GET /api/v1/products', () => {
   beforeAll(async () => {

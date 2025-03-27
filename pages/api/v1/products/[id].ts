@@ -4,7 +4,7 @@ import {
   getProductById,
   deleteProductById,
   updateProductById,
-} from 'infra/services';
+} from 'src/backend/services';
 
 const productHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { id } = req.query;

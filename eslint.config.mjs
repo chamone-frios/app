@@ -31,7 +31,7 @@ export default defineConfig([
       '**/dist/**',
       '**/build/**',
       '**/.git/**',
-      '**/infra/migrations/**',
+      '**/src/integrations/migrations/**',
     ],
   },
   {

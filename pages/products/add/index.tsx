@@ -1,9 +1,9 @@
 import { useMutation } from '@tanstack/react-query';
 
 import { Alert, Stack, Typography } from '@mui/material';
-import { postProduct } from 'infra/api/products/http';
-import { ProductForm } from 'infra/components';
-import { Product, ProductMetric } from 'infra/constants/types';
+import { Product, ProductMetric } from 'src/constants/types';
+import { postProduct } from 'src/frontend/api/products/http';
+import { ProductForm } from 'src/frontend/components';
 
 const AddProduct = () => {
   const { mutate, isPending, isSuccess, isError } = useMutation({

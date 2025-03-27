@@ -2,8 +2,8 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 import { join } from 'node:path';
 
-import { getClient } from 'infra/db';
 import node_pg_migration from 'node-pg-migrate';
+import { getClient } from 'src/integrations/database';
 
 const migrations = async (req: NextApiRequest, res: NextApiResponse) => {
   const alowedMethods = ['GET', 'POST'];
@@ -20,7 +20,7 @@ const migrations = async (req: NextApiRequest, res: NextApiResponse) => {
     const migrations = await node_pg_migration({
       dbClient,
       migrationsTable: 'pgmigrations',
-      dir: join('infra', 'migrations'),
+      dir: join('src', 'integrations', 'migrations'),
       direction: 'up',
       dryRun,
       verbose: true,
