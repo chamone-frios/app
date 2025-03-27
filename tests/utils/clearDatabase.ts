@@ -1,4 +1,4 @@
-import { query } from 'infra/database';
+import { query } from 'infra/db';
 
 export const clearDatabase = async () => {
   await query('DROP SCHEMA public CASCADE;');
