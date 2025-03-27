@@ -1,5 +1,5 @@
-import { query } from 'infra/database';
 import { Product, ProductMetric } from 'infra/constants/types';
+import { query } from 'infra/db';
 
 const getProduct = async ({ id }: { id: string }): Promise<Product> => {
   const queryString = `

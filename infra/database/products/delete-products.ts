@@ -1,4 +1,4 @@
-import { query } from 'infra/database';
+import { query } from 'infra/db';
 
 const deleteProduct = async ({ id }: { id: string }): Promise<null> => {
   const sql = `

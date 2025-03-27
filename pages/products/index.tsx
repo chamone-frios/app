@@ -6,10 +6,10 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { useMutation } from '@tanstack/react-query';
-import { useRouter } from 'next/router';
-import { useState } from 'react';
 import { deleteProductById, useGetProducts } from 'infra/api/products/http';
 import { DeleteModal, ProductCard } from 'infra/components';
+import { useRouter } from 'next/router';
+import { useState } from 'react';
 
 const ProductList = () => {
   const router = useRouter();

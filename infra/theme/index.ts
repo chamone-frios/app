@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 import { CSSProperties } from 'react';
 

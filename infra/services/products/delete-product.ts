@@ -1,5 +1,5 @@
-import { NextApiResponse } from 'next';
 import { deleteProduct } from 'infra/database';
+import { NextApiResponse } from 'next';
 
 const deleteProductById = async (id: string, res: NextApiResponse) => {
   try {

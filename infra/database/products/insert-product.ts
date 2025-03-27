@@ -1,5 +1,5 @@
-import { query } from 'infra/database';
 import { Product, ProductMetric } from 'infra/constants/types';
+import { query } from 'infra/db';
 import { v4 as uuidv4 } from 'uuid';
 
 type InsertProductInput = Omit<Product, 'id'>;

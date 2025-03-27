@@ -1,9 +1,9 @@
-import { NextApiRequest, NextApiResponse } from 'next';
 import {
   getProductById,
   deleteProductById,
   updateProductById,
 } from 'infra/services';
+import { NextApiRequest, NextApiResponse } from 'next';
 
 const productHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { id } = req.query;

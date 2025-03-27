@@ -1,4 +1,4 @@
-import { query } from 'infra/database';
+import { query } from 'infra/db';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 const status = async (req: NextApiRequest, res: NextApiResponse) => {
