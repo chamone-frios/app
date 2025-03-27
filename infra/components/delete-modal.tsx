@@ -1,6 +1,7 @@
+import { PropsWithChildren } from 'react';
+
 import { Button, Modal, Paper, Typography } from '@mui/material';
 import { Stack } from '@mui/system';
-import { PropsWithChildren } from 'react';
 
 type DeleteModalProps = {
   isOpen: boolean;

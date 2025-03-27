@@ -1,5 +1,6 @@
-import { Stack, Typography } from '@mui/material';
 import Image from 'next/image';
+
+import { Stack, Typography } from '@mui/material';
 
 const Page404 = () => {
   return (

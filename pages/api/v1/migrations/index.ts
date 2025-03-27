@@ -1,7 +1,8 @@
+import { NextApiRequest, NextApiResponse } from 'next';
+
 import { join } from 'node:path';
 
 import { getClient } from 'infra/db';
-import { NextApiRequest, NextApiResponse } from 'next';
 import node_pg_migration from 'node-pg-migrate';
 
 const migrations = async (req: NextApiRequest, res: NextApiResponse) => {

@@ -1,5 +1,6 @@
-import { getProduct } from 'infra/database';
 import { NextApiResponse } from 'next';
+
+import { getProduct } from 'infra/database';
 
 const getProductById = async (id: string, res: NextApiResponse) => {
   try {

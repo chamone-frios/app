@@ -1,3 +1,6 @@
+import reactPlugin from 'eslint-plugin-react';
+import reactHooksPlugin from 'eslint-plugin-react-hooks';
+
 import js from '@eslint/js';
 import tsPlugin from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
@@ -7,8 +10,6 @@ import importPlugin from 'eslint-plugin-import';
 import jsxA11yPlugin from 'eslint-plugin-jsx-a11y';
 import perfectionistPlugin from 'eslint-plugin-perfectionist';
 import prettierPlugin from 'eslint-plugin-prettier';
-import reactPlugin from 'eslint-plugin-react';
-import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import storybookPlugin from 'eslint-plugin-storybook';
 import globals from 'globals';
 
@@ -128,17 +129,23 @@ export default defineConfig([
       'perfectionist/sort-imports': [
         'error',
         {
-          // Adicionar as definições dos grupos customizados
           customGroups: {
             type: {
-              react: 'react',
+              thirdParty: ['react', 'next'],
             },
             value: {
-              react: ['react', 'react-dom', 'react-*'],
+              thirdParty: [
+                'react',
+                'react-dom',
+                'react-*',
+                'next',
+                'next/*',
+                'next-*',
+              ],
             },
           },
           groups: [
-            // Use os grupos padrão em vez de 'react'
+            'thirdParty',
             'builtin',
             'external',
             'internal',

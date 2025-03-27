@@ -1,5 +1,6 @@
-import { configDotenv } from 'dotenv';
 import nextJest from 'next/jest.js';
+
+import { configDotenv } from 'dotenv';
 
 import type { Config } from '@jest/types';
 

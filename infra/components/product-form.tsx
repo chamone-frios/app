@@ -1,3 +1,6 @@
+import { useRouter } from 'next/router';
+import { ChangeEvent, useState } from 'react';
+
 import {
   Button,
   CircularProgress,
@@ -13,8 +16,6 @@ import {
 } from '@mui/material';
 import { Product, ProductMetric } from 'infra/constants/types';
 import { numberToCurrency } from 'infra/utils/number';
-import { useRouter } from 'next/router';
-import { ChangeEvent, useState } from 'react';
 
 type ProductFormProps = {
   isLoading: boolean;

@@ -1,5 +1,6 @@
-import { query } from 'infra/db';
 import { NextApiRequest, NextApiResponse } from 'next';
+
+import { query } from 'infra/db';
 
 const status = async (req: NextApiRequest, res: NextApiResponse) => {
   console.log('tracking status');
