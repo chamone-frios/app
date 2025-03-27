@@ -4,7 +4,7 @@ import {
   GetProductResponse,
   GetProductsResponse,
   Product,
-} from 'src/constants/types';
+} from 'infra/constants/types';
 
 const postProduct = (product: Omit<Product, 'id'>) =>
   axios.post<Omit<Product, 'id'>, string>('/api/v1/products', product);

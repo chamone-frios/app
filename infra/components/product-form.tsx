@@ -11,10 +11,10 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { Product, ProductMetric } from 'infra/constants/types';
+import { numberToCurrency } from 'infra/utils/number';
 import { useRouter } from 'next/router';
 import { ChangeEvent, useState } from 'react';
-import { Product, ProductMetric } from 'src/constants/types';
-import { numberToCurrency } from 'src/utils/number';
 
 type ProductFormProps = {
   isLoading: boolean;

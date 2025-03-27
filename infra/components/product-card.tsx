@@ -1,8 +1,8 @@
 import { Delete, Edit } from '@mui/icons-material';
 import { Card, CardContent, Chip, Typography } from '@mui/material';
 import { Box, Container, Stack } from '@mui/system';
-import { Product, ProductMetric } from 'src/constants/types';
-import { numberToCurrency } from 'src/utils/number';
+import { Product, ProductMetric } from 'infra/constants/types';
+import { numberToCurrency } from 'infra/utils/number';
 
 type ProductCardProps = {
   product: Product;

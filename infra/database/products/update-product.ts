@@ -1,5 +1,5 @@
 import { query } from 'infra/database';
-import { Product, ProductMetric } from 'src/constants/types';
+import { Product, ProductMetric } from 'infra/constants/types';
 
 type UpdateProduct = {
   id: string;

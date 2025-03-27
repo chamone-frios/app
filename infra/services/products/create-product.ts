@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { ProductMetric } from 'src/constants/types';
-import { insertProduct } from 'src/database';
+import { ProductMetric } from 'infra/constants/types';
+import { insertProduct } from 'infra/database';
 
 const createProduct = async (req: NextApiRequest, res: NextApiResponse) => {
   try {

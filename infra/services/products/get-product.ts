@@ -1,5 +1,5 @@
 import { NextApiResponse } from 'next';
-import { getProduct } from 'src/database';
+import { getProduct } from 'infra/database';
 
 const getProductById = async (id: string, res: NextApiResponse) => {
   try {

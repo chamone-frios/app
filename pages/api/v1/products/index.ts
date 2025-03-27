@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { createProduct, listProducts } from 'src/services';
+import { createProduct, listProducts } from 'infra/services';
 
 const products = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') return createProduct(req, res);

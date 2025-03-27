@@ -1,9 +1,9 @@
 import { Alert, CircularProgress, Stack, Typography } from '@mui/material';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
-import { updateProduct, useGetProductById } from 'src/api/products/http';
-import { ProductForm } from 'src/components';
-import { Product } from 'src/constants/types';
+import { updateProduct, useGetProductById } from 'infra/api/products/http';
+import { ProductForm } from 'infra/components';
+import { Product } from 'infra/constants/types';
 
 const EditProduct = () => {
   const router = useRouter();
