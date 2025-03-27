@@ -10,8 +10,9 @@ const migrations = async (req: NextApiRequest, res: NextApiResponse) => {
     res.status(405).json({ error: 'Method not allowed' });
     return;
   }
-
+  console.log('Getting client...');
   const dbClient = await getClient();
+  console.log('Client connected, executing query...');
   const dryRun = req.method === 'GET';
 
   try {
