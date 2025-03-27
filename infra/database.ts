@@ -25,7 +25,9 @@ async function query(
   let client: Client;
 
   try {
+    console.log('Getting client...');
     client = await getClient();
+    console.log('Client connected, executing query...');
     const result = await client.query(queryObject);
     return result;
   } catch (error) {
