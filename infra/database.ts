@@ -23,6 +23,7 @@ async function query(
     | { text: string; name?: string; values?: unknown[]; rowMode?: 'array' }
 ) {
   let client: Client;
+  console.log('tracking queryObject', queryObject);
 
   try {
     console.log('Getting client...');

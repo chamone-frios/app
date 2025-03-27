@@ -2,7 +2,9 @@ import { query } from 'infra/database';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 const status = async (req: NextApiRequest, res: NextApiResponse) => {
+  console.log('tracking status');
   const now = new Date().toISOString();
+  console.log('tracking status', now);
 
   const versionResult = await query('SHOW server_version;');
   const version = versionResult.rows[0].server_version;
