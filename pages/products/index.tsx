@@ -45,13 +45,13 @@ const ProductList = ({ products: initialProducts }: ProductListProps) => {
     if (!productToDelete) return;
 
     setIsDeleting(true);
+    handleCloseModal();
     setProducts((currentProducts) =>
       currentProducts.filter((product) => product.id !== productToDelete)
     );
 
     try {
       await http.delete(`/api/v1/products/${productToDelete}`);
-      handleCloseModal();
     } catch (error) {
       console.error('Erro ao excluir produto:', error);
       setProducts(initialProducts);
