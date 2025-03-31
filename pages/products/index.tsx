@@ -13,6 +13,7 @@ import axios from 'axios';
 import { getProducts } from 'src/backend/database';
 import { Product } from 'src/constants/types';
 import { DeleteModal, ProductCard } from 'src/frontend/components';
+import { useIsNextLoading } from 'src/frontend/hooks';
 
 type ProductListProps = {
   products: Product[];
@@ -20,10 +21,11 @@ type ProductListProps = {
 
 const ProductList = ({ products }: ProductListProps) => {
   const router = useRouter();
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [productToDelete, setProductToDelete] = useState<string | null>(null);
+  const isNextLoading = useIsNextLoading();
   const [isFetching, setIsFetching] = useState(false);
   const [isRouteChanging, setIsRouteChanging] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     const handleStart = (url: string) => {
@@ -75,7 +77,7 @@ const ProductList = ({ products }: ProductListProps) => {
     }
   };
 
-  const isLoading = isFetching || isRouteChanging;
+  const isLoading = isFetching || isRouteChanging || isNextLoading;
 
   return (
     <Stack spacing={8}>

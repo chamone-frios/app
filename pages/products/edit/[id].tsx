@@ -2,11 +2,12 @@ import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 
-import { Alert, Stack, Typography } from '@mui/material';
+import { Alert, CircularProgress, Stack, Typography } from '@mui/material';
 import axios from 'axios';
 import { getProduct } from 'src/backend/database';
 import { Product } from 'src/constants/types';
 import { ProductForm } from 'src/frontend/components';
+import { useIsNextLoading } from 'src/frontend/hooks';
 
 type EditProductProps = {
   product: Product | null;
@@ -15,6 +16,7 @@ type EditProductProps = {
 
 const EditProduct = ({ product, error: serverError }: EditProductProps) => {
   const router = useRouter();
+  const isNextLoading = useIsNextLoading();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [error, setError] = useState(serverError || '');
@@ -70,19 +72,25 @@ const EditProduct = ({ product, error: serverError }: EditProductProps) => {
     <Stack spacing={4}>
       <Typography variant="hero-sm">Editar produto</Typography>
       <Alert severity={getAlertSeverity()}>{getAlertMessage()}</Alert>
-      <ProductForm
-        isLoading={isSubmitting}
-        initialState={{
-          name: product.name,
-          description: product.description,
-          maker: product.maker,
-          metric: product.metric,
-          stock: product.stock,
-          price: product.price,
-        }}
-        submitButtonText="Confirmar edição"
-        onSubmit={handleSubmit}
-      />
+      {isNextLoading ? (
+        <Stack alignItems="center" justifyContent="center" height="300px">
+          <CircularProgress />
+        </Stack>
+      ) : (
+        <ProductForm
+          isLoading={isSubmitting}
+          initialState={{
+            name: product.name,
+            description: product.description,
+            maker: product.maker,
+            metric: product.metric,
+            stock: product.stock,
+            price: product.price,
+          }}
+          submitButtonText="Confirmar edição"
+          onSubmit={handleSubmit}
+        />
+      )}
     </Stack>
   );
 };

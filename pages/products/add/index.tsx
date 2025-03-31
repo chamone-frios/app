@@ -1,12 +1,14 @@
 import { useState } from 'react';
 
-import { Alert, Stack, Typography } from '@mui/material';
+import { Alert, CircularProgress, Stack, Typography } from '@mui/material';
 import axios from 'axios';
 import { Product, ProductMetric } from 'src/constants/types';
 import { ProductForm } from 'src/frontend/components';
+import { useIsNextLoading } from 'src/frontend/hooks';
 
 const AddProduct = () => {
-  const [isLoading, setIsLoading] = useState(false);
+  const isNextLoading = useIsNextLoading();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -20,18 +22,18 @@ const AddProduct = () => {
   };
 
   const handleSubmit = async (product: Product) => {
-    setIsLoading(true);
+    setIsSubmitting(true);
     try {
       await axios.post('/api/v1/products', product);
       setStatus('success');
-      setIsLoading(false);
+      setIsSubmitting(false);
     } catch (error) {
       console.error('Erro ao adicionar produto:', error);
       setStatus('error');
       setErrorMessage(
         error.response?.data?.message || 'Erro ao adicionar produto.'
       );
-      setIsLoading(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -51,12 +53,18 @@ const AddProduct = () => {
     <Stack spacing={4}>
       <Typography variant="hero-sm">Adicionar produto</Typography>
       <Alert severity={getAlertSeverity()}>{getAlertMessage()}</Alert>
-      <ProductForm
-        isLoading={isLoading}
-        initialState={initialState}
-        submitButtonText="Adicionar produto"
-        onSubmit={handleSubmit}
-      />
+      {isNextLoading ? (
+        <Stack alignItems="center" justifyContent="center" height="300px">
+          <CircularProgress />
+        </Stack>
+      ) : (
+        <ProductForm
+          isLoading={isSubmitting}
+          initialState={initialState}
+          submitButtonText="Adicionar produto"
+          onSubmit={handleSubmit}
+        />
+      )}
     </Stack>
   );
 };
