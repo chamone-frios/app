@@ -1,6 +1,6 @@
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import {
   Stack,
@@ -23,6 +23,29 @@ const ProductList = ({ products }: ProductListProps) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<string | null>(null);
   const [isFetching, setIsFetching] = useState(false);
+  const [isRouteChanging, setIsRouteChanging] = useState(false);
+
+  useEffect(() => {
+    const handleStart = (url: string) => {
+      if (url === router.asPath && !isFetching) {
+        setIsRouteChanging(true);
+      }
+    };
+
+    const handleComplete = () => {
+      setIsRouteChanging(false);
+    };
+
+    router.events.on('routeChangeStart', handleStart);
+    router.events.on('routeChangeComplete', handleComplete);
+    router.events.on('routeChangeError', handleComplete);
+
+    return () => {
+      router.events.off('routeChangeStart', handleStart);
+      router.events.off('routeChangeComplete', handleComplete);
+      router.events.off('routeChangeError', handleComplete);
+    };
+  }, [router, isFetching]);
 
   const handleEditClick = (productId: string) => {
     router.push(`/products/edit/${productId}`);
@@ -47,11 +70,12 @@ const ProductList = ({ products }: ProductListProps) => {
         handleCloseModal();
       } catch (error) {
         console.error('Erro ao excluir produto:', error);
-      } finally {
         setIsFetching(false);
       }
     }
   };
+
+  const isLoading = isFetching || isRouteChanging;
 
   return (
     <Stack spacing={8}>
@@ -72,7 +96,7 @@ const ProductList = ({ products }: ProductListProps) => {
       </Stack>
       <Divider />
       <Stack height="100%" gap={4}>
-        {isFetching ? (
+        {isLoading ? (
           <Stack alignItems="center" justifyContent="center" height="300px">
             <CircularProgress />
           </Stack>
@@ -120,20 +144,10 @@ export const getServerSideProps: GetServerSideProps<
 > = async () => {
   try {
     const products = await getProducts();
-
-    return {
-      props: {
-        products: products,
-      },
-    };
+    return { props: { products } };
   } catch (error) {
     console.error('Erro ao buscar produtos:', error);
-
-    return {
-      props: {
-        products: [],
-      },
-    };
+    return { props: { products: [] } };
   }
 };
 
