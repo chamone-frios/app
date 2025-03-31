@@ -59,6 +59,7 @@ const AddProduct = () => {
         </Stack>
       ) : (
         <ProductForm
+          clearFormAferSubmit
           isLoading={isSubmitting}
           initialState={initialState}
           submitButtonText="Adicionar produto"

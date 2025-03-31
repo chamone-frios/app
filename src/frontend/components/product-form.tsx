@@ -21,6 +21,7 @@ type ProductFormProps = {
   isLoading: boolean;
   submitButtonText: string;
   initialState: Omit<Product, 'id' | 'img'>;
+  clearFormAferSubmit?: boolean;
   onSubmit: (product: Omit<Product, 'id'>) => void;
 };
 
@@ -35,6 +36,7 @@ const ProductForm = ({
   isLoading,
   submitButtonText,
   initialState,
+  clearFormAferSubmit,
   onSubmit,
 }: ProductFormProps) => {
   const router = useRouter();
@@ -101,6 +103,9 @@ const ProductForm = ({
       price: Number(product.price),
       img: product.name.replace(/\s/g, '-').toLowerCase(),
     });
+    if (clearFormAferSubmit) {
+      setProduct(initialState);
+    }
   };
 
   return (
