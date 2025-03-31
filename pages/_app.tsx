@@ -14,8 +14,7 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
   const router = useRouter();
   const url = process.env.NEXT_PUBLIC_URL || 'https://chamonefrios.com';
   const canonical = url + (router.asPath === '/' ? '' : router.asPath);
-  const description =
-    'Chamone Frios - Os melhores produtos para o seu negócio!';
+  const description = 'Os melhores ingredientes para o seu negócio!';
 
   return (
     <>
