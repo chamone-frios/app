@@ -1,6 +1,6 @@
 import { Delete, Edit } from '@mui/icons-material';
 import { Card, CardContent, Chip, Typography } from '@mui/material';
-import { Box, Container, Stack } from '@mui/system';
+import { Box, Stack } from '@mui/system';
 import { Product, ProductMetric } from 'src/constants/types';
 import { numberToCurrency } from 'src/utils/number';
 
@@ -29,20 +29,26 @@ const ProductCard = ({ product, onDelete, onEdit }: ProductCardProps) => {
   return (
     <Card key={product.id}>
       <CardContent>
-        <Stack direction="row" justifyContent="space-between">
+        <Stack
+          gap={2}
+          marginBottom={4}
+          direction="column"
+          alignItems="end"
+          sx={{ justifySelf: 'end', width: 'fit-content' }}
+        >
+          <Stack direction="row" gap={4}>
+            <Stack onClick={() => onEdit(product.id)}>
+              <Edit />
+            </Stack>
+            <Stack onClick={() => onDelete(product.id)}>
+              <Delete />
+            </Stack>
+          </Stack>
           <Chip
             label={`Estoque: ${product.stock} ${getMetricLabel(product.metric)}`}
             color={product.stock > 0 ? 'success' : 'error'}
             size="small"
           />
-          <Stack direction="row" justifyContent="end" marginBottom={4} gap={4}>
-            <Container onClick={() => onEdit(product.id)}>
-              <Edit />
-            </Container>
-            <Container onClick={() => onDelete(product.id)}>
-              <Delete />
-            </Container>
-          </Stack>
         </Stack>
         <Typography gutterBottom variant="h6" component="div">
           {product.name}
