@@ -24,6 +24,13 @@ type ProductFormProps = {
   onSubmit: (product: Omit<Product, 'id'>) => void;
 };
 
+const MAX_INPUT_CHARACTERS = 15;
+
+const formatUserInput = (value: string): string => {
+  const numericValue = value.replace(/\D/g, '').padStart(3, '0');
+  return `${numericValue.slice(0, -2)}.${numericValue.slice(-2)}`;
+};
+
 const ProductForm = ({
   isLoading,
   submitButtonText,
@@ -73,11 +80,11 @@ const ProductForm = ({
   };
 
   const handlePriceChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const rawValue = event.target.value.replace(/[^0-9.,]/g, '');
+    const value = event.target.value;
 
-    const numericValue = parseFloat(rawValue.replace(',', '.')) || 0;
+    if (value.length > MAX_INPUT_CHARACTERS) return;
 
-    onValueChange(numericValue, 'price');
+    onValueChange(formatUserInput(value), 'price');
   };
 
   const handleSubmit = async () => {
