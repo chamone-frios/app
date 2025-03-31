@@ -1,6 +1,6 @@
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 import {
   Stack,
@@ -19,35 +19,13 @@ type ProductListProps = {
   products: Product[];
 };
 
-const ProductList = ({ products }: ProductListProps) => {
+const ProductList = ({ products: initialProducts }: ProductListProps) => {
   const router = useRouter();
   const isNextLoading = useIsNextLoading();
-  const [isFetching, setIsFetching] = useState(false);
-  const [isRouteChanging, setIsRouteChanging] = useState(false);
+  const [products, setProducts] = useState<Product[]>(initialProducts);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<string | null>(null);
-
-  useEffect(() => {
-    const handleStart = (url: string) => {
-      if (url === router.asPath && !isFetching) {
-        setIsRouteChanging(true);
-      }
-    };
-
-    const handleComplete = () => {
-      setIsRouteChanging(false);
-    };
-
-    router.events.on('routeChangeStart', handleStart);
-    router.events.on('routeChangeComplete', handleComplete);
-    router.events.on('routeChangeError', handleComplete);
-
-    return () => {
-      router.events.off('routeChangeStart', handleStart);
-      router.events.off('routeChangeComplete', handleComplete);
-      router.events.off('routeChangeError', handleComplete);
-    };
-  }, [router, isFetching]);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleEditClick = (productId: string) => {
     router.push(`/products/edit/${productId}`);
@@ -64,20 +42,25 @@ const ProductList = ({ products }: ProductListProps) => {
   };
 
   const handleConfirmDelete = async () => {
-    if (productToDelete) {
-      setIsFetching(true);
-      try {
-        await axios.delete(`/api/v1/products/${productToDelete}`);
-        router.replace(router.asPath);
-        handleCloseModal();
-      } catch (error) {
-        console.error('Erro ao excluir produto:', error);
-        setIsFetching(false);
-      }
+    if (!productToDelete) return;
+
+    setIsDeleting(true);
+    setProducts((currentProducts) =>
+      currentProducts.filter((product) => product.id !== productToDelete)
+    );
+
+    try {
+      await axios.delete(`/api/v1/products/${productToDelete}`);
+      handleCloseModal();
+    } catch (error) {
+      console.error('Erro ao excluir produto:', error);
+      setProducts(initialProducts);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
-  const isLoading = isFetching || isRouteChanging || isNextLoading;
+  const isLoading = isDeleting || isNextLoading;
 
   return (
     <Stack spacing={8}>

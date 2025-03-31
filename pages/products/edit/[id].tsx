@@ -28,6 +28,7 @@ const EditProduct = ({ product, error: serverError }: EditProductProps) => {
     try {
       await axios.patch(`/api/v1/products/${product.id}`, updatedProduct);
       setStatus('success');
+      setIsSubmitting(false);
     } catch (err) {
       console.error('Erro ao atualizar produto:', err);
       setStatus('error');
@@ -62,8 +63,7 @@ const EditProduct = ({ product, error: serverError }: EditProductProps) => {
   };
 
   const getAlertMessage = () => {
-    if (status === 'success')
-      return 'Produto editado com sucesso! Redirecionando...';
+    if (status === 'success') return 'Produto editado com sucesso!';
     if (status === 'error') return error || 'Erro ao editar produto.';
     return 'Preencha corretamente antes de editar o produto.';
   };
