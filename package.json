@@ -29,7 +29,6 @@
     "@mui/system": "^6.4.8",
     "@mui/utils": "^6.4.8",
     "@types/pg": "8.11.10",
-    "axios": "^1.8.4",
     "dotenv": "16.4.4",
     "dotenv-expand": "11.0.6",
     "next": "15.2.4",

@@ -3,9 +3,9 @@ import { useRouter } from 'next/router';
 import { useState } from 'react';
 
 import { Alert, CircularProgress, Stack, Typography } from '@mui/material';
-import axios from 'axios';
 import { getProduct } from 'src/backend/database';
 import { Product } from 'src/constants/types';
+import { http } from 'src/frontend/api/http';
 import { ProductForm } from 'src/frontend/components';
 import { useIsNextLoading } from 'src/frontend/hooks';
 
@@ -26,7 +26,7 @@ const EditProduct = ({ product, error: serverError }: EditProductProps) => {
 
     setIsSubmitting(true);
     try {
-      await axios.patch(`/api/v1/products/${product.id}`, updatedProduct);
+      await http.patch(`/api/v1/products/${product.id}`, updatedProduct);
       setStatus('success');
       setIsSubmitting(false);
     } catch (err) {

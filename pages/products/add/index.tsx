@@ -1,8 +1,8 @@
 import { useState } from 'react';
 
 import { Alert, CircularProgress, Stack, Typography } from '@mui/material';
-import axios from 'axios';
 import { Product, ProductMetric } from 'src/constants/types';
+import { http } from 'src/frontend/api/http';
 import { ProductForm } from 'src/frontend/components';
 import { useIsNextLoading } from 'src/frontend/hooks';
 
@@ -24,7 +24,7 @@ const AddProduct = () => {
   const handleSubmit = async (product: Product) => {
     setIsSubmitting(true);
     try {
-      await axios.post('/api/v1/products', product);
+      await http.post('/api/v1/products', product);
       setStatus('success');
       setIsSubmitting(false);
     } catch (error) {

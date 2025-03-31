@@ -9,9 +9,9 @@ import {
   Typography,
   CircularProgress,
 } from '@mui/material';
-import axios from 'axios';
 import { getProducts } from 'src/backend/database';
 import { Product } from 'src/constants/types';
+import { http } from 'src/frontend/api/http';
 import { DeleteModal, ProductCard } from 'src/frontend/components';
 import { useIsNextLoading } from 'src/frontend/hooks';
 
@@ -50,7 +50,7 @@ const ProductList = ({ products: initialProducts }: ProductListProps) => {
     );
 
     try {
-      await axios.delete(`/api/v1/products/${productToDelete}`);
+      await http.delete(`/api/v1/products/${productToDelete}`);
       handleCloseModal();
     } catch (error) {
       console.error('Erro ao excluir produto:', error);
