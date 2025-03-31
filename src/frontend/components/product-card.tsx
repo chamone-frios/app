@@ -29,26 +29,27 @@ const ProductCard = ({ product, onDelete, onEdit }: ProductCardProps) => {
   return (
     <Card key={product.id}>
       <CardContent>
-        <Stack
-          gap={2}
-          marginBottom={4}
-          direction="column"
-          alignItems="end"
-          sx={{ justifySelf: 'end', width: 'fit-content' }}
-        >
-          <Stack direction="row" gap={4}>
-            <Stack onClick={() => onEdit(product.id)}>
-              <Edit />
+        <Stack width="100%" alignItems="end">
+          <Stack
+            gap={2}
+            marginBottom={4}
+            direction="column"
+            sx={{ justifySelf: 'end', alignItems: 'end', width: 'fit-content' }}
+          >
+            <Stack direction="row" gap={4}>
+              <Stack onClick={() => onEdit(product.id)}>
+                <Edit />
+              </Stack>
+              <Stack onClick={() => onDelete(product.id)}>
+                <Delete />
+              </Stack>
             </Stack>
-            <Stack onClick={() => onDelete(product.id)}>
-              <Delete />
-            </Stack>
+            <Chip
+              label={`Estoque: ${product.stock} ${getMetricLabel(product.metric)}`}
+              color={product.stock > 0 ? 'success' : 'error'}
+              size="small"
+            />
           </Stack>
-          <Chip
-            label={`Estoque: ${product.stock} ${getMetricLabel(product.metric)}`}
-            color={product.stock > 0 ? 'success' : 'error'}
-            size="small"
-          />
         </Stack>
         <Typography gutterBottom variant="h6" component="div">
           {product.name}
