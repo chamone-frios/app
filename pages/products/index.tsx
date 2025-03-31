@@ -1,4 +1,3 @@
-// pages/products/index.tsx
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 import { useState } from 'react';

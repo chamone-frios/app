@@ -34,7 +34,6 @@ const EditProduct = ({ product, error: serverError }: EditProductProps) => {
     }
   };
 
-  // Se houver erro no SSR ou produto não encontrado
   if (serverError || !product) {
     return (
       <Stack spacing={4}>
@@ -105,29 +104,14 @@ export const getServerSideProps: GetServerSideProps<EditProductProps> = async (
   try {
     const product = await getProduct({ id });
 
-    if (!product) {
-      return {
-        props: {
-          product: null,
-          error: 'Produto não encontrado',
-        },
-      };
-    }
+    if (!product)
+      return { props: { product: null, error: 'Produto não encontrado' } };
 
-    return {
-      props: {
-        product,
-      },
-    };
+    return { props: { product } };
   } catch (error) {
     console.error(`Erro ao buscar produto ${id}:`, error);
 
-    return {
-      props: {
-        product: null,
-        error: 'Erro ao buscar produto. Por favor, tente novamente.',
-      },
-    };
+    return { props: { product: null, error: 'Erro ao buscar produto' } };
   }
 };
 
