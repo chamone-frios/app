@@ -197,13 +197,8 @@ const ProductForm = ({
         </Stack>
       </Stack>
       <Stack alignItems="flex-end" sx={{ paddingTop: 4 }}>
-        <Button
-          variant="contained"
-          onClick={handleSubmit}
-          disabled={isLoading}
-          startIcon={isLoading ? <CircularProgress size={20} /> : null}
-        >
-          {isLoading ? '...' : submitButtonText}
+        <Button variant="contained" onClick={handleSubmit} disabled={isLoading}>
+          {isLoading ? <CircularProgress size={20} /> : submitButtonText}
         </Button>
       </Stack>
     </Stack>

@@ -1,4 +1,5 @@
-import { useMutation } from '@tanstack/react-query';
+// pages/products/index.tsx
+import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 
@@ -9,24 +10,20 @@ import {
   Typography,
   CircularProgress,
 } from '@mui/material';
-import {
-  deleteProductById,
-  useGetProducts,
-} from 'src/frontend/api/products/http';
+import axios from 'axios';
+import { getProducts } from 'src/backend/database';
+import { Product } from 'src/constants/types';
 import { DeleteModal, ProductCard } from 'src/frontend/components';
 
-const ProductList = () => {
+type ProductListProps = {
+  products: Product[];
+};
+
+const ProductList = ({ products }: ProductListProps) => {
   const router = useRouter();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<string | null>(null);
-  const { products, isFetching, refetch } = useGetProducts();
-  const { mutate } = useMutation({
-    mutationFn: (id: string) => deleteProductById(id),
-    onSuccess: () => {
-      refetch();
-      handleCloseModal();
-    },
-  });
+  const [isFetching, setIsFetching] = useState(false);
 
   const handleEditClick = (productId: string) => {
     router.push(`/products/edit/${productId}`);
@@ -42,8 +39,19 @@ const ProductList = () => {
     setProductToDelete(null);
   };
 
-  const handleConfirmDelete = () => {
-    if (productToDelete) mutate(productToDelete);
+  const handleConfirmDelete = async () => {
+    if (productToDelete) {
+      setIsFetching(true);
+      try {
+        await axios.delete(`/api/v1/products/${productToDelete}`);
+        router.replace(router.asPath);
+        handleCloseModal();
+      } catch (error) {
+        console.error('Erro ao excluir produto:', error);
+      } finally {
+        setIsFetching(false);
+      }
+    }
   };
 
   return (
@@ -106,6 +114,28 @@ const ProductList = () => {
       </DeleteModal>
     </Stack>
   );
+};
+
+export const getServerSideProps: GetServerSideProps<
+  ProductListProps
+> = async () => {
+  try {
+    const products = await getProducts();
+
+    return {
+      props: {
+        products: products,
+      },
+    };
+  } catch (error) {
+    console.error('Erro ao buscar produtos:', error);
+
+    return {
+      props: {
+        products: [],
+      },
+    };
+  }
 };
 
 export default ProductList;
