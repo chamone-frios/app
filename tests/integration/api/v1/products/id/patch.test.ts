@@ -1,4 +1,4 @@
-import { clearDatabase, runMigrations } from 'tests/utils';
+import { waitForAllServices } from 'tests/orchestrator';
 
 import { Product, ProductMetric } from '../../../../../../src/constants/types';
 
@@ -15,8 +15,7 @@ describe('PATCH /api/v1/products/[id]', () => {
   };
 
   beforeEach(async () => {
-    await clearDatabase();
-    await runMigrations();
+    await waitForAllServices();
 
     const productToCreate: Omit<Product, 'id'> = {
       name: 'Test Product for PATCH',
@@ -39,10 +38,6 @@ describe('PATCH /api/v1/products/[id]', () => {
 
     const createData = await createResponse.json();
     createdProductId = createData.id;
-  });
-
-  afterAll(async () => {
-    await clearDatabase().then(async () => await runMigrations());
   });
 
   it("should return 500 when product doesn't exist", async () => {

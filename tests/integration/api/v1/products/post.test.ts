@@ -1,14 +1,9 @@
 import { Product, ProductMetric } from 'src/constants/types';
-import { clearDatabase, runMigrations } from 'tests/utils';
+import { waitForAllServices } from 'tests/orchestrator';
 
 describe('POST /api/v1/products', () => {
   beforeAll(async () => {
-    await clearDatabase();
-    await runMigrations();
-  });
-
-  afterAll(async () => {
-    await clearDatabase().then(async () => await runMigrations());
+    await waitForAllServices();
   });
 
   it('should create a new product when all fields are valid', async () => {

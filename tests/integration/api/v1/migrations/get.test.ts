@@ -1,14 +1,11 @@
-import { clearDatabase, runMigrations } from 'tests/utils';
+import { waitForAllServices } from 'tests/orchestrator';
+import { clearDatabase } from 'tests/utils';
 
 describe('GET /api/v1/migrations', () => {
   beforeAll(async () => {
+    await waitForAllServices();
     await clearDatabase();
   });
-
-  afterAll(async () => {
-    await clearDatabase().then(async () => await runMigrations());
-  });
-
   it('Validate dryRun is true and migrations is simulated', async () => {
     const firstResponse = await fetch(
       'http://localhost:3000/api/v1/migrations'

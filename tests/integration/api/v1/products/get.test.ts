@@ -1,15 +1,10 @@
-import { clearDatabase, runMigrations } from 'tests/utils';
+import { waitForAllServices } from 'tests/orchestrator';
 
 import { Product, ProductMetric } from '../../../../../src/constants/types';
 
 describe('GET /api/v1/products', () => {
   beforeAll(async () => {
-    await clearDatabase();
-    await runMigrations();
-  });
-
-  afterAll(async () => {
-    await clearDatabase().then(async () => await runMigrations());
+    await waitForAllServices();
   });
 
   it('should return an empty array when no products exist', async () => {
