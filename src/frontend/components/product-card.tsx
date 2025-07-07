@@ -25,7 +25,6 @@ const ProductCard = ({ product, onDelete, onEdit }: ProductCardProps) => {
         return '';
     }
   };
-
   return (
     <Card key={product.id}>
       <CardContent>
@@ -64,11 +63,15 @@ const ProductCard = ({ product, onDelete, onEdit }: ProductCardProps) => {
           sx={{
             width: '100%',
             display: 'flex',
+            alignItems: 'end',
             justifyContent: 'flex-end',
           }}
         >
           <Typography variant="h6" fontWeight={600}>
             {numberToCurrency({ number: product.price })}
+          </Typography>
+          <Typography variant="body1">
+            {`/ ${getMetricLabel(product.metric).replace(/s$/, '').toLowerCase()}`}
           </Typography>
         </Box>
       </CardContent>

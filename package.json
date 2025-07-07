@@ -6,18 +6,18 @@
   "type": "commonjs",
   "scripts": {
     "dev": "yarn services:up && yarn wait-for-postgres && yarn migration:up && next dev",
+    "build": "next build",
+    "start": "next start",
     "services:up": "docker compose -f src/integrations/compose.yaml up -d",
     "services:down": "docker compose -f src/integrations/compose.yaml down",
     "services:stop": "docker compose -f src/integrations/compose.yaml stop",
-    "build": "next build",
-    "start": "next start",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "test": "yarn services:up && concurrently -n next,jest --hide next -k -s command-jest \"next dev\" \"jest --runInBand --verbose --coverage\"",
     "test:watch": "jest --watchAll --runInBand",
     "migration:create": "node-pg-migrate -m src/integrations/migrations create",
     "migration:up": "node-pg-migrate -m src/integrations/migrations --envPath .env.development up",
-    "wait-for-postgres": "ts-node --project tsconfig.json -r dotenv/config infra/scripts/wait-for-postgres.ts"
+    "wait-for-postgres": "ts-node --project tsconfig.json -r dotenv/config src/integrations/scripts/wait-for-postgres.ts"
   },
   "author": "marcos lott <lott.marcos@gmail.com>",
   "license": "MIT",
@@ -39,7 +39,8 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "ts-node": "^10.9.2",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "ws": "^8.18.2"
   },
   "repository": "git@github.com:chamone-frios/app.git",
   "private": false,
@@ -70,6 +71,7 @@
     "jest-environment-jsdom": "29.7.0",
     "prettier": "^3.5.3",
     "ts-jest": "29.2.5",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "5.6.2",
     "typescript-eslint": "^8.28.0"
   },
