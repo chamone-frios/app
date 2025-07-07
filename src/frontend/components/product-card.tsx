@@ -1,8 +1,10 @@
 import { Delete, Edit } from '@mui/icons-material';
-import { Card, CardContent, Chip, Typography } from '@mui/material';
-import { Box, Stack } from '@mui/system';
+import { Card, CardContent, Typography } from '@mui/material';
+import { Stack } from '@mui/system';
 import { Product, ProductMetric } from 'src/constants/types';
 import { numberToCurrency } from 'src/utils/number';
+
+import { CardFields } from './card-fields';
 
 type ProductCardProps = {
   product: Product;
@@ -28,52 +30,48 @@ const ProductCard = ({ product, onDelete, onEdit }: ProductCardProps) => {
   return (
     <Card key={product.id}>
       <CardContent>
-        <Stack width="100%" alignItems="end">
+        <Stack
+          width="100%"
+          direction="row"
+          justifyContent="space-between"
+          gap={2}
+        >
+          <Stack>
+            <Typography gutterBottom variant="h6" sx={{ mb: 0 }}>
+              {product.name}
+            </Typography>
+          </Stack>
           <Stack
             gap={2}
-            marginBottom={4}
-            direction="column"
-            sx={{ justifySelf: 'end', alignItems: 'end', width: 'fit-content' }}
+            sx={{
+              marginTop: 2,
+              justifySelf: 'center',
+              alignItems: 'center',
+              width: 'fit-content',
+            }}
           >
             <Stack direction="row" gap={4}>
               <Stack onClick={() => onEdit(product.id)}>
-                <Edit />
+                <Edit fontSize="small" />
               </Stack>
               <Stack onClick={() => onDelete(product.id)}>
-                <Delete />
+                <Delete fontSize="small" />
               </Stack>
             </Stack>
-            <Chip
-              label={`Estoque: ${product.stock} ${getMetricLabel(product.metric)}`}
-              color={product.stock > 0 ? 'success' : 'error'}
-              size="small"
-            />
           </Stack>
         </Stack>
-        <Typography gutterBottom variant="h6" component="div">
-          {product.name}
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
           {product.description}
         </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Fabricante: {product.maker}
-        </Typography>
-        <Box
-          sx={{
-            width: '100%',
-            display: 'flex',
-            alignItems: 'end',
-            justifyContent: 'flex-end',
-          }}
-        >
-          <Typography variant="h6" fontWeight={600}>
-            {numberToCurrency({ number: product.price })}
-          </Typography>
-          <Typography variant="body1">
-            {`/ ${getMetricLabel(product.metric).replace(/s$/, '').toLowerCase()}`}
-          </Typography>
-        </Box>
+        <CardFields label="Fabricante:" value={product.maker} />
+        <CardFields
+          label="Estoque:"
+          value={`${product.stock} ${getMetricLabel(product.metric)}`}
+        />
+        <CardFields
+          label="Preço:"
+          value={`${numberToCurrency({ number: product.price })} / ${getMetricLabel(product.metric).replace(/s$/, '').toLowerCase()}`}
+        />
       </CardContent>
     </Card>
   );

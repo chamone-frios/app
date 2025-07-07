@@ -9,49 +9,49 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { getProduct } from 'src/backend/database';
-import { Product } from 'src/constants/types';
+import { getClient } from 'src/backend/database';
+import { Client } from 'src/constants/types';
 import { http } from 'src/frontend/api/http';
-import { ProductForm } from 'src/frontend/components';
+import { ClientForm } from 'src/frontend/components';
 import { useIsNextLoading } from 'src/frontend/hooks';
 
-type EditProductProps = {
-  product: Product | null;
+type EditClientProps = {
+  client: Client | null;
   error?: string;
 };
 
-const EditProduct = ({ product, error: serverError }: EditProductProps) => {
+const EditClient = ({ client, error: serverError }: EditClientProps) => {
   const router = useRouter();
   const isNextLoading = useIsNextLoading();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [error, setError] = useState(serverError || '');
 
-  const handleSubmit = async (updatedProduct: Product) => {
-    if (!product?.id) return;
+  const handleSubmit = async (updatedClient: Client) => {
+    if (!client?.id) return;
 
     setIsSubmitting(true);
     try {
-      await http.patch(`/api/v1/products/${product.id}`, updatedProduct);
+      await http.patch(`/api/v1/clients/${client.id}`, updatedClient);
       setStatus('success');
       setIsSubmitting(false);
     } catch (err) {
-      console.error('Erro ao atualizar produto:', err);
+      console.error('Erro ao atualizar cliente:', err);
       setStatus('error');
-      setError(err.response?.data?.message || 'Erro ao atualizar produto.');
+      setError(err.response?.data?.message || 'Erro ao atualizar cliente.');
       setIsSubmitting(false);
     }
   };
 
-  if (serverError || !product) {
+  if (serverError || !client) {
     return (
       <Stack spacing={4}>
-        <Typography variant="hero-sm">Editar produto</Typography>
+        <Typography variant="hero-sm">Editar cliente</Typography>
         <Alert severity="error">
-          {serverError || 'Produto não encontrado'}
+          {serverError || 'Cliente não encontrado'}
         </Alert>
         <Stack direction="row" justifyContent="flex-start">
-          <Button onClick={() => router.push('/products')}>
+          <Button onClick={() => router.push('/clients')}>
             Voltar para a lista
           </Button>
         </Stack>
@@ -66,29 +66,27 @@ const EditProduct = ({ product, error: serverError }: EditProductProps) => {
   };
 
   const getAlertMessage = () => {
-    if (status === 'success') return 'Produto editado com sucesso!';
-    if (status === 'error') return error || 'Erro ao editar produto.';
-    return 'Preencha corretamente antes de editar o produto.';
+    if (status === 'success') return 'Cliente editado com sucesso!';
+    if (status === 'error') return error || 'Erro ao editar cliente.';
+    return 'Preencha corretamente antes de editar o cliente.';
   };
 
   return (
     <Stack spacing={4}>
-      <Typography variant="hero-sm">Editar produto</Typography>
+      <Typography variant="hero-sm">Editar cliente</Typography>
       <Alert severity={getAlertSeverity()}>{getAlertMessage()}</Alert>
       {isNextLoading ? (
         <Stack alignItems="center" justifyContent="center" height="300px">
           <CircularProgress />
         </Stack>
       ) : (
-        <ProductForm
+        <ClientForm
           isLoading={isSubmitting}
           initialState={{
-            name: product.name,
-            description: product.description,
-            maker: product.maker,
-            metric: product.metric,
-            stock: product.stock,
-            price: product.price,
+            establishment_type: client.establishment_type,
+            name: client.name,
+            phone: client.phone,
+            maps_link: client.maps_link,
           }}
           submitButtonText="Confirmar edição"
           onSubmit={handleSubmit}
@@ -98,7 +96,7 @@ const EditProduct = ({ product, error: serverError }: EditProductProps) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps<EditProductProps> = async (
+export const getServerSideProps: GetServerSideProps<EditClientProps> = async (
   context
 ) => {
   const { id } = context.params || {};
@@ -106,24 +104,24 @@ export const getServerSideProps: GetServerSideProps<EditProductProps> = async (
   if (!id || Array.isArray(id)) {
     return {
       props: {
-        product: null,
-        error: 'ID de produto inválido',
+        client: null,
+        error: 'ID de cliente inválido',
       },
     };
   }
 
   try {
-    const product = await getProduct({ id });
+    const client = await getClient({ id });
 
-    if (!product)
-      return { props: { product: null, error: 'Produto não encontrado' } };
+    if (!client)
+      return { props: { client: null, error: 'Cliente não encontrado' } };
 
-    return { props: { product } };
+    return { props: { client } };
   } catch (error) {
-    console.error(`Erro ao buscar produto ${id}:`, error);
+    console.error(`Erro ao buscar cliente ${id}:`, error);
 
-    return { props: { product: null, error: 'Erro ao buscar produto' } };
+    return { props: { client: null, error: 'Erro ao buscar cliente' } };
   }
 };
 
-export default EditProduct;
+export default EditClient;

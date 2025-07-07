@@ -1,7 +1,7 @@
 {
   "name": "app",
   "version": "1.0.0",
-  "description": "app for Distribuidora - MM",
+  "description": "Chamone Frios Internal Services",
   "main": "./",
   "type": "commonjs",
   "scripts": {

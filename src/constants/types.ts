@@ -23,3 +23,19 @@ export type GetProductsResponse = {
 export type GetProductResponse = {
   product: Product;
 };
+
+export type Client = {
+  id: string;
+  name: string;
+  establishment_type: string;
+  phone: string;
+  maps_link?: string;
+};
+
+export type GetClientsResponse = {
+  clients: Client[];
+};
+
+export type GetClientResponse = {
+  client: Client;
+};
