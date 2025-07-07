@@ -27,11 +27,6 @@ type ProductFormProps = {
 
 const MAX_INPUT_CHARACTERS = 15;
 
-const formatUserInput = (value: string): string => {
-  const numericValue = value.replace(/\D/g, '').padStart(3, '0');
-  return `${numericValue.slice(0, -2)}.${numericValue.slice(-2)}`;
-};
-
 const ProductForm = ({
   isLoading,
   submitButtonText,
@@ -54,6 +49,23 @@ const ProductForm = ({
     }
   };
 
+  const handlePriceChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+
+    if (value.length > MAX_INPUT_CHARACTERS) return;
+
+    const numericValue = value.replace(/\D/g, '').padStart(3, '0');
+    const formattedValue = `${numericValue.slice(0, -2)}.${numericValue.slice(-2)}`;
+
+    onValueChange(formattedValue, 'price');
+  };
+
+  const handleStockChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    const formattedValue = value.replace(/(?!^\+)\D/g, '');
+    onValueChange(formattedValue, 'stock');
+  };
+
   const validateForm = (): boolean => {
     const newErrors: Partial<Record<keyof Product, string>> = {};
 
@@ -73,20 +85,12 @@ const ProductForm = ({
       newErrors.price = 'Preço deve ser maior que zero';
     }
 
-    if (product.stock < 0) {
+    if (!product.stock || product.stock < 0) {
       newErrors.stock = 'Estoque não pode ser negativo';
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
-
-  const handlePriceChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-
-    if (value.length > MAX_INPUT_CHARACTERS) return;
-
-    onValueChange(formatUserInput(value), 'price');
   };
 
   const handleSubmit = async () => {
@@ -163,7 +167,6 @@ const ProductForm = ({
             onChange={handlePriceChange}
             error={!!errors.price}
             helperText={errors.price}
-            inputProps={{ inputMode: 'decimal' }}
           />
           <FormControl fullWidth>
             <FormLabel>Métrica do Produto</FormLabel>
@@ -198,9 +201,7 @@ const ProductForm = ({
             type="number"
             label="Unidades no estoque"
             value={product.stock}
-            onChange={(event) =>
-              onValueChange(Number(event.target.value), 'stock')
-            }
+            onChange={handleStockChange}
             error={!!errors.stock}
             helperText={errors.stock}
             required

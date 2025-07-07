@@ -15,7 +15,7 @@ export const Navbar = styled('nav')(({ theme }) => ({
   justifyContent: 'center',
   alignItems: 'center',
   textAlign: 'center',
-  gap: theme.spacing(12),
+  gap: theme.spacing(4),
   margin: theme.spacing(4),
   marginBottom: theme.spacing(12),
   padding: theme.spacing(8),

@@ -9,6 +9,7 @@ const PageWrapper = ({ children }: PropsWithChildren) => {
       <Navbar>
         <Link href="/">Home</Link>
         <Link href="/products">Produtos</Link>
+        <Link href="/clients">Clientes</Link>
       </Navbar>
       <Masrcme>{children}</Masrcme>
     </WallPaper>
