@@ -1,3 +1,5 @@
 import { useIsNextLoading } from './use-is-next-loading';
 
-export { useIsNextLoading };
+import { useIsMobileUser } from './use-is-mobile-user';
+
+export { useIsNextLoading, useIsMobileUser };

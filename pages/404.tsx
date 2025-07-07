@@ -1,8 +1,11 @@
 import Image from 'next/image';
 
 import { Stack, Typography } from '@mui/material';
+import { useIsMobileUser } from 'src/frontend/hooks';
 
 const Page404 = () => {
+  const isMobileUser = useIsMobileUser();
+
   return (
     <Stack
       alignItems="center"
@@ -17,8 +20,8 @@ const Page404 = () => {
       <Image
         src="/assets/404.png"
         alt="Página não encontrada"
-        width={200}
-        height={140}
+        width={isMobileUser ? 200 : 400}
+        height={isMobileUser ? 140 : 280}
       />
     </Stack>
   );
