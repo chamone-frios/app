@@ -1,9 +1,11 @@
 import { waitForAllServices } from 'tests/orchestrator';
+import { getApiEndpoint } from 'tests/utils';
 
 import { Product, ProductMetric } from '../../../../../../src/constants/types';
 
 describe('GET /api/v1/products/[id]', () => {
   let createdProductId: string;
+  const apiUrl = getApiEndpoint();
 
   beforeAll(async () => {
     await waitForAllServices();
@@ -18,14 +20,11 @@ describe('GET /api/v1/products/[id]', () => {
       price: 99.99,
     };
 
-    const createResponse = await fetch(
-      'http://localhost:3000/api/v1/products',
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(productToCreate),
-      }
-    );
+    const createResponse = await fetch(`${apiUrl}/api/v1/products`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(productToCreate),
+    });
 
     const createData = await createResponse.json();
     createdProductId = createData.id;
@@ -33,9 +32,7 @@ describe('GET /api/v1/products/[id]', () => {
 
   it("should return 404 when product doesn't exist", async () => {
     const nonExistentId = '00000000-0000-0000-0000-000000000000';
-    const response = await fetch(
-      `http://localhost:3000/api/v1/products/${nonExistentId}`
-    );
+    const response = await fetch(`${apiUrl}/api/v1/products/${nonExistentId}`);
 
     expect(response.status).toBe(404);
 
@@ -46,7 +43,7 @@ describe('GET /api/v1/products/[id]', () => {
 
   it('should return the specific product when a valid ID is provided', async () => {
     const response = await fetch(
-      `http://localhost:3000/api/v1/products/${createdProductId}`
+      `${apiUrl}/api/v1/products/${createdProductId}`
     );
 
     expect(response.status).toBe(200);
@@ -59,7 +56,7 @@ describe('GET /api/v1/products/[id]', () => {
 
   it('should return the correct product structure', async () => {
     const response = await fetch(
-      `http://localhost:3000/api/v1/products/${createdProductId}`
+      `${apiUrl}/api/v1/products/${createdProductId}`
     );
 
     expect(response.status).toBe(200);
@@ -88,7 +85,7 @@ describe('GET /api/v1/products/[id]', () => {
 
   it('should handle method not allowed', async () => {
     const response = await fetch(
-      `http://localhost:3000/api/v1/products/${createdProductId}`,
+      `${apiUrl}/api/v1/products/${createdProductId}`,
       { method: 'PUT' }
     );
 

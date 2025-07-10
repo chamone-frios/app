@@ -1,11 +1,11 @@
+import { getApiEndpoint } from './get-api-endpoint';
+
 export const runMigrations = async (): Promise<void> => {
+  const apiUrl = getApiEndpoint();
   try {
-    const migrationsResponse = await fetch(
-      'http://localhost:3000/api/v1/migrations',
-      {
-        method: 'POST',
-      }
-    );
+    const migrationsResponse = await fetch(`${apiUrl}/api/v1/migrations`, {
+      method: 'POST',
+    });
 
     if (
       migrationsResponse.status !== 201 &&

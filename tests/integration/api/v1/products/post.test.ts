@@ -1,7 +1,10 @@
 import { Product, ProductMetric } from 'src/constants/types';
 import { waitForAllServices } from 'tests/orchestrator';
+import { getApiEndpoint } from 'tests/utils';
 
 describe('POST /api/v1/products', () => {
+  const apiUrl = getApiEndpoint();
+
   beforeAll(async () => {
     await waitForAllServices();
   });
@@ -17,7 +20,7 @@ describe('POST /api/v1/products', () => {
       price: 100,
     };
 
-    const response = await fetch('http://localhost:3000/api/v1/products', {
+    const response = await fetch(`${apiUrl}/api/v1/products`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -31,7 +34,7 @@ describe('POST /api/v1/products', () => {
     expect(responseData.success).toBe(true);
     expect(responseData.id).toBeDefined();
 
-    const getResponse = await fetch(`http://localhost:3000/api/v1/products`);
+    const getResponse = await fetch(`${apiUrl}/api/v1/products`);
     const products = await getResponse.json();
 
     expect(getResponse.status).toBe(200);
@@ -52,7 +55,7 @@ describe('POST /api/v1/products', () => {
       name: 'Incomplete Product',
     };
 
-    const response = await fetch('http://localhost:3000/api/v1/products', {
+    const response = await fetch(`${apiUrl}/api/v1/products`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -77,7 +80,7 @@ describe('POST /api/v1/products', () => {
       price: 99,
     };
 
-    const response = await fetch('http://localhost:3000/api/v1/products', {
+    const response = await fetch(`${apiUrl}/api/v1/products`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -108,7 +111,7 @@ describe('POST /api/v1/products', () => {
         price: 100,
       };
 
-      const response = await fetch('http://localhost:3000/api/v1/products', {
+      const response = await fetch(`${apiUrl}/api/v1/products`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -124,7 +127,7 @@ describe('POST /api/v1/products', () => {
   });
 
   it('should return 405 for non-POST methods', async () => {
-    const response = await fetch('http://localhost:3000/api/v1/products', {
+    const response = await fetch(`${apiUrl}/api/v1/products`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
