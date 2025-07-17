@@ -59,7 +59,7 @@ const OrderStatusModal = ({
         onClose();
       }
     },
-    [orderId, onClose]
+    [orderId, onClose, onStatusChange]
   );
 
   return (
