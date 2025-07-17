@@ -15,7 +15,7 @@ import {
   Typography,
 } from '@mui/material';
 import { Product, ProductMetric } from 'src/constants/types';
-import { numberToCurrency } from 'src/utils/number';
+import { formatDecimalInputs, numberToCurrency } from 'src/utils/number';
 
 type ProductFormProps = {
   isLoading: boolean;
@@ -24,8 +24,6 @@ type ProductFormProps = {
   clearFormAferSubmit?: boolean;
   onSubmit: (product: Omit<Product, 'id'>) => void;
 };
-
-const MAX_INPUT_CHARACTERS = 15;
 
 const ProductForm = ({
   isLoading,
@@ -49,21 +47,15 @@ const ProductForm = ({
     }
   };
 
-  const handlePriceChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleNumberInputChange = (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    key: keyof Product
+  ) => {
     const value = event.target.value;
+    const formattedValue = formatDecimalInputs(value);
+    if (!formattedValue) return;
 
-    if (value.length > MAX_INPUT_CHARACTERS) return;
-
-    const numericValue = value.replace(/\D/g, '').padStart(3, '0');
-    const formattedValue = `${numericValue.slice(0, -2)}.${numericValue.slice(-2)}`;
-
-    onValueChange(formattedValue, 'price');
-  };
-
-  const handleStockChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    const formattedValue = value.replace(/(?!^\+)\D/g, '');
-    onValueChange(formattedValue, 'stock');
+    onValueChange(formattedValue, key);
   };
 
   const validateForm = (): boolean => {
@@ -94,9 +86,7 @@ const ProductForm = ({
   };
 
   const handleSubmit = async () => {
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     await onSubmit({
       name: product.name.trim(),
@@ -114,7 +104,7 @@ const ProductForm = ({
 
   return (
     <Stack spacing={4}>
-      <Stack direction="row" width="100%">
+      <Stack direction="row" width="100%" justifyContent="end">
         <Button
           variant="contained"
           color="primary"
@@ -125,7 +115,7 @@ const ProductForm = ({
       </Stack>
       <Divider />
       <Typography variant="h6">Informações do produto</Typography>
-      <Stack spacing={4}>
+      <Stack gap={6}>
         <TextField
           label="Nome"
           value={product.name}
@@ -155,59 +145,54 @@ const ProductForm = ({
           required
           fullWidth
         />
-      </Stack>
-      <Typography variant="h6">Informações do estoque</Typography>
-      <Stack>
-        <Stack spacing={4}>
-          <TextField
-            required
-            fullWidth
-            label="Preço"
-            value={numberToCurrency({ number: product.price })}
-            onChange={handlePriceChange}
-            error={!!errors.price}
-            helperText={errors.price}
-          />
-          <FormControl fullWidth>
-            <FormLabel>Métrica do Produto</FormLabel>
-            <RadioGroup
-              value={product.metric}
-              onChange={(e) => onValueChange(e.target.value, 'metric')}
-              row
-            >
-              <FormControlLabel
-                value={ProductMetric.UNIT}
-                control={<Radio />}
-                label="Unidade"
-              />
-              <FormControlLabel
-                value={ProductMetric.KG}
-                control={<Radio />}
-                label="Quilograma"
-              />
-              <FormControlLabel
-                value={ProductMetric.G}
-                control={<Radio />}
-                label="Grama"
-              />
-              <FormControlLabel
-                value={ProductMetric.L}
-                control={<Radio />}
-                label="Litro"
-              />
-            </RadioGroup>
-          </FormControl>
-          <TextField
-            type="number"
-            label="Unidades no estoque"
-            value={product.stock}
-            onChange={handleStockChange}
-            error={!!errors.stock}
-            helperText={errors.stock}
-            required
-            fullWidth
-          />
-        </Stack>
+        <TextField
+          required
+          fullWidth
+          label="Preço"
+          value={numberToCurrency({ number: product.price })}
+          onChange={(event) => handleNumberInputChange(event, 'price')}
+          error={!!errors.price}
+          helperText={errors.price}
+        />
+        <FormControl fullWidth>
+          <FormLabel>Métrica do Produto</FormLabel>
+          <RadioGroup
+            value={product.metric}
+            onChange={(e) => onValueChange(e.target.value, 'metric')}
+            row
+          >
+            <FormControlLabel
+              value={ProductMetric.UNIT}
+              control={<Radio />}
+              label="Unidade"
+            />
+            <FormControlLabel
+              value={ProductMetric.KG}
+              control={<Radio />}
+              label="Quilograma"
+            />
+            <FormControlLabel
+              value={ProductMetric.G}
+              control={<Radio />}
+              label="Grama"
+            />
+            <FormControlLabel
+              value={ProductMetric.L}
+              control={<Radio />}
+              label="Litro"
+            />
+          </RadioGroup>
+        </FormControl>
+        <TextField
+          type="number"
+          label="Unidades no estoque"
+          value={product.stock || '0.00'}
+          onChange={(event) => handleNumberInputChange(event, 'stock')}
+          error={!!errors.stock}
+          helperText={errors.stock}
+          required
+          fullWidth
+        />
       </Stack>
       <Stack alignItems="flex-end" sx={{ paddingTop: 4 }}>
         <Button variant="contained" onClick={handleSubmit} disabled={isLoading}>

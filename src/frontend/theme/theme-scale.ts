@@ -133,7 +133,7 @@ export const typography = {
     'md-line-height': '56px',
     'md-size': '40px',
     'sm-line-height': '40px',
-    'sm-size': '32px',
+    'sm-size': '24px',
     weight: 700,
   },
   link: {

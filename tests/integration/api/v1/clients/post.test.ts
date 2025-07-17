@@ -1,7 +1,10 @@
 import { Client } from 'src/constants/types';
 import { waitForAllServices } from 'tests/orchestrator';
+import { getApiEndpoint } from 'tests/utils';
 
 describe('POST /api/v1/clients', () => {
+  const apiUrl = getApiEndpoint();
+
   beforeAll(async () => {
     await waitForAllServices();
   });
@@ -14,7 +17,7 @@ describe('POST /api/v1/clients', () => {
       maps_link: 'https://maps.google.com/test-restaurant',
     };
 
-    const response = await fetch('http://localhost:3000/api/v1/clients', {
+    const response = await fetch(`${apiUrl}/api/v1/clients`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -28,7 +31,7 @@ describe('POST /api/v1/clients', () => {
     expect(responseData.success).toBe(true);
     expect(responseData.id).toBeDefined();
 
-    const getResponse = await fetch(`http://localhost:3000/api/v1/clients`);
+    const getResponse = await fetch(`${apiUrl}/api/v1/clients`);
     const clients = await getResponse.json();
 
     expect(getResponse.status).toBe(200);
@@ -51,7 +54,7 @@ describe('POST /api/v1/clients', () => {
       phone: '12345',
     };
 
-    const response = await fetch('http://localhost:3000/api/v1/clients', {
+    const response = await fetch(`${apiUrl}/api/v1/clients`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -71,7 +74,7 @@ describe('POST /api/v1/clients', () => {
       name: 'Incomplete Client',
     };
 
-    const response = await fetch('http://localhost:3000/api/v1/clients', {
+    const response = await fetch(`${apiUrl}/api/v1/clients`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -90,7 +93,7 @@ describe('POST /api/v1/clients', () => {
       establishment_type: 'Restaurant',
     };
 
-    const response = await fetch('http://localhost:3000/api/v1/clients', {
+    const response = await fetch(`${apiUrl}/api/v1/clients`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -109,7 +112,7 @@ describe('POST /api/v1/clients', () => {
       name: 'Test Client',
     };
 
-    const response = await fetch('http://localhost:3000/api/v1/clients', {
+    const response = await fetch(`${apiUrl}/api/v1/clients`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -134,7 +137,7 @@ describe('POST /api/v1/clients', () => {
         maps_link: `https://maps.google.com/test-${establishmentType.toLowerCase()}`,
       };
 
-      const response = await fetch('http://localhost:3000/api/v1/clients', {
+      const response = await fetch(`${apiUrl}/api/v1/clients`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -151,7 +154,7 @@ describe('POST /api/v1/clients', () => {
   });
 
   it('should return 405 for non-POST methods', async () => {
-    const response = await fetch('http://localhost:3000/api/v1/clients', {
+    const response = await fetch(`${apiUrl}/api/v1/clients`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

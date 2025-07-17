@@ -1,13 +1,16 @@
 import { Client } from 'src/constants/types';
 import { waitForAllServices } from 'tests/orchestrator';
+import { getApiEndpoint } from 'tests/utils';
 
 describe('GET /api/v1/clients', () => {
+  const apiUrl = getApiEndpoint();
+
   beforeAll(async () => {
     await waitForAllServices();
   });
 
   it('should return an empty array when no clients exist', async () => {
-    const response = await fetch('http://localhost:3000/api/v1/clients');
+    const response = await fetch(`${apiUrl}/api/v1/clients`);
 
     expect(response.status).toBe(200);
 
@@ -42,16 +45,13 @@ describe('GET /api/v1/clients', () => {
     const createdClientIds = [];
 
     for (const client of clientsToCreate) {
-      const createResponse = await fetch(
-        'http://localhost:3000/api/v1/clients',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(client),
-        }
-      );
+      const createResponse = await fetch(`${apiUrl}/api/v1/clients`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(client),
+      });
 
       expect(createResponse.status).toBe(201);
 
@@ -62,7 +62,7 @@ describe('GET /api/v1/clients', () => {
       createdClientIds.push(createData.id);
     }
 
-    const response = await fetch('http://localhost:3000/api/v1/clients');
+    const response = await fetch(`${apiUrl}/api/v1/clients`);
 
     expect(response.status).toBe(200);
 
@@ -86,7 +86,7 @@ describe('GET /api/v1/clients', () => {
   });
 
   it('should return the correct client structure', async () => {
-    const response = await fetch('http://localhost:3000/api/v1/clients');
+    const response = await fetch(`${apiUrl}/api/v1/clients`);
 
     expect(response.status).toBe(200);
 
@@ -120,7 +120,7 @@ describe('GET /api/v1/clients', () => {
       phone: '12345',
     };
 
-    const createResponse = await fetch('http://localhost:3000/api/v1/clients', {
+    const createResponse = await fetch(`${apiUrl}/api/v1/clients`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -130,7 +130,7 @@ describe('GET /api/v1/clients', () => {
 
     expect(createResponse.status).toBe(201);
 
-    const response = await fetch('http://localhost:3000/api/v1/clients');
+    const response = await fetch(`${apiUrl}/api/v1/clients`);
 
     expect(response.status).toBe(200);
 
@@ -146,7 +146,7 @@ describe('GET /api/v1/clients', () => {
   });
 
   it('should handle method not allowed', async () => {
-    const response = await fetch('http://localhost:3000/api/v1/clients', {
+    const response = await fetch(`${apiUrl}/api/v1/clients`, {
       method: 'PUT',
     });
 

@@ -1,24 +1,24 @@
 import { Stack, styled } from '@mui/material';
 
 export const WallPaper = styled(Stack)(({ theme }) => ({
-  minHeight: '100vh',
-  width: '100vw',
+  minHeight: '100dvh',
+  width: '100dvw',
   alignItems: 'center',
   background: `linear-gradient(180deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
 }));
 
 export const Navbar = styled('nav')(({ theme }) => ({
   display: 'flex',
-  width: '80%',
+  width: '90%',
   flex: 0,
-  borderRadius: '24px',
+  borderRadius: theme.spacing(5),
   justifyContent: 'center',
   alignItems: 'center',
   textAlign: 'center',
-  gap: theme.spacing(4),
+  gap: theme.spacing(6),
   margin: theme.spacing(4),
-  marginBottom: theme.spacing(12),
-  padding: theme.spacing(8),
+  marginBottom: theme.spacing(8),
+  padding: theme.spacing(5),
   background: theme.palette.background.paper,
   color: theme.palette.primary.contrastText,
 
@@ -33,12 +33,12 @@ export const Navbar = styled('nav')(({ theme }) => ({
   },
 }));
 
-export const Masrcme = styled(Stack)(({ theme }) => ({
-  width: '80%',
+export const Main = styled(Stack)(({ theme }) => ({
+  width: '90%',
   flex: 1,
-  borderRadius: '24px',
+  borderRadius: theme.spacing(5),
   borderEndStartRadius: 0,
   borderEndEndRadius: 0,
-  padding: theme.spacing(8),
+  padding: theme.spacing(5),
   background: theme.palette.background.paper,
 }));

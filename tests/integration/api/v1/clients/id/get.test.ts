@@ -1,8 +1,10 @@
 import { Client } from 'src/constants/types';
 import { waitForAllServices } from 'tests/orchestrator';
+import { getApiEndpoint } from 'tests/utils';
 
 describe('GET /api/v1/clients/[id]', () => {
   let createdClientId: string;
+  const apiUrl = getApiEndpoint();
 
   beforeAll(async () => {
     await waitForAllServices();
@@ -14,7 +16,7 @@ describe('GET /api/v1/clients/[id]', () => {
       maps_link: 'https://maps.google.com/test-client',
     };
 
-    const createResponse = await fetch('http://localhost:3000/api/v1/clients', {
+    const createResponse = await fetch(`${apiUrl}/api/v1/clients`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(clientToCreate),
@@ -26,9 +28,7 @@ describe('GET /api/v1/clients/[id]', () => {
 
   it("should return 404 when client doesn't exist", async () => {
     const nonExistentId = '00000000-0000-0000-0000-000000000000';
-    const response = await fetch(
-      `http://localhost:3000/api/v1/clients/${nonExistentId}`
-    );
+    const response = await fetch(`${apiUrl}/api/v1/clients/${nonExistentId}`);
 
     expect(response.status).toBe(404);
 
@@ -38,9 +38,7 @@ describe('GET /api/v1/clients/[id]', () => {
   });
 
   it('should return the specific client when a valid ID is provided', async () => {
-    const response = await fetch(
-      `http://localhost:3000/api/v1/clients/${createdClientId}`
-    );
+    const response = await fetch(`${apiUrl}/api/v1/clients/${createdClientId}`);
 
     expect(response.status).toBe(200);
 
@@ -51,9 +49,7 @@ describe('GET /api/v1/clients/[id]', () => {
   });
 
   it('should return the correct client structure', async () => {
-    const response = await fetch(
-      `http://localhost:3000/api/v1/clients/${createdClientId}`
-    );
+    const response = await fetch(`${apiUrl}/api/v1/clients/${createdClientId}`);
 
     expect(response.status).toBe(200);
 
@@ -78,9 +74,7 @@ describe('GET /api/v1/clients/[id]', () => {
   });
 
   it('should return correct data for the created client', async () => {
-    const response = await fetch(
-      `http://localhost:3000/api/v1/clients/${createdClientId}`
-    );
+    const response = await fetch(`${apiUrl}/api/v1/clients/${createdClientId}`);
 
     expect(response.status).toBe(200);
 
@@ -100,7 +94,7 @@ describe('GET /api/v1/clients/[id]', () => {
       phone: '12345',
     };
 
-    const createResponse = await fetch('http://localhost:3000/api/v1/clients', {
+    const createResponse = await fetch(`${apiUrl}/api/v1/clients`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(minimalClient),
@@ -109,9 +103,7 @@ describe('GET /api/v1/clients/[id]', () => {
     const createData = await createResponse.json();
     const minimalClientId = createData.id;
 
-    const response = await fetch(
-      `http://localhost:3000/api/v1/clients/${minimalClientId}`
-    );
+    const response = await fetch(`${apiUrl}/api/v1/clients/${minimalClientId}`);
 
     expect(response.status).toBe(200);
 
@@ -126,7 +118,7 @@ describe('GET /api/v1/clients/[id]', () => {
 
   it('should handle method not allowed', async () => {
     const response = await fetch(
-      `http://localhost:3000/api/v1/clients/${createdClientId}`,
+      `${apiUrl}/api/v1/clients/${createdClientId}`,
       { method: 'PUT' }
     );
 
@@ -139,9 +131,7 @@ describe('GET /api/v1/clients/[id]', () => {
 
   it('should handle invalid UUID format', async () => {
     const invalidId = 'invalid-uuid';
-    const response = await fetch(
-      `http://localhost:3000/api/v1/clients/${invalidId}`
-    );
+    const response = await fetch(`${apiUrl}/api/v1/clients/${invalidId}`);
 
     expect(response.status).toBe(404);
 

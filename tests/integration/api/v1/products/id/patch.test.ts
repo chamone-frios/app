@@ -1,9 +1,12 @@
 import { waitForAllServices } from 'tests/orchestrator';
+import { getApiEndpoint } from 'tests/utils';
 
 import { Product, ProductMetric } from '../../../../../../src/constants/types';
 
 describe('PATCH /api/v1/products/[id]', () => {
   let createdProductId: string;
+  const apiUrl = getApiEndpoint();
+
   const updatedProduct: Omit<Product, 'id'> = {
     img: 'updated-test.jpg',
     name: 'Updated Test Product',
@@ -27,14 +30,11 @@ describe('PATCH /api/v1/products/[id]', () => {
       price: 99.99,
     };
 
-    const createResponse = await fetch(
-      'http://localhost:3000/api/v1/products',
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(productToCreate),
-      }
-    );
+    const createResponse = await fetch(`${apiUrl}/api/v1/products`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(productToCreate),
+    });
 
     const createData = await createResponse.json();
     createdProductId = createData.id;
@@ -42,14 +42,11 @@ describe('PATCH /api/v1/products/[id]', () => {
 
   it("should return 500 when product doesn't exist", async () => {
     const nonExistentId = '00000000-0000-0000-0000-000000000000';
-    const response = await fetch(
-      `http://localhost:3000/api/v1/products/${nonExistentId}`,
-      {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedProduct),
-      }
-    );
+    const response = await fetch(`${apiUrl}/api/v1/products/${nonExistentId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updatedProduct),
+    });
 
     expect(response.status).toBe(500);
 
@@ -68,7 +65,7 @@ describe('PATCH /api/v1/products/[id]', () => {
     };
 
     const response = await fetch(
-      `http://localhost:3000/api/v1/products/${createdProductId}`,
+      `${apiUrl}/api/v1/products/${createdProductId}`,
       {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -88,7 +85,7 @@ describe('PATCH /api/v1/products/[id]', () => {
 
   it('should successfully update a product with valid data', async () => {
     const response = await fetch(
-      `http://localhost:3000/api/v1/products/${createdProductId}`,
+      `${apiUrl}/api/v1/products/${createdProductId}`,
       {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -104,14 +101,14 @@ describe('PATCH /api/v1/products/[id]', () => {
   });
 
   it('should confirm the product was actually updated', async () => {
-    await fetch(`http://localhost:3000/api/v1/products/${createdProductId}`, {
+    await fetch(`${apiUrl}/api/v1/products/${createdProductId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updatedProduct),
     });
 
     const response = await fetch(
-      `http://localhost:3000/api/v1/products/${createdProductId}`
+      `${apiUrl}/api/v1/products/${createdProductId}`
     );
 
     expect(response.status).toBe(200);
@@ -135,7 +132,7 @@ describe('PATCH /api/v1/products/[id]', () => {
     };
 
     const updateResponse = await fetch(
-      `http://localhost:3000/api/v1/products/${createdProductId}`,
+      `${apiUrl}/api/v1/products/${createdProductId}`,
       {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -152,7 +149,7 @@ describe('PATCH /api/v1/products/[id]', () => {
 
   it('should handle method not allowed', async () => {
     const response = await fetch(
-      `http://localhost:3000/api/v1/products/${createdProductId}`,
+      `${apiUrl}/api/v1/products/${createdProductId}`,
       { method: 'PUT' }
     );
 

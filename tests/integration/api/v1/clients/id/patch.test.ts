@@ -1,8 +1,11 @@
 import { Client } from 'src/constants/types';
 import { waitForAllServices } from 'tests/orchestrator';
+import { getApiEndpoint } from 'tests/utils';
 
 describe('PATCH /api/v1/clients/[id]', () => {
   let createdClientId: string;
+  const apiUrl = getApiEndpoint();
+
   const updatedClient: Omit<Client, 'id'> = {
     name: 'Updated Test Client',
     establishment_type: 'Updated Restaurant',
@@ -20,7 +23,7 @@ describe('PATCH /api/v1/clients/[id]', () => {
       maps_link: 'https://maps.google.com/test-client',
     };
 
-    const createResponse = await fetch('http://localhost:3000/api/v1/clients', {
+    const createResponse = await fetch(`${apiUrl}/api/v1/clients`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(clientToCreate),
@@ -32,14 +35,11 @@ describe('PATCH /api/v1/clients/[id]', () => {
 
   it("should return 500 when client doesn't exist", async () => {
     const nonExistentId = '00000000-0000-0000-0000-000000000000';
-    const response = await fetch(
-      `http://localhost:3000/api/v1/clients/${nonExistentId}`,
-      {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedClient),
-      }
-    );
+    const response = await fetch(`${apiUrl}/api/v1/clients/${nonExistentId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updatedClient),
+    });
 
     expect(response.status).toBe(500);
 
@@ -56,7 +56,7 @@ describe('PATCH /api/v1/clients/[id]', () => {
     };
 
     const response = await fetch(
-      `http://localhost:3000/api/v1/clients/${createdClientId}`,
+      `${apiUrl}/api/v1/clients/${createdClientId}`,
       {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -76,7 +76,7 @@ describe('PATCH /api/v1/clients/[id]', () => {
 
   it('should successfully update a client with valid data', async () => {
     const response = await fetch(
-      `http://localhost:3000/api/v1/clients/${createdClientId}`,
+      `${apiUrl}/api/v1/clients/${createdClientId}`,
       {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -92,15 +92,13 @@ describe('PATCH /api/v1/clients/[id]', () => {
   });
 
   it('should confirm the client was actually updated', async () => {
-    await fetch(`http://localhost:3000/api/v1/clients/${createdClientId}`, {
+    await fetch(`${apiUrl}/api/v1/clients/${createdClientId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updatedClient),
     });
 
-    const response = await fetch(
-      `http://localhost:3000/api/v1/clients/${createdClientId}`
-    );
+    const response = await fetch(`${apiUrl}/api/v1/clients/${createdClientId}`);
 
     expect(response.status).toBe(200);
 
@@ -122,7 +120,7 @@ describe('PATCH /api/v1/clients/[id]', () => {
     };
 
     const response = await fetch(
-      `http://localhost:3000/api/v1/clients/${createdClientId}`,
+      `${apiUrl}/api/v1/clients/${createdClientId}`,
       {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -143,7 +141,7 @@ describe('PATCH /api/v1/clients/[id]', () => {
     };
 
     const updateResponse = await fetch(
-      `http://localhost:3000/api/v1/clients/${createdClientId}`,
+      `${apiUrl}/api/v1/clients/${createdClientId}`,
       {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -167,7 +165,7 @@ describe('PATCH /api/v1/clients/[id]', () => {
     };
 
     const response = await fetch(
-      `http://localhost:3000/api/v1/clients/${createdClientId}`,
+      `${apiUrl}/api/v1/clients/${createdClientId}`,
       {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -184,7 +182,7 @@ describe('PATCH /api/v1/clients/[id]', () => {
 
   it('should handle method not allowed', async () => {
     const response = await fetch(
-      `http://localhost:3000/api/v1/clients/${createdClientId}`,
+      `${apiUrl}/api/v1/clients/${createdClientId}`,
       { method: 'PUT' }
     );
 

@@ -1,14 +1,17 @@
 import { waitForAllServices } from 'tests/orchestrator';
+import { getApiEndpoint } from 'tests/utils';
 
 import { Product, ProductMetric } from '../../../../../src/constants/types';
 
 describe('GET /api/v1/products', () => {
+  const apiUrl = getApiEndpoint();
+
   beforeAll(async () => {
     await waitForAllServices();
   });
 
   it('should return an empty array when no products exist', async () => {
-    const response = await fetch('http://localhost:3000/api/v1/products');
+    const response = await fetch(`${apiUrl}/api/v1/products`);
 
     expect(response.status).toBe(200);
 
@@ -52,16 +55,13 @@ describe('GET /api/v1/products', () => {
     const createdProductIds = [];
 
     for (const product of productsToCreate) {
-      const createResponse = await fetch(
-        'http://localhost:3000/api/v1/products',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(product),
-        }
-      );
+      const createResponse = await fetch(`${apiUrl}/api/v1/products`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(product),
+      });
 
       expect(createResponse.status).toBe(201);
 
@@ -72,7 +72,7 @@ describe('GET /api/v1/products', () => {
       createdProductIds.push(createData.id);
     }
 
-    const response = await fetch('http://localhost:3000/api/v1/products');
+    const response = await fetch(`${apiUrl}/api/v1/products`);
 
     expect(response.status).toBe(200);
 
@@ -97,7 +97,7 @@ describe('GET /api/v1/products', () => {
   });
 
   it('should return the correct product structure', async () => {
-    const response = await fetch('http://localhost:3000/api/v1/products');
+    const response = await fetch(`${apiUrl}/api/v1/products`);
 
     expect(response.status).toBe(200);
 
@@ -127,7 +127,7 @@ describe('GET /api/v1/products', () => {
   });
 
   it('should handle method not allowed', async () => {
-    const response = await fetch('http://localhost:3000/api/v1/products', {
+    const response = await fetch(`${apiUrl}/api/v1/products`, {
       method: 'PUT',
     });
 

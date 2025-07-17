@@ -63,12 +63,12 @@ const ProductList = ({ products: initialProducts }: ProductListProps) => {
   const isLoading = isDeleting || isNextLoading;
 
   return (
-    <Stack spacing={8}>
+    <Stack spacing={5}>
       <Stack spacing={4}>
         <Typography variant="hero-sm">Produtos</Typography>
         <Typography>Esses são nossos produtos! 🧀</Typography>
         {products.length > 0 && (
-          <Stack direction="row" width="100%">
+          <Stack direction="row-reverse" width="100%">
             <Button
               variant="contained"
               color="primary"
@@ -80,7 +80,7 @@ const ProductList = ({ products: initialProducts }: ProductListProps) => {
         )}
       </Stack>
       <Divider />
-      <Stack height="100%" gap={4}>
+      <Stack height="100%" gap={4} flex={1}>
         {isLoading ? (
           <Stack alignItems="center" justifyContent="center" height="300px">
             <CircularProgress />
@@ -117,7 +117,7 @@ const ProductList = ({ products: initialProducts }: ProductListProps) => {
         onClose={handleCloseModal}
         onConfirm={handleConfirmDelete}
       >
-        <Typography>Tem certeza que deseja excluir este produto?</Typography>
+        <Typography>Deseja realmente excluir este produto?</Typography>
         <Typography gutterBottom>Esta ação não pode ser desfeita.</Typography>
       </DeleteModal>
     </Stack>

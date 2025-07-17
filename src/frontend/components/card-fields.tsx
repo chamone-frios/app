@@ -9,11 +9,15 @@ export type CardFieldsProps = {
 
 const CardFields = ({ label, value }: CardFieldsProps) => {
   return (
-    <Stack direction="row" gap={3}>
-      <Typography variant="body2" fontWeight={600}>
+    <Stack direction="row" gap={3} alignItems="center">
+      <Typography variant="body2" fontWeight={600} color="textSecondary">
         {label}
       </Typography>
-      <Typography variant="body2" sx={{ cursor: 'pointer' }}>
+      <Typography
+        variant="body2"
+        sx={{ cursor: 'pointer' }}
+        color="textSecondary"
+      >
         {value}
       </Typography>
     </Stack>
