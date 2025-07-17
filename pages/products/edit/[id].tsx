@@ -74,7 +74,9 @@ const EditProduct = ({ product, error: serverError }: EditProductProps) => {
   return (
     <Stack spacing={4}>
       <Typography variant="hero-sm">Editar produto</Typography>
-      <Alert severity={getAlertSeverity()}>{getAlertMessage()}</Alert>
+      <Alert severity={getAlertSeverity()} sx={{ alignItems: 'center' }}>
+        {getAlertMessage()}
+      </Alert>
       {isNextLoading ? (
         <Stack alignItems="center" justifyContent="center" height="300px">
           <CircularProgress />
@@ -103,7 +105,7 @@ export const getServerSideProps: GetServerSideProps<EditProductProps> = async (
 ) => {
   const { id } = context.params || {};
 
-  if (!id || Array.isArray(id)) {
+  if (!id || typeof id !== 'string') {
     return {
       props: {
         product: null,

@@ -48,7 +48,7 @@ const getOrder = async ({ id }: { id: string }): Promise<OrderWithItems> => {
       unit_price: parseFloat(row.unit_price),
       quantity: parseFloat(row.quantity),
       subtotal: parseFloat(row.subtotal),
-      created_at: row.created_at,
+      created_at: row.created_at.toISOString(),
     }));
 
     const order: OrderWithItems = {
@@ -63,7 +63,7 @@ const getOrder = async ({ id }: { id: string }): Promise<OrderWithItems> => {
       tax: parseFloat(orderRow.tax) ?? 0,
       total: parseFloat(orderRow.total),
       notes: orderRow.notes,
-      created_at: orderRow.created_at,
+      created_at: orderRow.created_at.toISOString(),
       items,
     };
 
@@ -99,7 +99,7 @@ const getOrders = async (): Promise<Order[]> => {
       tax: parseFloat(row.tax) ?? 0,
       total: parseFloat(row.total),
       notes: row.notes,
-      created_at: row.created_at,
+      created_at: row.created_at.toISOString(),
     }));
   } catch (error) {
     console.error(
@@ -137,7 +137,7 @@ const getOrdersByClientId = async ({
       tax: parseFloat(row.tax) ?? 0,
       total: parseFloat(row.total),
       notes: row.notes,
-      created_at: row.created_at,
+      created_at: row.created_at.toISOString(),
     }));
   } catch (error) {
     console.error(

@@ -49,7 +49,9 @@ const AddClient = () => {
   return (
     <Stack spacing={4}>
       <Typography variant="hero-sm">Adicionar cliente</Typography>
-      <Alert severity={getAlertSeverity()}>{getAlertMessage()}</Alert>
+      <Alert severity={getAlertSeverity()} sx={{ alignItems: 'center' }}>
+        {getAlertMessage()}
+      </Alert>
       {isNextLoading ? (
         <Stack alignItems="center" justifyContent="center" height="300px">
           <CircularProgress />
