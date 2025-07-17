@@ -9,7 +9,7 @@ import {
 const productHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { id } = req.query;
 
-  if (!id || Array.isArray(id))
+  if (!id || typeof id !== 'string')
     return res.status(404).json({ error: 'ID not found' });
 
   if (req.method === 'GET') return getProductById(id, res);
