@@ -5,7 +5,7 @@ import { getOrderById } from 'src/backend/services';
 const orderHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { id } = req.query;
 
-  if (!id || Array.isArray(id))
+  if (!id || typeof id !== 'string')
     return res.status(400).json({ error: 'invalid ID' });
 
   if (req.method === 'GET') return getOrderById(id, res);

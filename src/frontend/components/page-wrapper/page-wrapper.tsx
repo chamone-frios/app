@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { PropsWithChildren } from 'react';
 
-import { Masrcme, Navbar, WallPaper } from './page-wrapper.styles';
+import { Main, Navbar, WallPaper } from './page-wrapper.styles';
 
 const PageWrapper = ({ children }: PropsWithChildren) => {
   return (
@@ -10,8 +10,9 @@ const PageWrapper = ({ children }: PropsWithChildren) => {
         <Link href="/">Home</Link>
         <Link href="/products">Produtos</Link>
         <Link href="/clients">Clientes</Link>
+        <Link href="/orders">Pedidos</Link>
       </Navbar>
-      <Masrcme>{children}</Masrcme>
+      <Main>{children}</Main>
     </WallPaper>
   );
 };

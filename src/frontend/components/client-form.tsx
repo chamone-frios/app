@@ -66,9 +66,7 @@ const ClientForm = ({
   };
 
   const handleSubmit = async () => {
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     await onSubmit({
       name: client.name.trim(),
@@ -84,7 +82,7 @@ const ClientForm = ({
 
   return (
     <Stack spacing={4}>
-      <Stack direction="row" width="100%">
+      <Stack direction="row" width="100%" justifyContent="end">
         <Button
           variant="contained"
           color="primary"
@@ -95,7 +93,7 @@ const ClientForm = ({
       </Stack>
       <Divider />
       <Typography variant="h6">Informações do cliente</Typography>
-      <Stack spacing={4}>
+      <Stack gap={6}>
         <TextField
           label="Nome"
           value={client.name}

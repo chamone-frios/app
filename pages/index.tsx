@@ -4,7 +4,7 @@ import { Divider, Stack, Typography } from '@mui/material';
 
 const Index = () => {
   return (
-    <Stack spacing={8}>
+    <Stack spacing={5}>
       <Stack spacing={4}>
         <Typography variant="hero-sm">Chamone frios</Typography>
         <Typography>A distribuidora mais pica de BH 🤙</Typography>

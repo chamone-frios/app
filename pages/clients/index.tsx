@@ -19,7 +19,7 @@ type ClientListProps = {
   clients: Client[];
 };
 
-const ProductList = ({ clients: initialClients }: ClientListProps) => {
+const ClientList = ({ clients: initialClients }: ClientListProps) => {
   const router = useRouter();
   const isNextLoading = useIsNextLoading();
   const [clients, setClients] = useState<Client[]>(initialClients);
@@ -63,12 +63,12 @@ const ProductList = ({ clients: initialClients }: ClientListProps) => {
   const isLoading = isDeleting || isNextLoading;
 
   return (
-    <Stack spacing={8}>
+    <Stack spacing={5}>
       <Stack spacing={4}>
         <Typography variant="hero-sm">Clientes</Typography>
         <Typography>Esses são nossos clients! 👨‍🍳</Typography>
         {clients.length > 0 && (
-          <Stack direction="row" width="100%">
+          <Stack direction="row-reverse" width="100%">
             <Button
               variant="contained"
               color="primary"
@@ -117,7 +117,7 @@ const ProductList = ({ clients: initialClients }: ClientListProps) => {
         onClose={handleCloseModal}
         onConfirm={handleConfirmDelete}
       >
-        <Typography>Tem certeza que deseja excluir este cliente?</Typography>
+        <Typography>Deseja realmente excluir este cliente?</Typography>
         <Typography gutterBottom>Esta ação não pode ser desfeita.</Typography>
       </DeleteModal>
     </Stack>
@@ -136,4 +136,4 @@ export const getServerSideProps: GetServerSideProps<
   }
 };
 
-export default ProductList;
+export default ClientList;

@@ -8,7 +8,7 @@ const clientOrdersHandler = async (
 ) => {
   const { id } = req.query;
 
-  if (!id || Array.isArray(id))
+  if (!id || typeof id !== 'string')
     return res.status(400).json({ error: 'invalid ID' });
 
   if (req.method === 'GET') return getClientOrders(id, res);
