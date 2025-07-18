@@ -45,6 +45,19 @@ const updateProductById = async (
     )
       validationErrors.push('Price must be a positive number');
 
+    if (product.purchase_price !== undefined) {
+      if (
+        typeof product.purchase_price !== 'number' ||
+        product.purchase_price < 0
+      ) {
+        validationErrors.push('Purchase price must be a non-negative number');
+      }
+
+      if (product.purchase_price >= product.price) {
+        validationErrors.push('Sale price must be greater than purchase price');
+      }
+    }
+
     if (validationErrors.length > 0)
       return res.status(400).json({
         error: 'Invalid data',
@@ -61,6 +74,7 @@ const updateProductById = async (
         metric: product.metric,
         stock: product.stock,
         price: product.price,
+        purchase_price: product.purchase_price,
       },
     });
 

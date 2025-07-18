@@ -12,13 +12,14 @@ const AddProduct = () => {
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
 
-  const initialState: Omit<Product, 'id' | 'img'> = {
+  const initialState: Omit<Product, 'id' | 'img' | 'profit_margin'> = {
     name: '',
     description: '',
     maker: '',
     metric: ProductMetric.UNIT,
     price: 0.0,
-    stock: 0,
+    stock: 0.0,
+    purchase_price: 0.0,
   };
 
   const handleSubmit = async (product: Product) => {

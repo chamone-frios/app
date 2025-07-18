@@ -14,6 +14,8 @@ export type Product = {
   metric: ProductMetric;
   stock: number;
   price: number;
+  purchase_price?: number;
+  profit_margin?: number;
 };
 
 export type GetProductsResponse = {
@@ -58,6 +60,9 @@ export type OrderItem = {
   unit_price: number;
   quantity: number;
   subtotal: number;
+  unit_purchase_price?: number;
+  unit_profit?: number;
+  total_profit?: number;
   created_at: string;
 };
 
@@ -72,6 +77,9 @@ export type Order = {
   discount?: number;
   tax?: number;
   total: number;
+  total_purchase_cost?: number;
+  total_profit?: number;
+  profit_margin_percentage?: number;
   notes?: string;
   created_at: string;
 };
@@ -118,4 +126,27 @@ export type UpdateOrderRequest = {
 
 export type UpdateOrderResponse = {
   order: OrderWithItems;
+};
+
+export type ProfitReport = {
+  total_revenue: number;
+  total_cost: number;
+  total_profit: number;
+  profit_margin_percentage: number;
+  orders_count: number;
+  period: {
+    start_date: string;
+    end_date: string;
+  };
+};
+
+export type ProductProfitReport = {
+  product_id: string;
+  product_name: string;
+  total_quantity_sold: number;
+  total_revenue: number;
+  total_cost: number;
+  total_profit: number;
+  profit_margin_percentage: number;
+  orders_count: number;
 };

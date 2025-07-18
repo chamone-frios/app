@@ -3,7 +3,7 @@ import { query } from 'src/integrations/database';
 
 const getProduct = async ({ id }: { id: string }): Promise<Product> => {
   const queryString = `
-    SELECT id, name, img, description, maker, metric, stock, price
+    SELECT id, name, img, description, maker, metric, stock, price, purchase_price, profit_margin
     FROM products
     WHERE id = $1
   `;
@@ -18,6 +18,7 @@ const getProduct = async ({ id }: { id: string }): Promise<Product> => {
     const metric = (
       row.metric as string
     ).toUpperCase() as keyof typeof ProductMetric;
+
     return {
       id: row.id,
       name: row.name,
@@ -25,8 +26,10 @@ const getProduct = async ({ id }: { id: string }): Promise<Product> => {
       description: row.description,
       maker: row.maker,
       metric: ProductMetric[metric],
-      stock: row.stock,
+      stock: parseFloat(row.stock),
       price: parseFloat(row.price),
+      purchase_price: parseFloat(row.purchase_price || '0'),
+      profit_margin: parseFloat(row.profit_margin || '0'),
     };
   } catch (error) {
     console.error(
@@ -39,7 +42,7 @@ const getProduct = async ({ id }: { id: string }): Promise<Product> => {
 
 const getProducts = async (): Promise<Product[]> => {
   const queryString = `
-    SELECT id, name, img, description, maker, metric, stock, price
+    SELECT id, name, img, description, maker, metric, stock, price, purchase_price, profit_margin
     FROM products
     ORDER BY name ASC
   `;
@@ -58,8 +61,10 @@ const getProducts = async (): Promise<Product[]> => {
         description: row.description,
         maker: row.maker,
         metric: ProductMetric[metric],
-        stock: row.stock,
+        stock: parseFloat(row.stock),
         price: parseFloat(row.price),
+        purchase_price: parseFloat(row.purchase_price || '0'),
+        profit_margin: parseFloat(row.profit_margin || '0'),
       };
     });
   } catch (error) {

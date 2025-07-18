@@ -3,20 +3,37 @@ import { query } from 'src/integrations/database';
 
 type UpdateProduct = {
   id: string;
-  product: Omit<Product, 'id'>;
+  product: Omit<Product, 'id' | 'profit_margin'>;
 };
 
 const updateProduct = async ({
   id,
   product,
 }: UpdateProduct): Promise<string> => {
-  const { name, img, description, maker, metric, stock, price } = product;
+  const {
+    name,
+    img,
+    description,
+    maker,
+    metric,
+    stock,
+    price,
+    purchase_price,
+  } = product;
+
   const metricString = ProductMetric[metric].toLowerCase();
 
   const sql = `
     UPDATE products
-    SET name = $1, img = $2, description = $3, maker = $4, metric = $5, stock = $6, price = $7
-    WHERE id = $8
+    SET name = $1,
+        img = $2,
+        description = $3,
+        maker = $4,
+        metric = $5,
+        stock = $6,
+        price = $7,
+        purchase_price = $8
+    WHERE id = $9
     RETURNING *;
   `;
 
@@ -28,6 +45,7 @@ const updateProduct = async ({
     metricString,
     stock,
     price,
+    purchase_price || null,
     id,
   ];
 
