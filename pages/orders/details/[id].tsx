@@ -60,11 +60,11 @@ const OrderDetails = ({ order }: OrderDetailsProps) => {
 
     try {
       await http.delete(`/api/v1/orders/${order.id}`);
+      router.push('/orders');
     } catch (error) {
       console.error('Erro ao excluir pedido:', error);
     } finally {
       setIsDeleting(false);
-      router.push('/orders');
     }
   };
 
