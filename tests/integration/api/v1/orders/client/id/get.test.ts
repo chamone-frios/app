@@ -5,6 +5,7 @@ import { getApiEndpoint } from 'tests/utils';
 describe('GET /api/v1/orders/client/[id]', () => {
   let createdClientId: string;
   let testProductId: string;
+  let testProductWithProfitId: string;
   const createdOrderIds: string[] = [];
   const apiUrl = getApiEndpoint();
 
@@ -33,7 +34,7 @@ describe('GET /api/v1/orders/client/[id]', () => {
       description: 'Product for testing client orders',
       maker: 'Test Maker',
       metric: ProductMetric.UNIT,
-      stock: 100,
+      stock: 100.5,
       price: 50.0,
     };
 
@@ -45,6 +46,26 @@ describe('GET /api/v1/orders/client/[id]', () => {
 
     const productData = await productResponse.json();
     testProductId = productData.id;
+
+    const productWithProfitToCreate = {
+      name: 'Test Product With Profit for Client Orders',
+      img: 'test-profit-client-orders.jpg',
+      description: 'Product with profit for testing client orders',
+      maker: 'Profit Maker',
+      metric: ProductMetric.KG,
+      stock: 50.25,
+      price: 80.0,
+      purchase_price: 50.0,
+    };
+
+    const productWithProfitResponse = await fetch(`${apiUrl}/api/v1/products`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(productWithProfitToCreate),
+    });
+
+    const productWithProfitData = await productWithProfitResponse.json();
+    testProductWithProfitId = productWithProfitData.id;
 
     const ordersToCreate: CreateOrderRequest[] = [
       {
@@ -61,9 +82,12 @@ describe('GET /api/v1/orders/client/[id]', () => {
       },
       {
         client_id: createdClientId,
-        items: [{ product_id: testProductId, quantity: 3 }],
+        items: [
+          { product_id: testProductId, quantity: 1 },
+          { product_id: testProductWithProfitId, quantity: 2.5 },
+        ],
         discount: 15.0,
-        notes: 'Third order for client',
+        notes: 'Third order for client with profit items',
       },
     ];
 
@@ -142,7 +166,7 @@ describe('GET /api/v1/orders/client/[id]', () => {
     });
   });
 
-  it('should return the correct order structure for client orders', async () => {
+  it('should return the correct order structure for client orders with profit fields', async () => {
     const response = await fetch(
       `${apiUrl}/api/v1/orders/client/${createdClientId}`
     );
@@ -167,6 +191,10 @@ describe('GET /api/v1/orders/client/[id]', () => {
     expect(order).toHaveProperty('notes');
     expect(order).toHaveProperty('created_at');
 
+    expect(order).toHaveProperty('total_purchase_cost');
+    expect(order).toHaveProperty('total_profit');
+    expect(order).toHaveProperty('profit_margin_percentage');
+
     expect(typeof order.id).toBe('string');
     expect(typeof order.client_id).toBe('string');
     expect(typeof order.client_name).toBe('string');
@@ -176,8 +204,15 @@ describe('GET /api/v1/orders/client/[id]', () => {
     expect(typeof order.subtotal).toBe('number');
     expect(typeof order.total).toBe('number');
 
-    expect(order.client_id).toBe(createdClientId);
+    expect(typeof order.total_purchase_cost).toBe('number');
+    expect(typeof order.total_profit).toBe('number');
+    expect(typeof order.profit_margin_percentage).toBe('number');
 
+    expect(order.total_purchase_cost).toBeGreaterThanOrEqual(0);
+    expect(order.total_profit).toBeGreaterThanOrEqual(0);
+    expect(order.profit_margin_percentage).toBeGreaterThanOrEqual(0);
+
+    expect(order.client_id).toBe(createdClientId);
     expect(order).not.toHaveProperty('items');
   });
 
@@ -257,14 +292,163 @@ describe('GET /api/v1/orders/client/[id]', () => {
     const data = await response.json();
 
     const orderWithDiscount = data.orders.find((o) => o.discount > 0);
-    const orderWithoutDiscount = data.orders.find(
-      (o) => !o.discount || o.discount === 0
-    );
+    const orderWithoutDiscount = data.orders.find((o) => o.discount === 0);
 
     expect(orderWithDiscount).toBeDefined();
     expect(orderWithoutDiscount).toBeDefined();
 
     expect(typeof orderWithDiscount.discount).toBe('number');
     expect(orderWithDiscount.discount).toBeGreaterThan(0);
+    expect(typeof orderWithoutDiscount.discount).toBe('number');
+    expect(orderWithoutDiscount.discount).toBe(0);
+  });
+
+  it('should return profit data for orders with profit items', async () => {
+    const response = await fetch(
+      `${apiUrl}/api/v1/orders/client/${createdClientId}`
+    );
+
+    expect(response.status).toBe(200);
+
+    const data = await response.json();
+
+    const orderWithProfitItems = data.orders.find(
+      (order) => order.notes === 'Third order for client with profit items'
+    );
+
+    expect(orderWithProfitItems).toBeDefined();
+
+    expect(orderWithProfitItems.total_purchase_cost).toBeGreaterThan(0);
+    expect(orderWithProfitItems.total_profit).toBeGreaterThan(0);
+    expect(orderWithProfitItems.profit_margin_percentage).toBeGreaterThan(0);
+
+    expect(orderWithProfitItems.total_profit).toBeCloseTo(125, 1);
+  });
+
+  it('should return zero profit data for orders without profit items', async () => {
+    const response = await fetch(
+      `${apiUrl}/api/v1/orders/client/${createdClientId}`
+    );
+
+    expect(response.status).toBe(200);
+
+    const data = await response.json();
+
+    const ordersWithoutProfitItems = data.orders.filter(
+      (order) =>
+        order.notes === 'First order for client' ||
+        order.notes === 'Second order for client'
+    );
+
+    expect(ordersWithoutProfitItems.length).toBe(2);
+
+    ordersWithoutProfitItems.forEach((order) => {
+      expect(order.total_purchase_cost).toBe(0);
+
+      expect(order.total_profit).toBeGreaterThan(0);
+      expect(order.total_profit).toBe(order.subtotal);
+
+      expect(order.profit_margin_percentage).toBe(100);
+    });
+  });
+
+  it('should validate profit calculations consistency', async () => {
+    const response = await fetch(
+      `${apiUrl}/api/v1/orders/client/${createdClientId}`
+    );
+
+    expect(response.status).toBe(200);
+
+    const data = await response.json();
+
+    data.orders.forEach((order) => {
+      expect(order.total_purchase_cost).toBeGreaterThanOrEqual(0);
+      expect(order.total_profit).toBeGreaterThanOrEqual(0);
+      expect(order.profit_margin_percentage).toBeGreaterThanOrEqual(0);
+      expect(order.profit_margin_percentage).toBeLessThanOrEqual(100);
+
+      if (order.subtotal > 0) {
+        const expectedPercentage = (order.total_profit / order.subtotal) * 100;
+        expect(order.profit_margin_percentage).toBeCloseTo(
+          expectedPercentage,
+          1
+        );
+      }
+
+      expect(order.total_profit).toBeLessThanOrEqual(order.subtotal);
+
+      if (order.discount > 0) {
+        expect(order.total).toBeLessThan(order.subtotal);
+      }
+
+      expect(Number.isFinite(order.total_purchase_cost)).toBe(true);
+      expect(Number.isFinite(order.total_profit)).toBe(true);
+      expect(Number.isFinite(order.profit_margin_percentage)).toBe(true);
+    });
+  });
+
+  it('should handle decimal quantities in profit calculations', async () => {
+    const response = await fetch(
+      `${apiUrl}/api/v1/orders/client/${createdClientId}`
+    );
+
+    expect(response.status).toBe(200);
+
+    const data = await response.json();
+
+    const orderWithDecimalQuantity = data.orders.find(
+      (order) => order.notes === 'Third order for client with profit items'
+    );
+
+    expect(orderWithDecimalQuantity).toBeDefined();
+
+    expect(orderWithDecimalQuantity.total_profit).toBeGreaterThan(0);
+    expect(Number.isFinite(orderWithDecimalQuantity.total_profit)).toBe(true);
+
+    const profit = orderWithDecimalQuantity.total_profit;
+    expect(profit.toString()).toMatch(/^\d+(\.\d+)?$/);
+  });
+
+  it('should return consistent data types for all numeric fields', async () => {
+    const response = await fetch(
+      `${apiUrl}/api/v1/orders/client/${createdClientId}`
+    );
+
+    expect(response.status).toBe(200);
+
+    const data = await response.json();
+
+    data.orders.forEach((order) => {
+      expect(typeof order.subtotal).toBe('number');
+      expect(typeof order.discount).toBe('number');
+      expect(typeof order.tax).toBe('number');
+      expect(typeof order.total).toBe('number');
+
+      expect(typeof order.total_purchase_cost).toBe('number');
+      expect(typeof order.total_profit).toBe('number');
+      expect(typeof order.profit_margin_percentage).toBe('number');
+
+      expect(isNaN(order.subtotal)).toBe(false);
+      expect(isNaN(order.discount)).toBe(false);
+      expect(isNaN(order.tax)).toBe(false);
+      expect(isNaN(order.total)).toBe(false);
+      expect(isNaN(order.total_purchase_cost)).toBe(false);
+      expect(isNaN(order.total_profit)).toBe(false);
+      expect(isNaN(order.profit_margin_percentage)).toBe(false);
+    });
+  });
+
+  it('should handle server errors gracefully', async () => {
+    const response = await fetch(
+      `${apiUrl}/api/v1/orders/client/${createdClientId}`
+    );
+
+    expect([200, 500]).toContain(response.status);
+
+    if (response.status === 500) {
+      const data = await response.json();
+      expect(data).toHaveProperty('error');
+      expect(data.error).toBe('Failed to fetch client orders');
+    }
   });
 });

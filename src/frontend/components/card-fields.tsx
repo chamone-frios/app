@@ -1,13 +1,14 @@
 import { ReactNode } from 'react';
 
-import { Stack, Typography } from '@mui/material';
+import { Stack, Typography, TypographyOwnProps } from '@mui/material';
 
 export type CardFieldsProps = {
   label: string | ReactNode;
   value: string | ReactNode;
+  valueProps?: TypographyOwnProps;
 };
 
-const CardFields = ({ label, value }: CardFieldsProps) => {
+const CardFields = ({ label, value, valueProps }: CardFieldsProps) => {
   return (
     <Stack direction="row" gap={3} alignItems="center">
       <Typography variant="body2" fontWeight={600} color="textSecondary">
@@ -17,6 +18,7 @@ const CardFields = ({ label, value }: CardFieldsProps) => {
         variant="body2"
         sx={{ cursor: 'pointer' }}
         color="textSecondary"
+        {...valueProps}
       >
         {value}
       </Typography>

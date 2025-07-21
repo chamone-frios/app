@@ -91,6 +91,7 @@ const EditProduct = ({ product, error: serverError }: EditProductProps) => {
             metric: product.metric,
             stock: product.stock,
             price: product.price,
+            purchase_price: product.purchase_price,
           }}
           submitButtonText="Confirmar edição"
           onSubmit={handleSubmit}

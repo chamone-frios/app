@@ -26,6 +26,32 @@ const createProduct = async (req: NextApiRequest, res: NextApiResponse) => {
       });
     }
 
+    if (typeof body.stock !== 'number' || body.stock < 0) {
+      return res.status(400).json({
+        error: 'Stock must be a non-negative number',
+      });
+    }
+
+    if (typeof body.price !== 'number' || body.price <= 0) {
+      return res.status(400).json({
+        error: 'Price must be a positive number',
+      });
+    }
+
+    if (body.purchase_price !== undefined) {
+      if (typeof body.purchase_price !== 'number' || body.purchase_price < 0) {
+        return res.status(400).json({
+          error: 'Purchase price must be a non-negative number',
+        });
+      }
+
+      if (body.purchase_price >= body.price) {
+        return res.status(400).json({
+          error: 'Sale price must be greater than purchase price',
+        });
+      }
+    }
+
     const productId = await insertProduct({
       name: body.name,
       img: body.img,
@@ -34,6 +60,7 @@ const createProduct = async (req: NextApiRequest, res: NextApiResponse) => {
       metric: body.metric,
       stock: body.stock,
       price: body.price,
+      purchase_price: body.purchase_price,
     });
 
     return res.status(201).json({

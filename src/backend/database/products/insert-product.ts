@@ -2,21 +2,51 @@ import { Product, ProductMetric } from 'src/constants/types';
 import { query } from 'src/integrations/database';
 import { v4 as uuidv4 } from 'uuid';
 
-type InsertProductInput = Omit<Product, 'id'>;
+type InsertProductInput = Omit<Product, 'id' | 'profit_margin'>;
 
 const insertProduct = async (product: InsertProductInput): Promise<string> => {
   const id = uuidv4();
-  const { name, img, description, maker, metric, stock, price } = product;
+  const {
+    name,
+    img,
+    description,
+    maker,
+    metric,
+    stock,
+    price,
+    purchase_price,
+  } = product;
 
   const metricName = ProductMetric[metric as number].toLowerCase();
 
   const sql = `
-    INSERT INTO products (id, name, img, description, maker, metric, stock, price, created_at)
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())
+    INSERT INTO products (
+      id,
+      name,
+      img,
+      description,
+      maker,
+      metric,
+      stock,
+      price,
+      purchase_price,
+      created_at
+    )
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW())
     RETURNING *;
   `;
 
-  const values = [id, name, img, description, maker, metricName, stock, price];
+  const values = [
+    id,
+    name,
+    img,
+    description,
+    maker,
+    metricName,
+    stock,
+    price,
+    purchase_price,
+  ];
 
   try {
     await query({ text: sql, values });

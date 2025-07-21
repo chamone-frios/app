@@ -9,7 +9,8 @@ import { query } from 'src/integrations/database';
 const getOrder = async ({ id }: { id: string }): Promise<OrderWithItems> => {
   const orderQueryString = `
     SELECT id, client_id, client_name, client_establishment_type, client_phone,
-           status, subtotal, discount, tax, total, notes, created_at
+           status, subtotal, discount, tax, total, notes, created_at,
+           total_purchase_cost, total_profit, profit_margin_percentage
     FROM orders
     WHERE id = $1
   `;
@@ -25,7 +26,7 @@ const getOrder = async ({ id }: { id: string }): Promise<OrderWithItems> => {
     const itemsQueryString = `
       SELECT id, order_id, product_id, product_name, product_description,
              product_maker, product_metric, product_img, unit_price, quantity,
-             subtotal, created_at
+             subtotal, created_at, unit_purchase_price, unit_profit, total_profit
       FROM order_items
       WHERE order_id = $1
       ORDER BY created_at DESC
@@ -49,6 +50,9 @@ const getOrder = async ({ id }: { id: string }): Promise<OrderWithItems> => {
       quantity: parseFloat(row.quantity),
       subtotal: parseFloat(row.subtotal),
       created_at: row.created_at.toISOString(),
+      unit_purchase_price: parseFloat(row.unit_purchase_price || '0'),
+      unit_profit: parseFloat(row.unit_profit || '0'),
+      total_profit: parseFloat(row.total_profit || '0'),
     }));
 
     const order: OrderWithItems = {
@@ -59,12 +63,17 @@ const getOrder = async ({ id }: { id: string }): Promise<OrderWithItems> => {
       client_phone: orderRow.client_phone,
       status: orderRow.status,
       subtotal: parseFloat(orderRow.subtotal),
-      discount: parseFloat(orderRow.discount) ?? 0,
-      tax: parseFloat(orderRow.tax) ?? 0,
+      discount: parseFloat(orderRow.discount || '0'),
+      tax: parseFloat(orderRow.tax || '0'),
       total: parseFloat(orderRow.total),
       notes: orderRow.notes,
       created_at: orderRow.created_at.toISOString(),
       items,
+      total_purchase_cost: parseFloat(orderRow.total_purchase_cost || '0'),
+      total_profit: parseFloat(orderRow.total_profit || '0'),
+      profit_margin_percentage: parseFloat(
+        orderRow.profit_margin_percentage || '0'
+      ),
     };
 
     return order;
@@ -80,7 +89,8 @@ const getOrder = async ({ id }: { id: string }): Promise<OrderWithItems> => {
 const getOrders = async (): Promise<Order[]> => {
   const queryString = `
     SELECT id, client_id, client_name, client_establishment_type, client_phone,
-           status, subtotal, discount, tax, total, notes, created_at
+           status, subtotal, discount, tax, total, notes, created_at,
+           total_purchase_cost, total_profit, profit_margin_percentage
     FROM orders
     ORDER BY created_at DESC
   `;
@@ -95,11 +105,14 @@ const getOrders = async (): Promise<Order[]> => {
       client_phone: row.client_phone,
       status: row.status,
       subtotal: parseFloat(row.subtotal),
-      discount: parseFloat(row.discount) ?? 0,
-      tax: parseFloat(row.tax) ?? 0,
+      discount: parseFloat(row.discount || '0'),
+      tax: parseFloat(row.tax || '0'),
       total: parseFloat(row.total),
       notes: row.notes,
       created_at: row.created_at.toISOString(),
+      total_purchase_cost: parseFloat(row.total_purchase_cost || '0'),
+      total_profit: parseFloat(row.total_profit || '0'),
+      profit_margin_percentage: parseFloat(row.profit_margin_percentage || '0'),
     }));
   } catch (error) {
     console.error(
@@ -117,7 +130,8 @@ const getOrdersByClientId = async ({
 }): Promise<Order[]> => {
   const queryString = `
     SELECT id, client_id, client_name, client_establishment_type, client_phone,
-           status, subtotal, discount, tax, total, notes, created_at
+           status, subtotal, discount, tax, total, notes, created_at,
+           total_purchase_cost, total_profit, profit_margin_percentage
     FROM orders
     WHERE client_id = $1
     ORDER BY created_at DESC
@@ -133,11 +147,14 @@ const getOrdersByClientId = async ({
       client_phone: row.client_phone,
       status: row.status,
       subtotal: parseFloat(row.subtotal),
-      discount: parseFloat(row.discount) ?? 0,
-      tax: parseFloat(row.tax) ?? 0,
+      discount: parseFloat(row.discount || '0'),
+      tax: parseFloat(row.tax || '0'),
       total: parseFloat(row.total),
       notes: row.notes,
       created_at: row.created_at.toISOString(),
+      total_purchase_cost: parseFloat(row.total_purchase_cost || '0'),
+      total_profit: parseFloat(row.total_profit || '0'),
+      profit_margin_percentage: parseFloat(row.profit_margin_percentage || '0'),
     }));
   } catch (error) {
     console.error(

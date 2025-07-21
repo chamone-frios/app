@@ -15,14 +15,15 @@ import {
   Typography,
 } from '@mui/material';
 import { Product, ProductMetric } from 'src/constants/types';
+import { getMetricLabel } from 'src/utils';
 import { formatDecimalInputs, numberToCurrency } from 'src/utils/number';
 
 type ProductFormProps = {
   isLoading: boolean;
   submitButtonText: string;
-  initialState: Omit<Product, 'id' | 'img'>;
+  initialState: Omit<Product, 'id' | 'img' | 'profit_margin'>;
   clearFormAferSubmit?: boolean;
-  onSubmit: (product: Omit<Product, 'id'>) => void;
+  onSubmit: (product: Omit<Product, 'id' | 'profit_margin'>) => void;
 };
 
 const ProductForm = ({
@@ -81,6 +82,10 @@ const ProductForm = ({
       newErrors.stock = 'Estoque não pode ser negativo';
     }
 
+    if (!product.purchase_price || product.purchase_price < 0) {
+      newErrors.purchase_price = 'Preço de compra não pode ser negativo';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -95,6 +100,7 @@ const ProductForm = ({
       stock: Number(product.stock),
       metric: Number(product.metric),
       price: Number(product.price),
+      purchase_price: Number(product.purchase_price),
       img: product.name.replace(/\s/g, '-').toLowerCase(),
     });
     if (clearFormAferSubmit) {
@@ -148,11 +154,20 @@ const ProductForm = ({
         <TextField
           required
           fullWidth
-          label="Preço"
+          label="Preço de venda"
           value={numberToCurrency({ number: product.price })}
           onChange={(event) => handleNumberInputChange(event, 'price')}
           error={!!errors.price}
           helperText={errors.price}
+        />
+        <TextField
+          required
+          fullWidth
+          label="Preço de compra"
+          value={numberToCurrency({ number: product.purchase_price })}
+          onChange={(event) => handleNumberInputChange(event, 'purchase_price')}
+          error={!!errors.purchase_price}
+          helperText={errors.purchase_price}
         />
         <FormControl fullWidth>
           <FormLabel>Métrica do Produto</FormLabel>
@@ -185,7 +200,7 @@ const ProductForm = ({
         </FormControl>
         <TextField
           type="number"
-          label="Unidades no estoque"
+          label={`${getMetricLabel(product.metric)} no estoque`}
           value={product.stock || '0.00'}
           onChange={(event) => handleNumberInputChange(event, 'stock')}
           error={!!errors.stock}

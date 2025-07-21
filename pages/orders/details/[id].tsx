@@ -45,8 +45,8 @@ const OrderDetails = ({ order }: OrderDetailsProps) => {
   return (
     <Stack spacing={5}>
       <Stack spacing={4}>
-        <Typography variant="hero-sm">Detalhamento do pedido</Typography>
-        <Typography>Veja os detalhes do pedido aqui! 📋</Typography>
+        <Typography variant="hero-sm">Detalhamento</Typography>
+        <Typography>Veja os detalhes aqui! 📋</Typography>
         <Stack direction="row-reverse" width="100%">
           <Button
             variant="contained"
@@ -108,37 +108,42 @@ const OrderDetails = ({ order }: OrderDetailsProps) => {
               />
             </Stack>
             <Stack gap={1}>
-              <Typography fontWeight={600}>Informações do pedido:</Typography>
+              <Typography fontWeight={600}>Informações:</Typography>
               <CardFields
-                label="Status do pedido:"
+                label="Status:"
                 value={<OrderStatusLabel status={status} />}
               />
               <CardFields
-                label="Horário do pedido:"
+                label="Horário:"
                 value={format(new Date(order.created_at), 'HH:mm', {
                   locale: ptBR,
                 })}
               />
               <CardFields
-                label="Data do pedido:"
+                label="Data:"
                 value={format(new Date(order.created_at), 'dd/MM/yyyy, eeee', {
                   locale: ptBR,
                 })}
               />
               {order.tax > 0 && (
                 <CardFields
-                  label="Valor de taxas:"
+                  label="Taxas:"
                   value={numberToCurrency({ number: order.tax })}
                 />
               )}
               {order.discount > 0 && (
                 <CardFields
-                  label="Valor de descontos:"
+                  label="Descontos:"
                   value={numberToCurrency({ number: order.discount })}
                 />
               )}
               <CardFields
-                label="Valor total do pedido:"
+                label="Lucro total:"
+                valueProps={{ color: 'success' }}
+                value={numberToCurrency({ number: order.total_profit })}
+              />
+              <CardFields
+                label="Valor total:"
                 value={numberToCurrency({ number: order.total })}
               />
             </Stack>
@@ -163,8 +168,22 @@ const OrderDetails = ({ order }: OrderDetailsProps) => {
                         </Typography>
                         <CardFields label="Quantidade:" value={item.quantity} />
                         <CardFields
+                          label="Lucro total:"
+                          valueProps={{ color: 'success' }}
+                          value={numberToCurrency({
+                            number: item.total_profit,
+                          })}
+                        />
+                        <CardFields
                           label="Preço total:"
                           value={numberToCurrency({ number: item.subtotal })}
+                        />
+                        <CardFields
+                          label="Lucro por unidade:"
+                          valueProps={{ color: 'success' }}
+                          value={numberToCurrency({
+                            number: item.unit_profit,
+                          })}
                         />
                         <CardFields
                           label="Preço por unidade:"
