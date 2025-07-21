@@ -35,7 +35,7 @@ const ProductForm = ({
 }: ProductFormProps) => {
   const router = useRouter();
   const [product, setProduct] =
-    useState<Omit<Product, 'id' | 'img'>>(initialState);
+    useState<Omit<Product, 'id' | 'img' | 'profit_margin'>>(initialState);
 
   const [errors, setErrors] = useState<Partial<Record<keyof Product, string>>>(
     {}

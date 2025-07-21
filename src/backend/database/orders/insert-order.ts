@@ -65,9 +65,7 @@ const insertOrder = async (orderData: InsertOrderInput): Promise<string> => {
       const itemSubtotal = parseFloat(productInfo.price) * item.quantity;
       subtotal += itemSubtotal;
 
-      const unitPurchasePrice = productInfo.purchase_price
-        ? parseFloat(productInfo.purchase_price)
-        : 0;
+      const unitPurchasePrice = parseFloat(productInfo.purchase_price || '0');
       const unitProfit = parseFloat(productInfo.price) - unitPurchasePrice;
       const totalProfitItem = unitProfit * item.quantity;
 

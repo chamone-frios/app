@@ -14,8 +14,8 @@ export type Product = {
   metric: ProductMetric;
   stock: number;
   price: number;
-  purchase_price?: number;
-  profit_margin?: number;
+  purchase_price: number;
+  profit_margin: number;
 };
 
 export type GetProductsResponse = {
