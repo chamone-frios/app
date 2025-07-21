@@ -2,6 +2,7 @@ import { deleteClient } from './clients/delete-client';
 import { getClient, getClients } from './clients/get-clients';
 import { insertClient } from './clients/insert-client';
 import { updateClient } from './clients/update-client';
+import { deleteOrder } from './orders/delete-order';
 import { getOrders, getOrder, getOrdersByClientId } from './orders/get-orders';
 import { insertOrder } from './orders/insert-order';
 import { updateOrderStatus } from './orders/update-order';
@@ -26,6 +27,7 @@ export {
   deleteClient,
 
   // order
+  deleteOrder,
   insertOrder,
   getOrder,
   getOrders,

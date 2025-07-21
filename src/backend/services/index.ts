@@ -4,6 +4,7 @@ import { getClientById } from './clients/get-client';
 import { listClients } from './clients/list-clients';
 import { updateClientById } from './clients/update-client';
 import { createOrder } from './orders/create-order';
+import { deleteOrderById } from './orders/delete-order';
 import { getClientOrders } from './orders/get-client-orders';
 import { getOrderById } from './orders/get-order';
 import { listOrders } from './orders/list-orders';
@@ -30,6 +31,7 @@ export {
   updateClientById,
 
   // orders
+  deleteOrderById,
   listOrders,
   createOrder,
   getOrderById,
