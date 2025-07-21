@@ -65,6 +65,11 @@ const OrderCard = ({ order }: OrderCardProps) => {
             value={<OrderStatusLabel status={status} />}
           />
           <CardFields
+            label="Lucro: "
+            valueProps={{ color: 'success' }}
+            value={numberToCurrency({ number: order.total_profit })}
+          />
+          <CardFields
             label="Valor total: "
             value={numberToCurrency({ number: order.total })}
           />

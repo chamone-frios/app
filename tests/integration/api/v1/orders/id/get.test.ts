@@ -8,8 +8,10 @@ import {
 
 describe('GET /api/v1/orders/[id]', () => {
   let createdOrderId: string;
+  let createdOrderWithProfitId: string;
   let testClientId: string;
   let testProductId: string;
+  let testProductWithProfitId: string;
   const apiUrl = getApiEndpoint();
 
   beforeAll(async () => {
@@ -37,7 +39,7 @@ describe('GET /api/v1/orders/[id]', () => {
       description: 'Product for testing order get by ID',
       maker: 'Test Maker',
       metric: ProductMetric.UNIT,
-      stock: 50,
+      stock: 50.5,
       price: 75.5,
     };
 
@@ -49,6 +51,26 @@ describe('GET /api/v1/orders/[id]', () => {
 
     const productData = await productResponse.json();
     testProductId = productData.id;
+
+    const productWithProfitToCreate = {
+      name: 'Test Product With Profit Get Order By ID',
+      img: 'test-profit-order-by-id.jpg',
+      description: 'Product with profit for testing order get by ID',
+      maker: 'Profit Maker',
+      metric: ProductMetric.KG,
+      stock: 25.75,
+      price: 100.0,
+      purchase_price: 60.0,
+    };
+
+    const productWithProfitResponse = await fetch(`${apiUrl}/api/v1/products`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(productWithProfitToCreate),
+    });
+
+    const productWithProfitData = await productWithProfitResponse.json();
+    testProductWithProfitId = productWithProfitData.id;
 
     const orderToCreate: CreateOrderRequest = {
       client_id: testClientId,
@@ -71,6 +93,28 @@ describe('GET /api/v1/orders/[id]', () => {
 
     const orderData = await orderResponse.json();
     createdOrderId = orderData.id;
+
+    const orderWithProfitToCreate: CreateOrderRequest = {
+      client_id: testClientId,
+      items: [
+        {
+          product_id: testProductWithProfitId,
+          quantity: 1.5,
+        },
+      ],
+      discount: 20.0,
+      tax: 15.0,
+      notes: 'Test order with profit for get by ID',
+    };
+
+    const orderWithProfitResponse = await fetch(`${apiUrl}/api/v1/orders`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(orderWithProfitToCreate),
+    });
+
+    const orderWithProfitData = await orderWithProfitResponse.json();
+    createdOrderWithProfitId = orderWithProfitData.id;
   });
 
   it("should return 404 when order doesn't exist", async () => {
@@ -95,7 +139,7 @@ describe('GET /api/v1/orders/[id]', () => {
     expect(data.order.id).toBe(createdOrderId);
   });
 
-  it('should return the correct order structure', async () => {
+  it('should return the correct order structure with profit fields', async () => {
     const response = await fetch(`${apiUrl}/api/v1/orders/${createdOrderId}`);
 
     expect(response.status).toBe(200);
@@ -117,6 +161,10 @@ describe('GET /api/v1/orders/[id]', () => {
     expect(order).toHaveProperty('created_at');
     expect(order).toHaveProperty('items');
 
+    expect(order).toHaveProperty('total_purchase_cost');
+    expect(order).toHaveProperty('total_profit');
+    expect(order).toHaveProperty('profit_margin_percentage');
+
     expect(typeof order.id).toBe('string');
     expect(typeof order.client_id).toBe('string');
     expect(typeof order.client_name).toBe('string');
@@ -129,6 +177,14 @@ describe('GET /api/v1/orders/[id]', () => {
     expect(typeof order.total).toBe('number');
     expect(typeof order.notes).toBe('string');
     expect(Array.isArray(order.items)).toBe(true);
+
+    expect(typeof order.total_purchase_cost).toBe('number');
+    expect(typeof order.total_profit).toBe('number');
+    expect(typeof order.profit_margin_percentage).toBe('number');
+
+    expect(order.total_purchase_cost).toBeGreaterThanOrEqual(0);
+    expect(order.total_profit).toBeGreaterThanOrEqual(0);
+    expect(order.profit_margin_percentage).toBeGreaterThanOrEqual(0);
   });
 
   it('should return order with correct client information', async () => {
@@ -147,7 +203,7 @@ describe('GET /api/v1/orders/[id]', () => {
     expect(order.status).toBe('pending');
   });
 
-  it('should return order with correct items structure', async () => {
+  it('should return order items with correct structure including profit fields', async () => {
     const response = await fetch(`${apiUrl}/api/v1/orders/${createdOrderId}`);
 
     expect(response.status).toBe(200);
@@ -174,6 +230,10 @@ describe('GET /api/v1/orders/[id]', () => {
     expect(item).toHaveProperty('subtotal');
     expect(item).toHaveProperty('created_at');
 
+    expect(item).toHaveProperty('unit_purchase_price');
+    expect(item).toHaveProperty('unit_profit');
+    expect(item).toHaveProperty('total_profit');
+
     expect(typeof item.id).toBe('string');
     expect(typeof item.order_id).toBe('string');
     expect(typeof item.product_id).toBe('string');
@@ -186,6 +246,10 @@ describe('GET /api/v1/orders/[id]', () => {
     expect(typeof item.quantity).toBe('number');
     expect(typeof item.subtotal).toBe('number');
 
+    expect(typeof item.unit_purchase_price).toBe('number');
+    expect(typeof item.unit_profit).toBe('number');
+    expect(typeof item.total_profit).toBe('number');
+
     expect(item.order_id).toBe(createdOrderId);
     expect(item.product_id).toBe(testProductId);
     expect(item.product_name).toBe('Test Product Get Order By ID');
@@ -197,6 +261,10 @@ describe('GET /api/v1/orders/[id]', () => {
     expect(item.quantity).toBe(2);
     expect(item.unit_price).toBe(75.5);
     expect(item.subtotal).toBe(151.0);
+
+    expect(item.unit_purchase_price).toBe(0);
+    expect(item.unit_profit).toBe(75.5);
+    expect(item.total_profit).toBe(151.0);
   });
 
   it('should return correct calculated totals', async () => {
@@ -211,6 +279,33 @@ describe('GET /api/v1/orders/[id]', () => {
     expect(order.discount).toBe(10.0);
     expect(order.tax).toBe(7.5);
     expect(order.total).toBe(148.5);
+
+    expect(order.total_purchase_cost).toBe(0);
+    expect(order.total_profit).toBe(151.0);
+    expect(order.profit_margin_percentage).toBe(100);
+  });
+
+  it('should handle order with profit items correctly', async () => {
+    const response = await fetch(
+      `${apiUrl}/api/v1/orders/${createdOrderWithProfitId}`
+    );
+
+    expect(response.status).toBe(200);
+
+    const data = await response.json();
+    const order = data.order;
+    const item = order.items[0];
+
+    expect(item.unit_purchase_price).toBe(60.0);
+    expect(item.unit_profit).toBe(40.0);
+    expect(item.total_profit).toBe(60.0);
+
+    expect(order.subtotal).toBe(150.0);
+    expect(order.total_purchase_cost).toBe(90.0);
+    expect(order.total_profit).toBe(60.0);
+    expect(order.profit_margin_percentage).toBe(40.0);
+
+    expect(order.total).toBe(145.0);
   });
 
   it('should handle order with minimal data', async () => {
@@ -245,6 +340,10 @@ describe('GET /api/v1/orders/[id]', () => {
     expect(order.notes).toBeNull();
     expect(order.subtotal).toBe(75.5);
     expect(order.total).toBe(75.5);
+
+    expect(order.total_purchase_cost).toBe(0);
+    expect(order.total_profit).toBe(75.5);
+    expect(order.profit_margin_percentage).toBe(100);
   });
 
   it('should handle invalid order ID format', async () => {
@@ -286,5 +385,134 @@ describe('GET /api/v1/orders/[id]', () => {
     expect(item.product_maker).toBe('Test Maker');
     expect(item.product_img).toBe('test-order-by-id.jpg');
     expect(item.unit_price).toBe(75.5);
+  });
+
+  it('should handle decimal quantities in items correctly', async () => {
+    const response = await fetch(
+      `${apiUrl}/api/v1/orders/${createdOrderWithProfitId}`
+    );
+
+    expect(response.status).toBe(200);
+
+    const data = await response.json();
+    const order = data.order;
+    const item = order.items[0];
+
+    expect(item.quantity).toBe(1.5);
+
+    expect(item.subtotal).toBe(150.0);
+    expect(item.total_profit).toBe(60.0);
+
+    expect(Number.isFinite(item.quantity)).toBe(true);
+    expect(Number.isFinite(item.subtotal)).toBe(true);
+    expect(Number.isFinite(item.total_profit)).toBe(true);
+  });
+
+  it('should validate profit calculations consistency', async () => {
+    const response = await fetch(
+      `${apiUrl}/api/v1/orders/${createdOrderWithProfitId}`
+    );
+
+    expect(response.status).toBe(200);
+
+    const data = await response.json();
+    const order = data.order;
+
+    expect(order.total_purchase_cost).toBeGreaterThanOrEqual(0);
+    expect(order.total_profit).toBeGreaterThanOrEqual(0);
+    expect(order.profit_margin_percentage).toBeGreaterThanOrEqual(0);
+    expect(order.profit_margin_percentage).toBeLessThanOrEqual(100);
+
+    if (order.subtotal > 0) {
+      const expectedPercentage = (order.total_profit / order.subtotal) * 100;
+      expect(order.profit_margin_percentage).toBeCloseTo(expectedPercentage, 1);
+    }
+
+    expect(Number.isFinite(order.total_purchase_cost)).toBe(true);
+    expect(Number.isFinite(order.total_profit)).toBe(true);
+    expect(Number.isFinite(order.profit_margin_percentage)).toBe(true);
+  });
+
+  it('should return consistent data types for all numeric fields', async () => {
+    const response = await fetch(`${apiUrl}/api/v1/orders/${createdOrderId}`);
+
+    expect(response.status).toBe(200);
+
+    const data = await response.json();
+    const order = data.order;
+
+    expect(typeof order.subtotal).toBe('number');
+    expect(typeof order.discount).toBe('number');
+    expect(typeof order.tax).toBe('number');
+    expect(typeof order.total).toBe('number');
+
+    expect(typeof order.total_purchase_cost).toBe('number');
+    expect(typeof order.total_profit).toBe('number');
+    expect(typeof order.profit_margin_percentage).toBe('number');
+
+    expect(isNaN(order.subtotal)).toBe(false);
+    expect(isNaN(order.discount)).toBe(false);
+    expect(isNaN(order.tax)).toBe(false);
+    expect(isNaN(order.total)).toBe(false);
+    expect(isNaN(order.total_purchase_cost)).toBe(false);
+    expect(isNaN(order.total_profit)).toBe(false);
+    expect(isNaN(order.profit_margin_percentage)).toBe(false);
+
+    order.items.forEach((item) => {
+      expect(typeof item.unit_purchase_price).toBe('number');
+      expect(typeof item.unit_profit).toBe('number');
+      expect(typeof item.total_profit).toBe('number');
+      expect(isNaN(item.unit_purchase_price)).toBe(false);
+      expect(isNaN(item.unit_profit)).toBe(false);
+      expect(isNaN(item.total_profit)).toBe(false);
+    });
+  });
+
+  it('should handle server errors gracefully', async () => {
+    const response = await fetch(`${apiUrl}/api/v1/orders/${createdOrderId}`);
+
+    expect([200, 500]).toContain(response.status);
+
+    if (response.status === 500) {
+      const data = await response.json();
+      expect(data).toHaveProperty('error');
+      expect(data.error).toBe('Failed to fetch order');
+    }
+  });
+
+  it('should return order with items sorted by created_at DESC', async () => {
+    const multiItemOrderData: CreateOrderRequest = {
+      client_id: testClientId,
+      items: [
+        { product_id: testProductId, quantity: 1 },
+        { product_id: testProductWithProfitId, quantity: 1 },
+      ],
+    };
+
+    const createResponse = await fetch(`${apiUrl}/api/v1/orders`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(multiItemOrderData),
+    });
+
+    const createData = await createResponse.json();
+    const multiItemOrderId = createData.id;
+
+    const response = await fetch(`${apiUrl}/api/v1/orders/${multiItemOrderId}`);
+
+    expect(response.status).toBe(200);
+
+    const data = await response.json();
+    const order = data.order;
+
+    expect(order.items.length).toBe(2);
+
+    for (let i = 0; i < order.items.length - 1; i++) {
+      const currentItemDate = new Date(order.items[i].created_at);
+      const nextItemDate = new Date(order.items[i + 1].created_at);
+      expect(currentItemDate.getTime()).toBeGreaterThanOrEqual(
+        nextItemDate.getTime()
+      );
+    }
   });
 });

@@ -72,6 +72,18 @@ const OrderForm = ({
     [products, order]
   );
 
+  const totalProfit = useMemo(() => {
+    const itemsProfit = order.items.reduce((acc, item) => {
+      const product = products.find((p) => p.id === item.product_id);
+      if (!product) return acc;
+      return (
+        acc +
+        (Number(product.price) - Number(product.purchase_price)) * item.quantity
+      );
+    }, 0);
+    return itemsProfit + Number(order.tax) - Number(order.discount);
+  }, [products, order]);
+
   const onOrderItemChange = (
     value: string | number,
     key: keyof OrderItem,
@@ -342,11 +354,31 @@ const OrderForm = ({
           })}
         >
           <Typography>Total do pedido:</Typography>
-          <Typography fontWeight={600}>
+          <Typography
+            fontWeight={600}
+            color={total < 0 ? 'error' : 'textPrimary'}
+          >
             {numberToCurrency({ number: total })}
           </Typography>
+          <Typography>Lucro do pedido:</Typography>
+          <Typography
+            fontWeight={600}
+            color={
+              totalProfit === 0
+                ? 'textPrimary'
+                : totalProfit > 0
+                  ? 'success'
+                  : 'error'
+            }
+          >
+            {numberToCurrency({ number: totalProfit })}
+          </Typography>
         </Stack>
-        <Button variant="contained" onClick={handleSubmit} disabled={isLoading}>
+        <Button
+          variant="contained"
+          onClick={handleSubmit}
+          disabled={isLoading || total <= 0}
+        >
           {isLoading ? <CircularProgress size={20} /> : submitButtonText}
         </Button>
       </Stack>

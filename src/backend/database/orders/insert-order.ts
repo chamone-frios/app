@@ -27,15 +27,21 @@ const insertOrder = async (orderData: InsertOrderInput): Promise<string> => {
     const clientInfo = clientResult.rows[0];
 
     let subtotal = 0;
+    let totalPurchaseCost = 0;
+    let totalProfit = 0;
+
     const orderItems: Array<{
       productInfo: Product;
       quantity: number;
       itemSubtotal: number;
+      unitPurchasePrice: number;
+      unitProfit: number;
+      totalProfitItem: number;
     }> = [];
 
     for (const item of items) {
       const productQuery = `
-        SELECT id, name, description, maker, metric, img, price, stock
+        SELECT id, name, description, maker, metric, img, price, stock, purchase_price, profit_margin
         FROM products
         WHERE id = $1
       `;
@@ -59,14 +65,28 @@ const insertOrder = async (orderData: InsertOrderInput): Promise<string> => {
       const itemSubtotal = parseFloat(productInfo.price) * item.quantity;
       subtotal += itemSubtotal;
 
+      const unitPurchasePrice = productInfo.purchase_price
+        ? parseFloat(productInfo.purchase_price)
+        : 0;
+      const unitProfit = parseFloat(productInfo.price) - unitPurchasePrice;
+      const totalProfitItem = unitProfit * item.quantity;
+
+      totalPurchaseCost += unitPurchasePrice * item.quantity;
+      totalProfit += totalProfitItem;
+
       orderItems.push({
         productInfo,
         quantity: item.quantity,
         itemSubtotal,
+        unitPurchasePrice,
+        unitProfit,
+        totalProfitItem,
       });
     }
 
-    const total = subtotal - (discount || 0) + (tax || 0);
+    const total = subtotal - discount + tax;
+    const profitMarginPercentage =
+      subtotal > 0 ? (totalProfit / subtotal) * 100 : 0;
 
     const orderSql = `
       INSERT INTO orders (
@@ -81,9 +101,12 @@ const insertOrder = async (orderData: InsertOrderInput): Promise<string> => {
         tax,
         total,
         notes,
+        total_purchase_cost,
+        total_profit,
+        profit_margin_percentage,
         created_at
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW())
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, NOW())
       RETURNING *;
     `;
 
@@ -99,11 +122,21 @@ const insertOrder = async (orderData: InsertOrderInput): Promise<string> => {
       tax,
       total,
       notes,
+      totalPurchaseCost,
+      totalProfit,
+      profitMarginPercentage,
     ];
 
     await query({ text: orderSql, values: orderValues });
 
-    for (const { productInfo, quantity, itemSubtotal } of orderItems) {
+    for (const {
+      productInfo,
+      quantity,
+      itemSubtotal,
+      unitPurchasePrice,
+      unitProfit,
+      totalProfitItem,
+    } of orderItems) {
       const itemId = uuidv4();
 
       const itemSql = `
@@ -119,9 +152,12 @@ const insertOrder = async (orderData: InsertOrderInput): Promise<string> => {
           unit_price,
           quantity,
           subtotal,
+          unit_purchase_price,
+          unit_profit,
+          total_profit,
           created_at
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW())
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, NOW())
         RETURNING *;
       `;
 
@@ -137,6 +173,9 @@ const insertOrder = async (orderData: InsertOrderInput): Promise<string> => {
         productInfo.price,
         quantity,
         itemSubtotal,
+        unitPurchasePrice,
+        unitProfit,
+        totalProfitItem,
       ];
 
       await query({ text: itemSql, values: itemValues });
