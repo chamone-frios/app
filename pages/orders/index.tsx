@@ -1,5 +1,6 @@
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
+import { useState } from 'react';
 
 import {
   Stack,
@@ -10,16 +11,52 @@ import {
 } from '@mui/material';
 import { getOrders } from 'src/backend/database';
 import { Order } from 'src/constants/types';
-import { OrderCard } from 'src/frontend/components';
+import { http } from 'src/frontend/api/http';
+import { DeleteModal, OrderCard } from 'src/frontend/components';
 import { useIsNextLoading } from 'src/frontend/hooks';
 
 type OrdersListProps = {
   orders: Order[];
 };
 
-const OrdersList = ({ orders }: OrdersListProps) => {
+const OrdersList = ({ orders: initialOrders }: OrdersListProps) => {
   const router = useRouter();
   const isNextLoading = useIsNextLoading();
+  const [orders, setOrders] = useState<Order[]>(initialOrders);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [orderToDelete, setOrderToDelete] = useState<string | null>(null);
+
+  const handleDeleteClick = (orderId: string) => {
+    setOrderToDelete(orderId);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsDeleteModalOpen(false);
+    setOrderToDelete(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!orderToDelete) return;
+
+    setIsDeleting(true);
+    handleCloseModal();
+    setOrders((currentOrders) =>
+      currentOrders.filter((order) => order.id !== orderToDelete)
+    );
+
+    try {
+      await http.delete(`/api/v1/orders/${orderToDelete}`);
+    } catch (error) {
+      console.error('Erro ao excluir pedido:', error);
+      setOrders(initialOrders);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const isLoading = isNextLoading || isDeleting;
 
   return (
     <Stack spacing={5}>
@@ -40,7 +77,7 @@ const OrdersList = ({ orders }: OrdersListProps) => {
       </Stack>
       <Divider />
       <Stack height="100%" gap={4}>
-        {isNextLoading ? (
+        {isLoading ? (
           <Stack alignItems="center" justifyContent="center" height="300px">
             <CircularProgress />
           </Stack>
@@ -61,9 +98,23 @@ const OrdersList = ({ orders }: OrdersListProps) => {
             </Button>
           </Stack>
         ) : (
-          orders.map((order) => <OrderCard key={order.id} order={order} />)
+          orders.map((order) => (
+            <OrderCard
+              key={order.id}
+              order={order}
+              onDelete={handleDeleteClick}
+            />
+          ))
         )}
       </Stack>
+      <DeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={handleCloseModal}
+        onConfirm={handleConfirmDelete}
+      >
+        <Typography>Deseja realmente excluir este pedido?</Typography>
+        <Typography gutterBottom>Esta ação não pode ser desfeita.</Typography>
+      </DeleteModal>
     </Stack>
   );
 };

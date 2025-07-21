@@ -15,9 +15,12 @@ import { OrderMenu } from './order-menu';
 import { OrderStatusLabel } from './order-status-label';
 import { OrderStatusModal } from './order-status-modal';
 
-export type OrderCardProps = { order: Order };
+export type OrderCardProps = {
+  order: Order;
+  onDelete: (orderId: string) => void;
+};
 
-const OrderCard = ({ order }: OrderCardProps) => {
+const OrderCard = ({ order, onDelete }: OrderCardProps) => {
   const router = useRouter();
   const isClient = useIsClient();
   const [status, setStatus] = useState(order.status);
@@ -31,6 +34,10 @@ const OrderCard = ({ order }: OrderCardProps) => {
       {
         label: 'Atualizar status',
         onClick: () => setIsModalOpen(true),
+      },
+      {
+        label: 'Excluir pedido',
+        onClick: () => onDelete(order.id),
       },
     ],
     [order.id, router]

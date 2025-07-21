@@ -13,8 +13,10 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { getOrder } from 'src/backend/database';
 import { OrderWithItems } from 'src/constants/types';
+import { http } from 'src/frontend/api/http';
 import {
   CardFields,
+  DeleteModal,
   OrderMenu,
   OrderStatusLabel,
   OrderStatusModal,
@@ -30,17 +32,41 @@ const OrderDetails = ({ order }: OrderDetailsProps) => {
   const router = useRouter();
   const isNextLoading = useIsNextLoading();
   const [status, setStatus] = useState(order.status);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isStatusModalOpen, setStatusModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const menuItems = useMemo(
     () => [
       {
         label: 'Atualizar status',
-        onClick: () => setIsModalOpen(true),
+        onClick: () => setStatusModalOpen(true),
+      },
+      {
+        label: 'Excluir pedido',
+        onClick: () => setIsDeleteModalOpen(true),
       },
     ],
     [order.id, router]
   );
+
+  const handleCloseModal = () => {
+    setIsDeleteModalOpen(false);
+  };
+
+  const handleConfirmDelete = async () => {
+    setIsDeleting(true);
+    handleCloseModal();
+
+    try {
+      await http.delete(`/api/v1/orders/${order.id}`);
+      router.push('/orders');
+    } catch (error) {
+      console.error('Erro ao excluir pedido:', error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <Stack spacing={5}>
@@ -51,6 +77,7 @@ const OrderDetails = ({ order }: OrderDetailsProps) => {
           <Button
             variant="contained"
             color="primary"
+            disabled={isDeleting || isNextLoading}
             onClick={() => router.push('/orders')}
           >
             Voltar
@@ -204,11 +231,19 @@ const OrderDetails = ({ order }: OrderDetailsProps) => {
       </Stack>
       <OrderStatusModal
         orderId={order.id}
-        isOpen={isModalOpen}
+        isOpen={isStatusModalOpen}
         currentStatus={status}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => setStatusModalOpen(false)}
         onStatusChange={(newStatus) => setStatus(newStatus)}
       />
+      <DeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={handleCloseModal}
+        onConfirm={handleConfirmDelete}
+      >
+        <Typography>Deseja realmente excluir este pedido?</Typography>
+        <Typography gutterBottom>Esta ação não pode ser desfeita.</Typography>
+      </DeleteModal>
     </Stack>
   );
 };

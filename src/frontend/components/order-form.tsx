@@ -78,7 +78,8 @@ const OrderForm = ({
       if (!product) return acc;
       return (
         acc +
-        (Number(product.price) - Number(product.purchase_price || 0)) * item.quantity
+        (Number(product.price) - Number(product.purchase_price || 0)) *
+          item.quantity
       );
     }, 0);
     return itemsProfit + Number(order.tax) - Number(order.discount);
