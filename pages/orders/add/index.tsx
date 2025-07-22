@@ -46,7 +46,7 @@ const AddOrder = ({ clients, products }: AddOrderProps) => {
     } catch (error) {
       console.error('Erro ao criar pedido:', error);
       setStatus('error');
-      setErrorMessage(error.response?.data?.message || 'Erro ao criar pedido.');
+      setErrorMessage(error.data?.error || 'Erro ao criar pedido.');
       setIsSubmitting(false);
     }
   };
