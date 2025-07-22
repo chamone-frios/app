@@ -346,7 +346,7 @@ const OrderForm = ({
       </Stack>
       <Stack alignItems="flex-end" gap={3} sx={{ paddingTop: 4 }}>
         <Stack
-          direction="row"
+          width="100%"
           padding={3}
           gap={3}
           sx={(theme) => ({
@@ -354,26 +354,30 @@ const OrderForm = ({
             borderRadius: theme.spacing(3),
           })}
         >
-          <Typography>Total do pedido:</Typography>
-          <Typography
-            fontWeight={600}
-            color={total < 0 ? 'error' : 'textPrimary'}
-          >
-            {numberToCurrency({ number: total })}
-          </Typography>
-          <Typography>Lucro do pedido:</Typography>
-          <Typography
-            fontWeight={600}
-            color={
-              totalProfit === 0
-                ? 'textPrimary'
-                : totalProfit > 0
-                  ? 'success'
-                  : 'error'
-            }
-          >
-            {numberToCurrency({ number: totalProfit })}
-          </Typography>
+          <Stack direction="row" justifyContent="space-between">
+            <Typography>Total do pedido:</Typography>
+            <Typography
+              fontWeight={600}
+              color={total < 0 ? 'error' : 'textPrimary'}
+            >
+              {numberToCurrency({ number: total })}
+            </Typography>
+          </Stack>
+          <Stack direction="row" justifyContent="space-between">
+            <Typography>Lucro do pedido:</Typography>
+            <Typography
+              fontWeight={600}
+              color={
+                totalProfit === 0
+                  ? 'textPrimary'
+                  : totalProfit > 0
+                    ? 'success'
+                    : 'error'
+              }
+            >
+              {numberToCurrency({ number: totalProfit })}
+            </Typography>
+          </Stack>
         </Stack>
         <Button
           variant="contained"

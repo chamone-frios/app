@@ -27,9 +27,7 @@ const AddClient = () => {
     } catch (error) {
       console.error('Erro ao adicionar cliente:', error);
       setStatus('error');
-      setErrorMessage(
-        error.response?.data?.message || 'Erro ao adicionar cliente.'
-      );
+      setErrorMessage(error.data?.error || 'Erro ao adicionar cliente.');
       setIsSubmitting(false);
     }
   };

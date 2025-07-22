@@ -31,9 +31,7 @@ const AddProduct = () => {
     } catch (error) {
       console.error('Erro ao adicionar produto:', error);
       setStatus('error');
-      setErrorMessage(
-        error.response?.data?.message || 'Erro ao adicionar produto.'
-      );
+      setErrorMessage(error.data?.error || 'Erro ao adicionar produto.');
       setIsSubmitting(false);
     }
   };
