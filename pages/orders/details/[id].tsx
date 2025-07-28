@@ -17,7 +17,7 @@ import { http } from 'src/frontend/api/http';
 import {
   CardFields,
   DeleteModal,
-  OrderMenu,
+  Menu,
   OrderStatusLabel,
   OrderStatusModal,
 } from 'src/frontend/components';
@@ -104,7 +104,7 @@ const OrderDetails = ({ order }: OrderDetailsProps) => {
                 <Typography variant="h6" fontWeight={600}>
                   {`Pedido de ${order.client_name}`}
                 </Typography>
-                <OrderMenu id={order.id} items={menuItems} />
+                <Menu id={order.id} items={menuItems} />
               </Stack>
               {order.notes && (
                 <CardFields label="Observações:" value={order.notes} />

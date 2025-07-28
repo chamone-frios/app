@@ -11,7 +11,7 @@ import { numberToCurrency } from 'src/utils';
 import { useIsClient } from '../hooks';
 
 import { CardFields } from './card-fields';
-import { OrderMenu } from './order-menu';
+import { Menu } from './menu';
 import { OrderStatusLabel } from './order-status-label';
 import { OrderStatusModal } from './order-status-modal';
 
@@ -62,7 +62,7 @@ const OrderCard = ({ order, onDelete }: OrderCardProps) => {
                 {`Pedido de ${order.client_name}`}
               </Typography>
             </Stack>
-            <OrderMenu id={order.id} items={menuItems} />
+            <Menu id={order.id} items={menuItems} />
           </Stack>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
             {order.notes}

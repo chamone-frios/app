@@ -1,9 +1,11 @@
-import { Delete, Edit } from '@mui/icons-material';
+import { useMemo } from 'react';
+
 import { Card, CardContent, Typography } from '@mui/material';
 import { Stack } from '@mui/system';
 import { Client } from 'src/constants/types';
 
 import { CardFields } from './card-fields';
+import { Menu } from './menu';
 
 type ClientCardProps = {
   client: Client;
@@ -12,6 +14,20 @@ type ClientCardProps = {
 };
 
 const ClientCard = ({ client, onDelete, onEdit }: ClientCardProps) => {
+  const menuItems = useMemo(
+    () => [
+      {
+        label: 'Editar',
+        onClick: () => onEdit(client.id),
+      },
+      {
+        label: 'Excluir',
+        onClick: () => onDelete(client.id),
+      },
+    ],
+    [client.id, onDelete, onEdit]
+  );
+
   return (
     <Card key={client.id}>
       <CardContent>
@@ -21,24 +37,7 @@ const ClientCard = ({ client, onDelete, onEdit }: ClientCardProps) => {
               {client.name}
             </Typography>
           </Stack>
-          <Stack
-            gap={2}
-            sx={{
-              marginTop: 2,
-              justifySelf: 'center',
-              alignItems: 'center',
-              width: 'fit-content',
-            }}
-          >
-            <Stack direction="row" gap={4}>
-              <Stack onClick={() => onEdit(client.id)}>
-                <Edit fontSize="small" />
-              </Stack>
-              <Stack onClick={() => onDelete(client.id)}>
-                <Delete fontSize="small" />
-              </Stack>
-            </Stack>
-          </Stack>
+          <Menu id={client.id} items={menuItems} />
         </Stack>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
           {client.establishment_type}

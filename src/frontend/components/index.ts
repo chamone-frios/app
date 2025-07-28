@@ -4,9 +4,9 @@ import { ClientForm } from './client-form';
 import { DeleteModal } from './delete-modal';
 import { Intersperse } from './intersperse';
 import { Loading } from './loading';
+import { Menu } from './menu';
 import { OrderCard } from './order-card';
 import { OrderForm } from './order-form';
-import { OrderMenu } from './order-menu';
 import { OrderStatusLabel } from './order-status-label';
 import { OrderStatusModal } from './order-status-modal';
 import { PageWrapper } from './page-wrapper/page-wrapper';
@@ -17,7 +17,7 @@ export {
   Loading,
   OrderForm,
   OrderCard,
-  OrderMenu,
+  Menu,
   CardFields,
   ClientCard,
   ClientForm,
