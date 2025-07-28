@@ -1,15 +1,15 @@
 import { useState } from 'react';
 
 import { Settings } from '@mui/icons-material';
-import { IconButton, Menu, MenuItem } from '@mui/material';
+import { IconButton, Menu as MUIMenu, MenuItem } from '@mui/material';
 import { Stack } from '@mui/system';
 
-export type OrderMenuProps = {
+export type MenuProps = {
   id: string;
   items: { label: string; onClick: () => void }[];
 };
 
-const OrderMenu = ({ id, items }: OrderMenuProps) => {
+const Menu = ({ id, items }: MenuProps) => {
   const [dropDownElement, setDropDownElement] = useState<null | HTMLElement>(
     null
   );
@@ -29,7 +29,7 @@ const OrderMenu = ({ id, items }: OrderMenuProps) => {
       >
         <Settings fontSize="small" color="primary" />
       </IconButton>
-      <Menu
+      <MUIMenu
         id={`order-card-menu-${id}`}
         anchorEl={dropDownElement}
         open={Boolean(dropDownElement)}
@@ -45,9 +45,9 @@ const OrderMenu = ({ id, items }: OrderMenuProps) => {
             {item.label}
           </MenuItem>
         ))}
-      </Menu>
+      </MUIMenu>
     </Stack>
   );
 };
 
-export { OrderMenu };
+export { Menu };

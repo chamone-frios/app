@@ -6,14 +6,12 @@ import {
   RemoveCircleOutlineRounded,
 } from '@mui/icons-material';
 import {
+  Autocomplete,
   Button,
   CircularProgress,
   Divider,
   FormControl,
   IconButton,
-  InputLabel,
-  MenuItem,
-  Select,
   Stack,
   TextField,
   Typography,
@@ -59,6 +57,24 @@ const OrderForm = ({
   const [order, setOrder] =
     useState<Omit<CreateOrderRequest, 'id'>>(initialState);
   const [errors, setErrors] = useState<Errors>({ client_id: '', items: [] });
+
+  const clientOptions = useMemo(
+    () =>
+      clients.map((client) => ({
+        label: client.name,
+        id: client.id,
+      })),
+    [clients]
+  );
+
+  const productOptions = useMemo(
+    () =>
+      products.map((product) => ({
+        label: `${product.name} (${numberToCurrency({ number: product.price })})`,
+        id: product.id,
+      })),
+    [products]
+  );
 
   const total = useMemo(
     () =>
@@ -123,10 +139,11 @@ const OrderForm = ({
 
   const handleNumberInputChange = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    callback: (value: string) => void
+    callback: (value: string) => void,
+    { decimalPlaces = 2 } = {}
   ) => {
     const value = event.target.value;
-    const formattedValue = formatDecimalInputs(value);
+    const formattedValue = formatDecimalInputs({ value, decimalPlaces });
     if (!formattedValue) return;
 
     callback(formattedValue);
@@ -194,24 +211,18 @@ const OrderForm = ({
       <Typography variant="h6">Informações do pedido</Typography>
       <Stack gap={6}>
         <FormControl fullWidth>
-          <InputLabel id="client">Cliente</InputLabel>
-          <Select
-            required
-            fullWidth
-            id="client"
-            label="client"
-            title="client"
-            name="client"
-            value={order.client_id}
-            onChange={(e) => onClientChange(e.target.value)}
-            error={!!errors.client_id}
-          >
-            {clients.map((client) => (
-              <MenuItem key={client.id} value={client.id}>
-                {client.name}
-              </MenuItem>
-            ))}
-          </Select>
+          <Autocomplete
+            noOptionsText="Nenhum cliente encontrado"
+            options={clientOptions}
+            onChange={(_, value) => onClientChange(value.id)}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Cliente"
+                error={!!errors.client_id}
+              />
+            )}
+          />
           {errors.client_id && (
             <Typography color="error" variant="caption">
               {errors.client_id}
@@ -243,39 +254,36 @@ const OrderForm = ({
                       key={`product-item-${index}`}
                     >
                       <FormControl fullWidth>
-                        <InputLabel id={`product-${index}`}>Produto</InputLabel>
-                        <Select
-                          required
-                          fullWidth
+                        <Autocomplete
                           id={`product-${index}`}
-                          label={`product-${index}`}
-                          title={`product-${index}`}
-                          name={`product-${index}`}
-                          value={item.product_id}
-                          onChange={(e) =>
-                            onOrderItemChange(
-                              e.target.value,
-                              'product_id',
-                              index
-                            )
+                          noOptionsText="Nenhum produto encontrado"
+                          options={productOptions}
+                          onChange={(_, value) =>
+                            onOrderItemChange(value.id, 'product_id', index)
                           }
-                          error={!!errors.items?.[index]?.product_id}
-                        >
-                          {products.map((product) => (
-                            <MenuItem key={product.id} value={product.id}>
-                              {`${product.name} (${numberToCurrency({ number: product.price })})`}
-                            </MenuItem>
-                          ))}
-                        </Select>
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label="Produto"
+                              error={!!errors.items?.[index]?.product_id}
+                            />
+                          )}
+                        />
                       </FormControl>
                       <TextField
                         required
                         type="number"
                         label="Quantidade"
-                        value={item.quantity || '0.00'}
+                        value={formatDecimalInputs({
+                          value: item.quantity.toString() || '0.000',
+                          decimalPlaces: 3,
+                        })}
                         onChange={(e) =>
-                          handleNumberInputChange(e, (value) =>
-                            onOrderItemChange(value, 'quantity', index)
+                          handleNumberInputChange(
+                            e,
+                            (value) =>
+                              onOrderItemChange(value, 'quantity', index),
+                            { decimalPlaces: 3 }
                           )
                         }
                         error={!!errors.items?.[index]?.quantity}

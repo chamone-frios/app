@@ -19,6 +19,7 @@ describe('PATCH /api/v1/products/[id]', () => {
       metric: ProductMetric.UNIT,
       stock: 10.5,
       price: 99.99,
+      purchase_price: 0,
     };
 
     const createResponse = await fetch(`${apiUrl}/api/v1/products`, {
@@ -61,6 +62,7 @@ describe('PATCH /api/v1/products/[id]', () => {
       metric: ProductMetric.KG,
       stock: 20.5,
       price: 149.99,
+      purchase_price: 0,
     };
 
     const response = await fetch(`${apiUrl}/api/v1/products/${nonExistentId}`, {
@@ -113,6 +115,7 @@ describe('PATCH /api/v1/products/[id]', () => {
       metric: ProductMetric.KG,
       stock: 20.75,
       price: 149.99,
+      purchase_price: 0,
     };
 
     const response = await fetch(
@@ -253,6 +256,7 @@ describe('PATCH /api/v1/products/[id]', () => {
       metric: ProductMetric.UNIT,
       stock: 10,
       price: 25.0,
+      purchase_price: 0,
     };
 
     await fetch(`${apiUrl}/api/v1/products/${createdProductId}`, {
@@ -343,6 +347,7 @@ describe('PATCH /api/v1/products/[id]', () => {
       metric: ProductMetric.KG,
       stock: 12.75,
       price: 30.5,
+      purchase_price: 0,
     };
 
     const response = await fetch(
@@ -456,5 +461,41 @@ describe('PATCH /api/v1/products/[id]', () => {
     const data = await response.json();
     expect(data.error).toBe('Invalid data');
     expect(data.details.length).toBeGreaterThan(0);
+  });
+
+  it('should update product with 3 decimal places in stock field', async () => {
+    const updatedProduct: Omit<Product, 'id' | 'profit_margin'> = {
+      img: 'three-decimals-patch.jpg',
+      name: 'Updated Product 3 Decimals',
+      description: 'Updated with 3 decimal places in stock',
+      maker: 'Decimal Patch Maker',
+      metric: ProductMetric.L,
+      stock: 8.625,
+      price: 25.0,
+      purchase_price: 15.0,
+    };
+
+    const response = await fetch(
+      `${apiUrl}/api/v1/products/${createdProductId}`,
+      {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedProduct),
+      }
+    );
+
+    expect(response.status).toBe(200);
+
+    const getResponse = await fetch(
+      `${apiUrl}/api/v1/products/${createdProductId}`
+    );
+    const getData = await getResponse.json();
+
+    expect(getData.product.stock).toBe(8.625);
+    expect(getData.product.stock.toString()).toMatch(/^\d+\.\d{3}$/);
+
+    const decimalPlaces = (getData.product.stock.toString().split('.')[1] || '')
+      .length;
+    expect(decimalPlaces).toBe(3);
   });
 });

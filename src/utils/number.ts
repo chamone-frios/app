@@ -19,15 +19,26 @@ export function numberToCurrency({
   return currencyString;
 }
 
-export function formatDecimalInputs(value: string): string | undefined {
+export function formatDecimalInputs({
+  value,
+  decimalPlaces = 2,
+}: {
+  value: string;
+  decimalPlaces?: number;
+}): string | undefined {
   if (value.length > MAX_INPUT_CHARACTERS) return;
 
-  const numericValue = value.replace(/\D/g, '').padStart(3, '0');
-  const formattedValue = `${numericValue.slice(0, -2)}.${numericValue.slice(-2)}`;
+  const numericValue = value
+    .replace(/\D/g, '')
+    .padStart(decimalPlaces + 1, '0');
+  const formattedValue = `${numericValue.slice(0, -decimalPlaces)}.${numericValue.slice(-decimalPlaces)}`;
+
+  const zeroPattern = new RegExp(`^${'0'.repeat(decimalPlaces)}\\.`, '');
+  const formatPattern = new RegExp(`^0(\\d+\\.\\d{${decimalPlaces}})$`, '');
 
   const parsedValue = formattedValue
-    .replace(/^00\./, '0.')
-    .replace(/^0(\d+\.\d{2})$/, '$1');
+    .replace(zeroPattern, '0.')
+    .replace(formatPattern, '$1');
 
   return parsedValue;
 }

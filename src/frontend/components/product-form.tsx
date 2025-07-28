@@ -53,7 +53,10 @@ const ProductForm = ({
     key: keyof Product
   ) => {
     const value = event.target.value;
-    const formattedValue = formatDecimalInputs(value);
+    const formattedValue = formatDecimalInputs({
+      value,
+      decimalPlaces: key === 'stock' ? 3 : 2,
+    });
     if (!formattedValue) return;
 
     onValueChange(formattedValue, key);
@@ -201,7 +204,10 @@ const ProductForm = ({
         <TextField
           type="number"
           label={`${getMetricLabel(product.metric)} no estoque`}
-          value={product.stock || '0.00'}
+          value={formatDecimalInputs({
+            value: product.stock.toString() || '0.000',
+            decimalPlaces: 3,
+          })}
           onChange={(event) => handleNumberInputChange(event, 'stock')}
           error={!!errors.stock}
           helperText={errors.stock}
