@@ -236,4 +236,45 @@ describe('GET /api/v1/products/[id]', () => {
     expect(product.purchase_price).not.toBeNull();
     expect(product.profit_margin).not.toBeNull();
   });
+
+  it('should return product with 3 decimal places precision in stock field', async () => {
+    const productWith3Decimals: Omit<Product, 'id' | 'profit_margin'> = {
+      name: 'Test Product 3 Decimals Get ID',
+      img: 'three-decimals-get-id.jpg',
+      description: 'Product with 3 decimal places for get by ID test',
+      maker: 'Decimal Get ID Maker',
+      metric: ProductMetric.G,
+      stock: 7.875,
+      price: 40.0,
+      purchase_price: 25.0,
+    };
+
+    const createResponse = await fetch(`${apiUrl}/api/v1/products`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(productWith3Decimals),
+    });
+
+    const createData = await createResponse.json();
+    const productId = createData.id;
+
+    const response = await fetch(`${apiUrl}/api/v1/products/${productId}`);
+
+    expect(response.status).toBe(200);
+
+    const data = await response.json();
+    const product = data.product;
+
+    expect(product.stock).toBe(7.875);
+    expect(typeof product.stock).toBe('number');
+    expect(product.stock.toString()).toMatch(/^\d+\.\d{3}$/);
+
+    const stockStr = product.stock.toString();
+    const decimalPart = stockStr.split('.')[1];
+    expect(decimalPart).toBeDefined();
+    expect(decimalPart.length).toBe(3);
+
+    expect(Number.isFinite(product.stock)).toBe(true);
+    expect(product.stock).toBeCloseTo(7.875, 3);
+  });
 });

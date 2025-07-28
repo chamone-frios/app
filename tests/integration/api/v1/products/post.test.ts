@@ -442,4 +442,37 @@ describe('POST /api/v1/products', () => {
     expect(responseData.success).toBe(true);
     expect(responseData.id).toBeDefined();
   });
+
+  it('should create a product with 3 decimal places in stock field', async () => {
+    const productData: Omit<Product, 'id' | 'profit_margin'> = {
+      name: 'Test Product 3 Decimals Stock',
+      img: 'three-decimals.jpg',
+      description: 'Product with 3 decimal places in stock',
+      maker: 'Decimal Maker',
+      metric: ProductMetric.KG,
+      stock: 12.125,
+      price: 30.0,
+      purchase_price: 20.0,
+    };
+
+    const response = await fetch(`${apiUrl}/api/v1/products`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(productData),
+    });
+
+    expect(response.status).toBe(201);
+
+    const responseData = await response.json();
+    expect(responseData.success).toBe(true);
+
+    const getResponse = await fetch(
+      `${apiUrl}/api/v1/products/${responseData.id}`
+    );
+    const productResponse = await getResponse.json();
+    const createdProduct = productResponse.product;
+
+    expect(createdProduct.stock).toBe(12.125);
+    expect(createdProduct.stock.toString()).toMatch(/^\d+\.\d{3}$/);
+  });
 });

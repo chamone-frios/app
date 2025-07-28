@@ -123,10 +123,11 @@ const OrderForm = ({
 
   const handleNumberInputChange = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    callback: (value: string) => void
+    callback: (value: string) => void,
+    { decimalPlaces = 2 } = {}
   ) => {
     const value = event.target.value;
-    const formattedValue = formatDecimalInputs(value);
+    const formattedValue = formatDecimalInputs({ value, decimalPlaces });
     if (!formattedValue) return;
 
     callback(formattedValue);
@@ -272,10 +273,16 @@ const OrderForm = ({
                         required
                         type="number"
                         label="Quantidade"
-                        value={item.quantity || '0.00'}
+                        value={formatDecimalInputs({
+                          value: item.quantity.toString() || '0.000',
+                          decimalPlaces: 3,
+                        })}
                         onChange={(e) =>
-                          handleNumberInputChange(e, (value) =>
-                            onOrderItemChange(value, 'quantity', index)
+                          handleNumberInputChange(
+                            e,
+                            (value) =>
+                              onOrderItemChange(value, 'quantity', index),
+                            { decimalPlaces: 3 }
                           )
                         }
                         error={!!errors.items?.[index]?.quantity}
