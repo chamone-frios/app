@@ -19,6 +19,7 @@ describe('PATCH /api/v1/products/[id]', () => {
       metric: ProductMetric.UNIT,
       stock: 10.5,
       price: 99.99,
+      purchase_price: 0,
     };
 
     const createResponse = await fetch(`${apiUrl}/api/v1/products`, {
@@ -61,6 +62,7 @@ describe('PATCH /api/v1/products/[id]', () => {
       metric: ProductMetric.KG,
       stock: 20.5,
       price: 149.99,
+      purchase_price: 0,
     };
 
     const response = await fetch(`${apiUrl}/api/v1/products/${nonExistentId}`, {
@@ -113,6 +115,7 @@ describe('PATCH /api/v1/products/[id]', () => {
       metric: ProductMetric.KG,
       stock: 20.75,
       price: 149.99,
+      purchase_price: 0,
     };
 
     const response = await fetch(
@@ -253,6 +256,7 @@ describe('PATCH /api/v1/products/[id]', () => {
       metric: ProductMetric.UNIT,
       stock: 10,
       price: 25.0,
+      purchase_price: 0,
     };
 
     await fetch(`${apiUrl}/api/v1/products/${createdProductId}`, {
@@ -343,6 +347,7 @@ describe('PATCH /api/v1/products/[id]', () => {
       metric: ProductMetric.KG,
       stock: 12.75,
       price: 30.5,
+      purchase_price: 0,
     };
 
     const response = await fetch(

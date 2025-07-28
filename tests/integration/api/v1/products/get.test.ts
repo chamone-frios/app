@@ -31,6 +31,7 @@ describe('GET /api/v1/products', () => {
         metric: ProductMetric.UNIT,
         stock: 10.5,
         price: 100.5,
+        purchase_price: 80.0,
       },
       {
         name: 'Test Product 2',
@@ -311,6 +312,7 @@ describe('GET /api/v1/products', () => {
       metric: ProductMetric.UNIT,
       stock: 15,
       price: 50.0,
+      purchase_price: 0,
     };
 
     const createResponse = await fetch(`${apiUrl}/api/v1/products`, {
@@ -330,7 +332,7 @@ describe('GET /api/v1/products', () => {
 
     expect(createdProduct).toBeDefined();
     expect(createdProduct.purchase_price).toBe(0);
-    expect(createdProduct.profit_margin).toBe(0);
+    expect(createdProduct.profit_margin).toBe(50);
   });
 
   it('should handle products with zero purchase_price correctly', async () => {

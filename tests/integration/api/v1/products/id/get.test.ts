@@ -19,6 +19,7 @@ describe('GET /api/v1/products/[id]', () => {
       metric: ProductMetric.UNIT,
       stock: 10.5,
       price: 99.99,
+      purchase_price: 50,
     };
 
     const createResponse = await fetch(`${apiUrl}/api/v1/products`, {
@@ -154,8 +155,8 @@ describe('GET /api/v1/products/[id]', () => {
     const data = await response.json();
     const product = data.product;
 
-    expect(product.purchase_price).toBe(0);
-    expect(product.profit_margin).toBe(0);
+    expect(product.purchase_price).toBe(50);
+    expect(product.profit_margin).toBe(49.99);
   });
 
   it('should return correct values from updated database schema', async () => {

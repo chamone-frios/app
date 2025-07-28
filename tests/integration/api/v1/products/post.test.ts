@@ -18,6 +18,7 @@ describe('POST /api/v1/products', () => {
       metric: ProductMetric.UNIT,
       stock: 10.5,
       price: 100.99,
+      purchase_price: 0,
     };
 
     const response = await fetch(`${apiUrl}/api/v1/products`, {
@@ -50,7 +51,7 @@ describe('POST /api/v1/products', () => {
     expect(createdProduct.stock).toBe(productData.stock);
     expect(createdProduct.price).toBe(productData.price);
     expect(createdProduct.purchase_price).toBe(0);
-    expect(createdProduct.profit_margin).toBe(0);
+    expect(createdProduct.profit_margin).toBe(100.99);
   });
 
   it('should create a product with purchase_price and calculate profit_margin', async () => {
@@ -129,6 +130,7 @@ describe('POST /api/v1/products', () => {
       metric: ProductMetric.KG,
       stock: 12.75,
       price: 30.5,
+      purchase_price: 0,
     };
 
     const response = await fetch(`${apiUrl}/api/v1/products`, {
@@ -398,6 +400,7 @@ describe('POST /api/v1/products', () => {
       metric: ProductMetric.UNIT,
       stock: 10,
       price: 50.0,
+      purchase_price: 0,
     };
 
     const response = await fetch(`${apiUrl}/api/v1/products`, {
