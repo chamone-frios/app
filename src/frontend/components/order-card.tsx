@@ -8,7 +8,7 @@ import { format } from 'date-fns';
 import { Order } from 'src/constants/types';
 import { numberToCurrency } from 'src/utils';
 
-import { useIsClient } from '../hooks';
+import { useIsClient, useReceipt } from '../hooks';
 
 import { CardFields } from './card-fields';
 import { Menu } from './menu';
@@ -23,6 +23,7 @@ export type OrderCardProps = {
 const OrderCard = ({ order, onDelete }: OrderCardProps) => {
   const router = useRouter();
   const isClient = useIsClient();
+  const { handleDownloadReceipt } = useReceipt({ order });
   const [status, setStatus] = useState(order.status);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const menuItems = useMemo(
@@ -38,6 +39,10 @@ const OrderCard = ({ order, onDelete }: OrderCardProps) => {
       {
         label: 'Excluir pedido',
         onClick: () => onDelete(order.id),
+      },
+      {
+        label: 'Baixar recibo',
+        onClick: () => handleDownloadReceipt(),
       },
     ],
     [order.id, router]
