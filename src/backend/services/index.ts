@@ -7,6 +7,7 @@ import { createOrder } from './orders/create-order';
 import { deleteOrderById } from './orders/delete-order';
 import { getClientOrders } from './orders/get-client-orders';
 import { getOrderById } from './orders/get-order';
+import { getReceipt } from './orders/get-receipt';
 import { listOrders } from './orders/list-orders';
 import { updateOrderStatus } from './orders/update-order-status';
 import { createProduct } from './products/create-product';
@@ -37,4 +38,5 @@ export {
   getOrderById,
   getClientOrders,
   updateOrderStatus,
+  getReceipt,
 };

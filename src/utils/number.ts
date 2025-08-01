@@ -19,6 +19,13 @@ export function numberToCurrency({
   return currencyString;
 }
 
+export function formatNumber({ number }: { number: number }) {
+  return new Intl.NumberFormat('pt-BR', {
+    maximumFractionDigits: 3,
+    minimumFractionDigits: 3,
+  }).format(number);
+}
+
 export function formatDecimalInputs({
   value,
   decimalPlaces = 2,

@@ -4,7 +4,7 @@ import { Card, CardContent, Typography } from '@mui/material';
 import { Stack } from '@mui/system';
 import { Product } from 'src/constants/types';
 import { getMetricLabel } from 'src/utils';
-import { numberToCurrency } from 'src/utils/number';
+import { formatNumber, numberToCurrency } from 'src/utils/number';
 
 import { CardFields } from './card-fields';
 import { Menu } from './menu';
@@ -52,7 +52,7 @@ const ProductCard = ({ product, onDelete, onEdit }: ProductCardProps) => {
         <CardFields label="Fabricante:" value={product.maker} />
         <CardFields
           label="Estoque:"
-          value={`${product.stock} ${getMetricLabel(product.metric)}`}
+          value={`${formatNumber({ number: product.stock })} ${getMetricLabel(product.metric)}`}
         />
         <CardFields
           label="Preço de venda:"

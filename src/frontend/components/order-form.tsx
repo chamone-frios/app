@@ -289,6 +289,11 @@ const OrderForm = ({
                         error={!!errors.items?.[index]?.quantity}
                       />
                       <IconButton
+                        sx={{
+                          alignSelf: 'center',
+                          width: 'fit-content',
+                          height: 'fit-content',
+                        }}
                         onClick={() =>
                           setOrder((prev) => ({
                             ...prev,
@@ -315,6 +320,11 @@ const OrderForm = ({
             </Stack>
           </Stack>
           <IconButton
+            sx={{
+              alignSelf: 'center',
+              width: 'fit-content',
+              height: 'fit-content',
+            }}
             onClick={() =>
               setOrder((prev) => ({
                 ...prev,

@@ -21,8 +21,9 @@ import {
   OrderStatusLabel,
   OrderStatusModal,
 } from 'src/frontend/components';
-import { useIsNextLoading } from 'src/frontend/hooks';
-import { numberToCurrency } from 'src/utils';
+import { useIsNextLoading, useReceipt } from 'src/frontend/hooks';
+import { getMetricLabel, numberToCurrency } from 'src/utils';
+import { formatNumber } from 'src/utils/number';
 
 type OrderDetailsProps = {
   order: OrderWithItems;
@@ -31,6 +32,7 @@ type OrderDetailsProps = {
 const OrderDetails = ({ order }: OrderDetailsProps) => {
   const router = useRouter();
   const isNextLoading = useIsNextLoading();
+  const { isGeneratingPDF, handleDownloadReceipt } = useReceipt({ order });
   const [status, setStatus] = useState(order.status);
   const [isStatusModalOpen, setStatusModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -45,6 +47,10 @@ const OrderDetails = ({ order }: OrderDetailsProps) => {
       {
         label: 'Excluir pedido',
         onClick: () => setIsDeleteModalOpen(true),
+      },
+      {
+        label: 'Baixar recibo',
+        onClick: () => handleDownloadReceipt(),
       },
     ],
     [order.id, router]
@@ -68,6 +74,8 @@ const OrderDetails = ({ order }: OrderDetailsProps) => {
     }
   };
 
+  const isLoading = isNextLoading || isDeleting || isGeneratingPDF;
+
   return (
     <Stack spacing={5}>
       <Stack spacing={4}>
@@ -77,7 +85,7 @@ const OrderDetails = ({ order }: OrderDetailsProps) => {
           <Button
             variant="contained"
             color="primary"
-            disabled={isDeleting || isNextLoading}
+            disabled={isLoading}
             onClick={() => router.push('/orders')}
           >
             Voltar
@@ -152,18 +160,14 @@ const OrderDetails = ({ order }: OrderDetailsProps) => {
                   locale: ptBR,
                 })}
               />
-              {order.tax > 0 && (
-                <CardFields
-                  label="Taxas:"
-                  value={numberToCurrency({ number: order.tax })}
-                />
-              )}
-              {order.discount > 0 && (
-                <CardFields
-                  label="Descontos:"
-                  value={numberToCurrency({ number: order.discount })}
-                />
-              )}
+              <CardFields
+                label="Taxas adicionais:"
+                value={numberToCurrency({ number: order.tax })}
+              />
+              <CardFields
+                label="Descontos:"
+                value={numberToCurrency({ number: order.discount })}
+              />
               <CardFields
                 label="Lucro total:"
                 valueProps={{ color: 'success' }}
@@ -193,7 +197,10 @@ const OrderDetails = ({ order }: OrderDetailsProps) => {
                         <Typography fontWeight={600}>
                           {item.product_name}
                         </Typography>
-                        <CardFields label="Quantidade:" value={item.quantity} />
+                        <CardFields
+                          label="Quantidade:"
+                          value={`${formatNumber({ number: item.quantity })} ${getMetricLabel(item.product_metric)}`}
+                        />
                         <CardFields
                           label="Lucro total:"
                           valueProps={{ color: 'success' }}
