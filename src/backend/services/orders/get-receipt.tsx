@@ -3,6 +3,7 @@ import { NextApiResponse } from 'next';
 
 import { format } from 'date-fns';
 import { getOrder } from 'src/backend/database';
+import { OrderWithItems } from 'src/constants/types';
 
 import { Receipt } from './receipt';
 
@@ -15,7 +16,17 @@ const getReceipt = async (orderId: string, res: NextApiResponse) => {
       });
     }
 
-    const order = await getOrder({ id: orderId });
+    let order: OrderWithItems;
+
+    try {
+      order = await getOrder({ id: orderId });
+    } catch (dbError) {
+      console.error('Erro ao buscar ordem:', dbError);
+      return res.status(404).json({
+        error: 'Order not found',
+        message: 'Pedido não encontrado',
+      });
+    }
 
     if (!order) {
       return res.status(404).json({
