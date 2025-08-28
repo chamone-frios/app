@@ -27,6 +27,12 @@ const createProduct = async (req: NextApiRequest, res: NextApiResponse) => {
       });
     }
 
+    if (typeof body.label !== 'number') {
+      return res.status(400).json({
+        error: 'Invalid label value',
+      });
+    }
+
     if (typeof body.stock !== 'number' || body.stock < 0) {
       return res.status(400).json({
         error: 'Stock must be a non-negative number',

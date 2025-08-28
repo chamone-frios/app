@@ -1,4 +1,9 @@
-import { CreateOrderRequest, ProductMetric } from 'src/constants/types';
+import {
+  CreateOrderRequest,
+  Product,
+  ProductLabel,
+  ProductMetric,
+} from 'src/constants/types';
 import { waitForAllServices } from 'tests/orchestrator';
 import { getApiEndpoint } from 'tests/utils';
 
@@ -30,12 +35,16 @@ describe('GET /api/v1/orders/receipt/[id]', () => {
     const clientData = await clientResponse.json();
     testClientId = clientData.id;
 
-    const productToCreate = {
+    const productToCreate: Omit<
+      Product,
+      'id' | 'profit_margin' | 'purchase_price'
+    > = {
       name: 'Test Product Receipt',
       img: 'test-receipt-product.jpg',
       description: 'Product for testing receipt generation',
       maker: 'Receipt Test Maker',
       metric: ProductMetric.UNIT,
+      label: ProductLabel.DAIRY,
       stock: 100.0,
       price: 50.0,
     };
@@ -49,12 +58,13 @@ describe('GET /api/v1/orders/receipt/[id]', () => {
     const productData = await productResponse.json();
     testProductId = productData.id;
 
-    const productWithProfitToCreate = {
+    const productWithProfitToCreate: Omit<Product, 'id' | 'profit_margin'> = {
       name: 'Test Product Receipt With Profit',
       img: 'test-receipt-profit.jpg',
       description: 'Product with profit for receipt testing',
       maker: 'Profit Receipt Maker',
       metric: ProductMetric.KG,
+      label: ProductLabel.MEATS,
       stock: 50.0,
       price: 80.0,
       purchase_price: 50.0,

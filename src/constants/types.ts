@@ -19,11 +19,11 @@ export type Product = {
   description: string;
   maker: string;
   metric: ProductMetric;
+  label: ProductLabel;
   stock: number;
   price: number;
   purchase_price: number;
   profit_margin: number;
-  label?: ProductLabel;
 };
 
 export type GetProductsResponse = {
