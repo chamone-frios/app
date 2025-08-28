@@ -4,14 +4,17 @@ import { getApiEndpoint } from 'tests/utils';
 import {
   CreateOrderRequest,
   ProductMetric,
+  ProductLabel,
 } from '../../../../../../src/constants/types';
 
 describe('GET /api/v1/orders/[id]', () => {
   let createdOrderId: string;
   let createdOrderWithProfitId: string;
+  let createdOrderWithLabelId: string;
   let testClientId: string;
   let testProductId: string;
   let testProductWithProfitId: string;
+  let testProductWithLabelId: string;
   const apiUrl = getApiEndpoint();
 
   beforeAll(async () => {
@@ -39,8 +42,10 @@ describe('GET /api/v1/orders/[id]', () => {
       description: 'Product for testing order get by ID',
       maker: 'Test Maker',
       metric: ProductMetric.UNIT,
+      label: ProductLabel.DAIRY,
       stock: 50.5,
       price: 75.5,
+      purchase_price: 0,
     };
 
     const productResponse = await fetch(`${apiUrl}/api/v1/products`, {
@@ -58,6 +63,7 @@ describe('GET /api/v1/orders/[id]', () => {
       description: 'Product with profit for testing order get by ID',
       maker: 'Profit Maker',
       metric: ProductMetric.KG,
+      label: ProductLabel.MEATS,
       stock: 25.75,
       price: 100.0,
       purchase_price: 60.0,
@@ -71,6 +77,27 @@ describe('GET /api/v1/orders/[id]', () => {
 
     const productWithProfitData = await productWithProfitResponse.json();
     testProductWithProfitId = productWithProfitData.id;
+
+    const productWithLabelToCreate = {
+      name: 'Test Product With Label Get Order By ID',
+      img: 'test-label-order-by-id.jpg',
+      description: 'Product with label for testing order get by ID',
+      maker: 'Label Maker',
+      metric: ProductMetric.L,
+      label: ProductLabel.HAMBURGERS,
+      stock: 20.0,
+      price: 45.0,
+      purchase_price: 30.0,
+    };
+
+    const productWithLabelResponse = await fetch(`${apiUrl}/api/v1/products`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(productWithLabelToCreate),
+    });
+
+    const productWithLabelData = await productWithLabelResponse.json();
+    testProductWithLabelId = productWithLabelData.id;
 
     const orderToCreate: CreateOrderRequest = {
       client_id: testClientId,
@@ -115,6 +142,28 @@ describe('GET /api/v1/orders/[id]', () => {
 
     const orderWithProfitData = await orderWithProfitResponse.json();
     createdOrderWithProfitId = orderWithProfitData.id;
+
+    const orderWithLabelToCreate: CreateOrderRequest = {
+      client_id: testClientId,
+      items: [
+        {
+          product_id: testProductWithLabelId,
+          quantity: 2,
+        },
+      ],
+      discount: 5.0,
+      tax: 3.0,
+      notes: 'Test order with label for get by ID',
+    };
+
+    const orderWithLabelResponse = await fetch(`${apiUrl}/api/v1/orders`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(orderWithLabelToCreate),
+    });
+
+    const orderWithLabelData = await orderWithLabelResponse.json();
+    createdOrderWithLabelId = orderWithLabelData.id;
   });
 
   it("should return 404 when order doesn't exist", async () => {
@@ -203,7 +252,7 @@ describe('GET /api/v1/orders/[id]', () => {
     expect(order.status).toBe('pending');
   });
 
-  it('should return order items with correct structure including profit fields', async () => {
+  it('should return order items with correct structure including profit and label fields', async () => {
     const response = await fetch(`${apiUrl}/api/v1/orders/${createdOrderId}`);
 
     expect(response.status).toBe(200);
@@ -224,6 +273,7 @@ describe('GET /api/v1/orders/[id]', () => {
     expect(item).toHaveProperty('product_description');
     expect(item).toHaveProperty('product_maker');
     expect(item).toHaveProperty('product_metric');
+    expect(item).toHaveProperty('product_label');
     expect(item).toHaveProperty('product_img');
     expect(item).toHaveProperty('unit_price');
     expect(item).toHaveProperty('quantity');
@@ -249,6 +299,9 @@ describe('GET /api/v1/orders/[id]', () => {
     expect(typeof item.unit_purchase_price).toBe('number');
     expect(typeof item.unit_profit).toBe('number');
     expect(typeof item.total_profit).toBe('number');
+
+    expect(typeof item.product_label).toBe('number');
+    expect(item.product_label).toBe(ProductLabel.DAIRY);
 
     expect(item.order_id).toBe(createdOrderId);
     expect(item.product_id).toBe(testProductId);
@@ -299,6 +352,7 @@ describe('GET /api/v1/orders/[id]', () => {
     expect(item.unit_purchase_price).toBe(60.0);
     expect(item.unit_profit).toBe(40.0);
     expect(item.total_profit).toBe(60.0);
+    expect(item.product_label).toBe(ProductLabel.MEATS);
 
     expect(order.subtotal).toBe(150.0);
     expect(order.total_purchase_cost).toBe(90.0);
@@ -344,6 +398,115 @@ describe('GET /api/v1/orders/[id]', () => {
     expect(order.total_purchase_cost).toBe(0);
     expect(order.total_profit).toBe(75.5);
     expect(order.profit_margin_percentage).toBe(100);
+
+    const item = order.items[0];
+    expect(item.product_label).toBe(ProductLabel.DAIRY);
+  });
+
+  it('should preserve product label information at order time', async () => {
+    const response = await fetch(
+      `${apiUrl}/api/v1/orders/${createdOrderWithLabelId}`
+    );
+
+    expect(response.status).toBe(200);
+
+    const data = await response.json();
+    const order = data.order;
+    const item = order.items[0];
+
+    expect(item.product_label).toBe(ProductLabel.HAMBURGERS);
+    expect(item.product_name).toBe('Test Product With Label Get Order By ID');
+    expect(item.product_maker).toBe('Label Maker');
+    expect(item.unit_price).toBe(45.0);
+    expect(item.quantity).toBe(2);
+    expect(item.subtotal).toBe(90.0);
+  });
+
+  it('should handle order with multiple items having different labels', async () => {
+    const multiLabelOrderData: CreateOrderRequest = {
+      client_id: testClientId,
+      items: [
+        { product_id: testProductId, quantity: 1 },
+        { product_id: testProductWithProfitId, quantity: 1 },
+        { product_id: testProductWithLabelId, quantity: 1 },
+      ],
+      notes: 'Multi-label order test',
+    };
+
+    const createResponse = await fetch(`${apiUrl}/api/v1/orders`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(multiLabelOrderData),
+    });
+
+    const createData = await createResponse.json();
+    const multiLabelOrderId = createData.id;
+
+    const response = await fetch(
+      `${apiUrl}/api/v1/orders/${multiLabelOrderId}`
+    );
+
+    expect(response.status).toBe(200);
+
+    const data = await response.json();
+    const order = data.order;
+
+    expect(order.items.length).toBe(3);
+
+    const dairyItem = order.items.find(
+      (item) => item.product_id === testProductId
+    );
+    const meatItem = order.items.find(
+      (item) => item.product_id === testProductWithProfitId
+    );
+    const hamburgerItem = order.items.find(
+      (item) => item.product_id === testProductWithLabelId
+    );
+
+    expect(dairyItem.product_label).toBe(ProductLabel.DAIRY);
+    expect(meatItem.product_label).toBe(ProductLabel.MEATS);
+    expect(hamburgerItem.product_label).toBe(ProductLabel.HAMBURGERS);
+
+    expect(typeof dairyItem.product_label).toBe('number');
+    expect(typeof meatItem.product_label).toBe('number');
+    expect(typeof hamburgerItem.product_label).toBe('number');
+  });
+
+  it('should validate that product_label is correctly stored and retrieved', async () => {
+    const response = await fetch(
+      `${apiUrl}/api/v1/orders/${createdOrderWithLabelId}`
+    );
+
+    expect(response.status).toBe(200);
+
+    const data = await response.json();
+    const order = data.order;
+    const item = order.items[0];
+
+    expect(typeof item.product_label).toBe('number');
+    expect(Number.isInteger(item.product_label)).toBe(true);
+    expect(item.product_label).toBe(ProductLabel.HAMBURGERS);
+    expect(item.product_label).toBe(2);
+
+    expect(Object.values(ProductLabel)).toContain(item.product_label);
+  });
+
+  it('should preserve product label snapshot behavior', async () => {
+    const response = await fetch(
+      `${apiUrl}/api/v1/orders/${createdOrderWithLabelId}`
+    );
+
+    expect(response.status).toBe(200);
+
+    const data = await response.json();
+    const order = data.order;
+    const item = order.items[0];
+
+    expect(item.product_label).toBe(ProductLabel.HAMBURGERS);
+    expect(item.product_name).toBe('Test Product With Label Get Order By ID');
+
+    expect(typeof item.product_label).toBe('number');
+    expect(Object.values(ProductLabel)).toContain(item.product_label);
   });
 
   it('should handle invalid order ID format', async () => {
@@ -385,6 +548,7 @@ describe('GET /api/v1/orders/[id]', () => {
     expect(item.product_maker).toBe('Test Maker');
     expect(item.product_img).toBe('test-order-by-id.jpg');
     expect(item.unit_price).toBe(75.5);
+    expect(item.product_label).toBe(ProductLabel.DAIRY);
   });
 
   it('should handle decimal quantities in items correctly', async () => {
@@ -399,13 +563,98 @@ describe('GET /api/v1/orders/[id]', () => {
     const item = order.items[0];
 
     expect(item.quantity).toBe(1.5);
-
     expect(item.subtotal).toBe(150.0);
     expect(item.total_profit).toBe(60.0);
+    expect(item.product_label).toBe(ProductLabel.MEATS);
 
     expect(Number.isFinite(item.quantity)).toBe(true);
     expect(Number.isFinite(item.subtotal)).toBe(true);
     expect(Number.isFinite(item.total_profit)).toBe(true);
+  });
+
+  it('should validate all ProductLabel enum values in order items', async () => {
+    const allLabelProducts = [
+      {
+        name: 'Test PROCESSED Product Order ID',
+        label: ProductLabel.PROCESSED,
+        img: 'processed-order-id.jpg',
+        description: 'Processed product for order test',
+        maker: 'Processed Maker',
+        metric: ProductMetric.KG,
+        stock: 10.0,
+        price: 55.0,
+        purchase_price: 35.0,
+      },
+    ];
+
+    const createdLabelProducts = [];
+    for (const productData of allLabelProducts) {
+      const productResponse = await fetch(`${apiUrl}/api/v1/products`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(productData),
+      });
+      const productResult = await productResponse.json();
+      createdLabelProducts.push({
+        ...productData,
+        id: productResult.id,
+      });
+    }
+
+    const allLabelsOrderData: CreateOrderRequest = {
+      client_id: testClientId,
+      items: [
+        { product_id: testProductId, quantity: 1 },
+        { product_id: testProductWithProfitId, quantity: 1 },
+        { product_id: testProductWithLabelId, quantity: 1 },
+        { product_id: createdLabelProducts[0].id, quantity: 1 },
+      ],
+      notes: 'All labels validation',
+    };
+
+    const createResponse = await fetch(`${apiUrl}/api/v1/orders`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(allLabelsOrderData),
+    });
+
+    const createData = await createResponse.json();
+    const allLabelsOrderId = createData.id;
+
+    const response = await fetch(`${apiUrl}/api/v1/orders/${allLabelsOrderId}`);
+
+    expect(response.status).toBe(200);
+
+    const data = await response.json();
+    const order = data.order;
+
+    expect(order.items.length).toBe(4);
+
+    const dairyItem = order.items.find(
+      (item) => item.product_name === 'Test Product Get Order By ID'
+    );
+    const meatItem = order.items.find(
+      (item) => item.product_name === 'Test Product With Profit Get Order By ID'
+    );
+    const hamburgerItem = order.items.find(
+      (item) => item.product_name === 'Test Product With Label Get Order By ID'
+    );
+    const processedItem = order.items.find(
+      (item) => item.product_name === 'Test PROCESSED Product Order ID'
+    );
+
+    expect(dairyItem.product_label).toBe(0);
+    expect(meatItem.product_label).toBe(1);
+    expect(hamburgerItem.product_label).toBe(2);
+    expect(processedItem.product_label).toBe(3);
+
+    [dairyItem, meatItem, hamburgerItem, processedItem].forEach((item) => {
+      expect(typeof item.product_label).toBe('number');
+      expect(Number.isInteger(item.product_label)).toBe(true);
+      expect(item.product_label).toBeGreaterThanOrEqual(0);
+      expect(item.product_label).toBeLessThanOrEqual(3);
+      expect(Object.values(ProductLabel)).toContain(item.product_label);
+    });
   });
 
   it('should validate profit calculations consistency', async () => {
@@ -433,7 +682,7 @@ describe('GET /api/v1/orders/[id]', () => {
     expect(Number.isFinite(order.profit_margin_percentage)).toBe(true);
   });
 
-  it('should return consistent data types for all numeric fields', async () => {
+  it('should return consistent data types for all numeric fields including labels', async () => {
     const response = await fetch(`${apiUrl}/api/v1/orders/${createdOrderId}`);
 
     expect(response.status).toBe(200);
@@ -465,6 +714,12 @@ describe('GET /api/v1/orders/[id]', () => {
       expect(isNaN(item.unit_purchase_price)).toBe(false);
       expect(isNaN(item.unit_profit)).toBe(false);
       expect(isNaN(item.total_profit)).toBe(false);
+
+      if (item.product_label !== undefined) {
+        expect(typeof item.product_label).toBe('number');
+        expect(isNaN(item.product_label)).toBe(false);
+        expect(Number.isInteger(item.product_label)).toBe(true);
+      }
     });
   });
 
@@ -514,5 +769,33 @@ describe('GET /api/v1/orders/[id]', () => {
         nextItemDate.getTime()
       );
     }
+
+    order.items.forEach((item) => {
+      expect(typeof item.product_label).toBe('number');
+      expect(Object.values(ProductLabel)).toContain(item.product_label);
+    });
+  });
+
+  it('should validate database format consistency for product_label field', async () => {
+    const response = await fetch(
+      `${apiUrl}/api/v1/orders/${createdOrderWithLabelId}`
+    );
+
+    expect(response.status).toBe(200);
+
+    const data = await response.json();
+    const order = data.order;
+    const item = order.items[0];
+
+    expect(typeof item.product_label).toBe('number');
+    expect(Number.isInteger(item.product_label)).toBe(true);
+    expect(item.product_label).toBeGreaterThanOrEqual(0);
+    expect(item.product_label).toBeLessThanOrEqual(3);
+
+    expect(item.product_label).toBe(ProductLabel.HAMBURGERS);
+    expect(item.product_label).toBe(2);
+
+    expect([0, 1, 2, 3]).toContain(item.product_label);
+    expect(Object.values(ProductLabel)).toContain(item.product_label);
   });
 });
