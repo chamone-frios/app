@@ -4,6 +4,8 @@ const getProductLabel = (label: number): string => {
   switch (label) {
     case ProductLabel.DAIRY:
       return 'Laticínios';
+    case ProductLabel.MEATS:
+      return 'Carnes';
     case ProductLabel.HAMBURGERS:
       return 'Hambúrgueres';
     case ProductLabel.PROCESSED:
