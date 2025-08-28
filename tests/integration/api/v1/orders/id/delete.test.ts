@@ -1,4 +1,10 @@
-import { CreateOrderRequest, Order, ProductMetric } from 'src/constants/types';
+import {
+  CreateOrderRequest,
+  Order,
+  Product,
+  ProductLabel,
+  ProductMetric,
+} from 'src/constants/types';
 import { waitForAllServices } from 'tests/orchestrator';
 import { getApiEndpoint } from 'tests/utils';
 
@@ -29,12 +35,16 @@ describe('DELETE /api/v1/orders/[id]', () => {
     const clientResult = await clientResponse.json();
     testClientId = clientResult.id;
 
-    const productData = {
+    const productData: Omit<
+      Product,
+      'id' | 'purchase_price' | 'profit_margin'
+    > = {
       name: 'Test Delete Order Product',
       img: 'test-delete-order-product.jpg',
       description: 'Product for delete order testing',
       maker: 'Test Maker',
       metric: ProductMetric.UNIT,
+      label: ProductLabel.DAIRY,
       stock: 100.5,
       price: 50.0,
     };
@@ -50,12 +60,13 @@ describe('DELETE /api/v1/orders/[id]', () => {
     const productResult = await productResponse.json();
     testProductId = productResult.id;
 
-    const productWithProfitData = {
+    const productWithProfitData: Omit<Product, 'id' | 'profit_margin'> = {
       name: 'Test Delete Order Product With Profit',
       img: 'test-delete-order-product-profit.jpg',
       description: 'Product with profit for delete order testing',
       maker: 'Profit Maker',
       metric: ProductMetric.KG,
+      label: ProductLabel.MEATS,
       stock: 50.25,
       price: 80.0,
       purchase_price: 50.0,

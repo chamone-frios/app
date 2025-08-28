@@ -18,6 +18,7 @@ const updateProduct = async ({
     metric,
     stock,
     price,
+    label,
     purchase_price,
   } = product;
 
@@ -32,8 +33,9 @@ const updateProduct = async ({
         metric = $5,
         stock = $6,
         price = $7,
-        purchase_price = $8
-    WHERE id = $9
+        label = $8,
+        purchase_price = $9
+    WHERE id = $10
     RETURNING *;
   `;
 
@@ -45,6 +47,7 @@ const updateProduct = async ({
     metricString,
     stock,
     price,
+    label,
     purchase_price || null,
     id,
   ];

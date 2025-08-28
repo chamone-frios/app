@@ -26,7 +26,8 @@ const getOrder = async ({ id }: { id: string }): Promise<OrderWithItems> => {
     const itemsQueryString = `
       SELECT id, order_id, product_id, product_name, product_description,
              product_maker, product_metric, product_img, unit_price, quantity,
-             subtotal, created_at, unit_purchase_price, unit_profit, total_profit
+             subtotal, created_at, unit_purchase_price, unit_profit, total_profit,
+             product_label
       FROM order_items
       WHERE order_id = $1
       ORDER BY created_at DESC
@@ -45,6 +46,7 @@ const getOrder = async ({ id }: { id: string }): Promise<OrderWithItems> => {
         ProductMetric[
           row.product_metric.toUpperCase() as keyof typeof ProductMetric
         ],
+      product_label: row.product_label,
       product_img: row.product_img,
       unit_price: parseFloat(row.unit_price),
       quantity: parseFloat(row.quantity),

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import { Alert, CircularProgress, Stack, Typography } from '@mui/material';
-import { Product, ProductMetric } from 'src/constants/types';
+import { Product, ProductLabel, ProductMetric } from 'src/constants/types';
 import { http } from 'src/frontend/api/http';
 import { ProductForm } from 'src/frontend/components';
 import { useIsNextLoading } from 'src/frontend/hooks';
@@ -16,6 +16,7 @@ const AddProduct = () => {
     name: '',
     description: '',
     maker: '',
+    label: ProductLabel.DAIRY,
     metric: ProductMetric.UNIT,
     price: 0.0,
     stock: 0.0,

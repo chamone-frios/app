@@ -1,4 +1,8 @@
-import { CreateOrderRequest, ProductMetric } from 'src/constants/types';
+import {
+  CreateOrderRequest,
+  ProductMetric,
+  ProductLabel,
+} from 'src/constants/types';
 import { waitForAllServices } from 'tests/orchestrator';
 import { getApiEndpoint } from 'tests/utils';
 
@@ -6,6 +10,7 @@ describe('GET /api/v1/orders', () => {
   let testClientId: string;
   let testProductId: string;
   let testProductWithProfitId: string;
+  let testProductWithLabelId: string;
   const apiUrl = getApiEndpoint();
 
   beforeAll(async () => {
@@ -35,8 +40,10 @@ describe('GET /api/v1/orders', () => {
       description: 'Product for orders testing',
       maker: 'Test Maker',
       metric: ProductMetric.UNIT,
+      label: ProductLabel.DAIRY,
       stock: 100.5,
       price: 25.0,
+      purchase_price: 0,
     };
 
     const productResponse = await fetch(`${apiUrl}/api/v1/products`, {
@@ -56,6 +63,7 @@ describe('GET /api/v1/orders', () => {
       description: 'Product with profit for orders testing',
       maker: 'Profit Maker',
       metric: ProductMetric.KG,
+      label: ProductLabel.MEATS,
       stock: 50.25,
       price: 40.0,
       purchase_price: 25.0,
@@ -71,6 +79,29 @@ describe('GET /api/v1/orders', () => {
 
     const productWithProfitResult = await productWithProfitResponse.json();
     testProductWithProfitId = productWithProfitResult.id;
+
+    const productWithLabelData = {
+      name: 'Test Orders Product With Label',
+      img: 'test-orders-product-label.jpg',
+      description: 'Product with label for orders testing',
+      maker: 'Label Maker',
+      metric: ProductMetric.L,
+      label: ProductLabel.HAMBURGERS,
+      stock: 30.0,
+      price: 35.0,
+      purchase_price: 20.0,
+    };
+
+    const productWithLabelResponse = await fetch(`${apiUrl}/api/v1/products`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(productWithLabelData),
+    });
+
+    const productWithLabelResult = await productWithLabelResponse.json();
+    testProductWithLabelId = productWithLabelResult.id;
   });
 
   it('should return an empty array when no orders exist', async () => {
@@ -305,6 +336,84 @@ describe('GET /api/v1/orders', () => {
     expect(createdOrder.status).toBe('pending');
   });
 
+  it('should verify that orders preserve product label information in individual order items', async () => {
+    const orderData: CreateOrderRequest = {
+      client_id: testClientId,
+      items: [{ product_id: testProductWithLabelId, quantity: 1 }],
+      notes: 'Label preservation test order',
+    };
+
+    const createResponse = await fetch(`${apiUrl}/api/v1/orders`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(orderData),
+    });
+
+    expect(createResponse.status).toBe(201);
+    const createData = await createResponse.json();
+
+    const getOrderResponse = await fetch(
+      `${apiUrl}/api/v1/orders/${createData.id}`
+    );
+    const getOrderData = await getOrderResponse.json();
+
+    expect(getOrderResponse.status).toBe(200);
+    expect(getOrderData.order.items.length).toBe(1);
+
+    const orderItem = getOrderData.order.items[0];
+    expect(orderItem.product_label).toBe(ProductLabel.HAMBURGERS);
+    expect(orderItem.product_name).toBe('Test Orders Product With Label');
+  });
+
+  it('should create orders with products having different labels and verify in order list', async () => {
+    const mixedLabelOrderData: CreateOrderRequest = {
+      client_id: testClientId,
+      items: [
+        { product_id: testProductId, quantity: 1 },
+        { product_id: testProductWithProfitId, quantity: 1 },
+        { product_id: testProductWithLabelId, quantity: 1 },
+      ],
+      notes: 'Mixed labels order test',
+    };
+
+    const createResponse = await fetch(`${apiUrl}/api/v1/orders`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(mixedLabelOrderData),
+    });
+
+    expect(createResponse.status).toBe(201);
+    const createData = await createResponse.json();
+
+    const getResponse = await fetch(`${apiUrl}/api/v1/orders`);
+    const getData = await getResponse.json();
+
+    const order = getData.orders.find((o) => o.id === createData.id);
+    expect(order).toBeDefined();
+    expect(order.notes).toBe('Mixed labels order test');
+
+    const getOrderResponse = await fetch(
+      `${apiUrl}/api/v1/orders/${createData.id}`
+    );
+    const getOrderData = await getOrderResponse.json();
+
+    expect(getOrderData.order.items.length).toBe(3);
+
+    const dairyItem = getOrderData.order.items.find(
+      (item) => item.product_id === testProductId
+    );
+    const meatItem = getOrderData.order.items.find(
+      (item) => item.product_id === testProductWithProfitId
+    );
+    const hamburgerItem = getOrderData.order.items.find(
+      (item) => item.product_id === testProductWithLabelId
+    );
+
+    expect(dairyItem.product_label).toBe(ProductLabel.DAIRY);
+    expect(meatItem.product_label).toBe(ProductLabel.MEATS);
+    expect(hamburgerItem.product_label).toBe(ProductLabel.HAMBURGERS);
+  });
+
   it('should handle method not allowed', async () => {
     const response = await fetch(`${apiUrl}/api/v1/orders`, {
       method: 'PUT',
@@ -463,6 +572,82 @@ describe('GET /api/v1/orders', () => {
     expect(Number.isFinite(order.profit_margin_percentage)).toBe(true);
   });
 
+  it('should validate that product labels are properly stored in order items across multiple orders', async () => {
+    const productsWithLabels = [
+      {
+        name: 'Test DAIRY Product for Orders',
+        label: ProductLabel.DAIRY,
+        img: 'dairy-orders.jpg',
+        description: 'Dairy product for orders',
+        maker: 'Dairy Maker',
+        metric: ProductMetric.UNIT,
+        stock: 20.0,
+        price: 25.0,
+        purchase_price: 15.0,
+      },
+      {
+        name: 'Test PROCESSED Product for Orders',
+        label: ProductLabel.PROCESSED,
+        img: 'processed-orders.jpg',
+        description: 'Processed product for orders',
+        maker: 'Processed Maker',
+        metric: ProductMetric.G,
+        stock: 15.0,
+        price: 45.0,
+        purchase_price: 30.0,
+      },
+    ];
+
+    const createdProducts = [];
+    for (const productData of productsWithLabels) {
+      const productResponse = await fetch(`${apiUrl}/api/v1/products`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(productData),
+      });
+      const productResult = await productResponse.json();
+      createdProducts.push({
+        ...productData,
+        id: productResult.id,
+      });
+    }
+
+    const orderData: CreateOrderRequest = {
+      client_id: testClientId,
+      items: createdProducts.map((product) => ({
+        product_id: product.id,
+        quantity: 1,
+      })),
+      notes: 'All labels validation order',
+    };
+
+    const createResponse = await fetch(`${apiUrl}/api/v1/orders`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(orderData),
+    });
+
+    expect(createResponse.status).toBe(201);
+    const createData = await createResponse.json();
+
+    const getOrderResponse = await fetch(
+      `${apiUrl}/api/v1/orders/${createData.id}`
+    );
+    const getOrderData = await getOrderResponse.json();
+
+    expect(getOrderData.order.items.length).toBe(2);
+
+    for (const expectedProduct of createdProducts) {
+      const orderItem = getOrderData.order.items.find(
+        (item) => item.product_name === expectedProduct.name
+      );
+
+      expect(orderItem).toBeDefined();
+      expect(orderItem.product_label).toBe(expectedProduct.label);
+      expect(typeof orderItem.product_label).toBe('number');
+    }
+  });
+
   it('should validate profit calculations consistency', async () => {
     const response = await fetch(`${apiUrl}/api/v1/orders`);
 
@@ -572,6 +757,36 @@ describe('GET /api/v1/orders', () => {
     expect(order.profit_margin_percentage).toBeCloseTo(61.54, 1);
   });
 
+  it('should verify product label snapshot behavior in order items', async () => {
+    const orderData: CreateOrderRequest = {
+      client_id: testClientId,
+      items: [{ product_id: testProductWithLabelId, quantity: 1 }],
+      notes: 'Label snapshot test',
+    };
+
+    const createResponse = await fetch(`${apiUrl}/api/v1/orders`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(orderData),
+    });
+
+    expect(createResponse.status).toBe(201);
+    const createData = await createResponse.json();
+
+    const getOrderResponse = await fetch(
+      `${apiUrl}/api/v1/orders/${createData.id}`
+    );
+    const getOrderData = await getOrderResponse.json();
+
+    const orderItem = getOrderData.order.items[0];
+    expect(orderItem.product_label).toBe(ProductLabel.HAMBURGERS);
+    expect(orderItem.product_name).toBe('Test Orders Product With Label');
+
+    expect(orderItem.product_label).toBe(ProductLabel.HAMBURGERS);
+    expect(typeof orderItem.product_label).toBe('number');
+    expect(Object.values(ProductLabel)).toContain(orderItem.product_label);
+  });
+
   it('should handle server errors gracefully', async () => {
     const response = await fetch(`${apiUrl}/api/v1/orders`);
 
@@ -623,5 +838,55 @@ describe('GET /api/v1/orders', () => {
     if (data.orders.length === 0) {
       expect(data.orders).toEqual([]);
     }
+  });
+
+  it('should validate that product_label is correctly stored as integer in database format', async () => {
+    const orderData: CreateOrderRequest = {
+      client_id: testClientId,
+      items: [
+        { product_id: testProductId, quantity: 1 },
+        { product_id: testProductWithProfitId, quantity: 1 },
+        { product_id: testProductWithLabelId, quantity: 1 },
+      ],
+      notes: 'Database format validation',
+    };
+
+    const createResponse = await fetch(`${apiUrl}/api/v1/orders`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(orderData),
+    });
+
+    expect(createResponse.status).toBe(201);
+    const createData = await createResponse.json();
+
+    const getOrderResponse = await fetch(
+      `${apiUrl}/api/v1/orders/${createData.id}`
+    );
+    const getOrderData = await getOrderResponse.json();
+
+    getOrderData.order.items.forEach((item) => {
+      if (item.product_label !== undefined) {
+        expect(typeof item.product_label).toBe('number');
+        expect(Number.isInteger(item.product_label)).toBe(true);
+        expect(item.product_label).toBeGreaterThanOrEqual(0);
+        expect(item.product_label).toBeLessThanOrEqual(3);
+        expect(Object.values(ProductLabel)).toContain(item.product_label);
+      }
+    });
+
+    const dairyItem = getOrderData.order.items.find(
+      (item) => item.product_name === 'Test Orders Product'
+    );
+    const meatItem = getOrderData.order.items.find(
+      (item) => item.product_name === 'Test Orders Product With Profit'
+    );
+    const hamburgerItem = getOrderData.order.items.find(
+      (item) => item.product_name === 'Test Orders Product With Label'
+    );
+
+    expect(dairyItem.product_label).toBe(0);
+    expect(meatItem.product_label).toBe(1);
+    expect(hamburgerItem.product_label).toBe(2);
   });
 });

@@ -1,6 +1,8 @@
 import {
   CreateOrderRequest,
   OrderStatus,
+  Product,
+  ProductLabel,
   ProductMetric,
 } from 'src/constants/types';
 import { waitForAllServices } from 'tests/orchestrator';
@@ -31,12 +33,16 @@ describe('POST /api/v1/orders/status/[id]', () => {
     const clientData = await clientResponse.json();
     testClientId = clientData.id;
 
-    const productToCreate = {
+    const productToCreate: Omit<
+      Product,
+      'id' | 'profit_margin' | 'purchase_price'
+    > = {
       name: 'Test Product for Order Status',
       img: 'test-order-status.jpg',
       description: 'Product for testing order status updates',
       maker: 'Test Maker',
       metric: ProductMetric.UNIT,
+      label: ProductLabel.DAIRY,
       stock: 100,
       price: 25.0,
     };

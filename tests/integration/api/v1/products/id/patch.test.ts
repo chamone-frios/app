@@ -1,11 +1,16 @@
 import { waitForAllServices } from 'tests/orchestrator';
 import { getApiEndpoint } from 'tests/utils';
 
-import { Product, ProductMetric } from '../../../../../../src/constants/types';
+import {
+  Product,
+  ProductMetric,
+  ProductLabel,
+} from '../../../../../../src/constants/types';
 
 describe('PATCH /api/v1/products/[id]', () => {
   let createdProductId: string;
   let createdProductWithProfitId: string;
+  let createdProductWithLabelId: string;
   const apiUrl = getApiEndpoint();
 
   beforeEach(async () => {
@@ -17,6 +22,7 @@ describe('PATCH /api/v1/products/[id]', () => {
       description: 'Product for testing PATCH',
       maker: 'Test Maker',
       metric: ProductMetric.UNIT,
+      label: ProductLabel.DAIRY,
       stock: 10.5,
       price: 99.99,
       purchase_price: 0,
@@ -37,6 +43,7 @@ describe('PATCH /api/v1/products/[id]', () => {
       description: 'Product with profit for testing PATCH',
       maker: 'Profit Maker',
       metric: ProductMetric.KG,
+      label: ProductLabel.MEATS,
       stock: 25.75,
       price: 50.0,
       purchase_price: 30.0,
@@ -50,6 +57,27 @@ describe('PATCH /api/v1/products/[id]', () => {
 
     const createProfitData = await createProfitResponse.json();
     createdProductWithProfitId = createProfitData.id;
+
+    const productWithLabel: Omit<Product, 'id' | 'profit_margin'> = {
+      name: 'Test Product With Label PATCH',
+      img: 'test-label-patch.jpg',
+      description: 'Product with label for testing PATCH',
+      maker: 'Label Patch Maker',
+      metric: ProductMetric.L,
+      label: ProductLabel.HAMBURGERS,
+      stock: 15.0,
+      price: 35.0,
+      purchase_price: 20.0,
+    };
+
+    const createLabelResponse = await fetch(`${apiUrl}/api/v1/products`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(productWithLabel),
+    });
+
+    const createLabelData = await createLabelResponse.json();
+    createdProductWithLabelId = createLabelData.id;
   });
 
   it("should return 500 when product doesn't exist", async () => {
@@ -60,6 +88,7 @@ describe('PATCH /api/v1/products/[id]', () => {
       description: 'Updated Description',
       maker: 'Updated Maker',
       metric: ProductMetric.KG,
+      label: ProductLabel.PROCESSED,
       stock: 20.5,
       price: 149.99,
       purchase_price: 0,
@@ -83,6 +112,7 @@ describe('PATCH /api/v1/products/[id]', () => {
       description: 'Updated Description',
       maker: 'Updated Maker',
       metric: 999,
+      label: 99,
       stock: -5,
       price: 0,
     };
@@ -113,6 +143,7 @@ describe('PATCH /api/v1/products/[id]', () => {
       description: 'Updated Description',
       maker: 'Updated Maker',
       metric: ProductMetric.KG,
+      label: ProductLabel.PROCESSED,
       stock: 20.75,
       price: 149.99,
       purchase_price: 0,
@@ -141,6 +172,7 @@ describe('PATCH /api/v1/products/[id]', () => {
       description: 'Updated Description with profit calculation',
       maker: 'Updated Profit Maker',
       metric: ProductMetric.L,
+      label: ProductLabel.MEATS,
       stock: 15.25,
       price: 80.0,
       purchase_price: 50.0,
@@ -162,13 +194,14 @@ describe('PATCH /api/v1/products/[id]', () => {
     expect(data.id).toBe(createdProductId);
   });
 
-  it('should confirm the product was actually updated with all new fields', async () => {
+  it('should confirm the product was actually updated with all new fields including label', async () => {
     const updatedProduct: Omit<Product, 'id' | 'profit_margin'> = {
       img: 'updated-test.jpg',
       name: 'Updated Test Product',
       description: 'Updated Description',
       maker: 'Updated Maker',
       metric: ProductMetric.KG,
+      label: ProductLabel.HAMBURGERS,
       stock: 20.75,
       price: 149.99,
       purchase_price: 100.5,
@@ -194,6 +227,7 @@ describe('PATCH /api/v1/products/[id]', () => {
     expect(product.description).toBe('Updated Description');
     expect(product.maker).toBe('Updated Maker');
     expect(product.metric).toBe(ProductMetric.KG);
+    expect(product.label).toBe(ProductLabel.HAMBURGERS);
     expect(product.stock).toBe(20.75);
     expect(parseFloat(product.price)).toBe(149.99);
     expect(parseFloat(product.purchase_price)).toBe(100.5);
@@ -207,6 +241,7 @@ describe('PATCH /api/v1/products/[id]', () => {
       description: 'Testing profit calculation',
       maker: 'Profit Maker',
       metric: ProductMetric.UNIT,
+      label: ProductLabel.DAIRY,
       stock: 10,
       price: 25.0,
       purchase_price: 15.0,
@@ -228,6 +263,7 @@ describe('PATCH /api/v1/products/[id]', () => {
     expect(product.purchase_price).toBe(15.0);
     expect(product.price).toBe(25.0);
     expect(product.profit_margin).toBe(10.0);
+    expect(product.label).toBe(ProductLabel.DAIRY);
   });
 
   it('should remove profit_margin when purchase_price is removed', async () => {
@@ -237,6 +273,7 @@ describe('PATCH /api/v1/products/[id]', () => {
       description: 'Test',
       maker: 'Test Maker',
       metric: ProductMetric.UNIT,
+      label: ProductLabel.PROCESSED,
       stock: 10,
       price: 25.0,
       purchase_price: 15.0,
@@ -254,6 +291,7 @@ describe('PATCH /api/v1/products/[id]', () => {
       description: 'Test',
       maker: 'Test Maker',
       metric: ProductMetric.UNIT,
+      label: ProductLabel.PROCESSED,
       stock: 10,
       price: 25.0,
       purchase_price: 0,
@@ -274,6 +312,7 @@ describe('PATCH /api/v1/products/[id]', () => {
 
     expect(product.purchase_price).toBe(0);
     expect(product.profit_margin).toBe(0);
+    expect(product.label).toBe(ProductLabel.PROCESSED);
   });
 
   it('should validate purchase_price business rules', async () => {
@@ -283,6 +322,7 @@ describe('PATCH /api/v1/products/[id]', () => {
       description: 'Test',
       maker: 'Test Maker',
       metric: ProductMetric.UNIT,
+      label: ProductLabel.DAIRY,
       stock: 10,
       price: 20.0,
       purchase_price: 25.0,
@@ -314,6 +354,7 @@ describe('PATCH /api/v1/products/[id]', () => {
       description: 'Test',
       maker: 'Test Maker',
       metric: ProductMetric.UNIT,
+      label: ProductLabel.MEATS,
       stock: 10,
       price: 20.0,
       purchase_price: -5.0,
@@ -345,6 +386,7 @@ describe('PATCH /api/v1/products/[id]', () => {
       description: 'Testing decimal stock values',
       maker: 'Decimal Maker',
       metric: ProductMetric.KG,
+      label: ProductLabel.HAMBURGERS,
       stock: 12.75,
       price: 30.5,
       purchase_price: 0,
@@ -367,6 +409,7 @@ describe('PATCH /api/v1/products/[id]', () => {
     const getData = await getResponse.json();
 
     expect(getData.product.stock).toBe(12.75);
+    expect(getData.product.label).toBe(ProductLabel.HAMBURGERS);
   });
 
   it('should trigger error when trying to update a product with only some fields', async () => {
@@ -411,6 +454,7 @@ describe('PATCH /api/v1/products/[id]', () => {
       description: 'Test',
       maker: 'Test Maker',
       metric: 999,
+      label: ProductLabel.DAIRY,
       stock: 10,
       price: 20.0,
     };
@@ -442,6 +486,7 @@ describe('PATCH /api/v1/products/[id]', () => {
       description: 'Test',
       maker: 'Test Maker',
       metric: ProductMetric.UNIT,
+      label: 'invalid',
       stock: 'invalid',
       price: 'invalid',
       purchase_price: 'invalid',
@@ -470,6 +515,7 @@ describe('PATCH /api/v1/products/[id]', () => {
       description: 'Updated with 3 decimal places in stock',
       maker: 'Decimal Patch Maker',
       metric: ProductMetric.L,
+      label: ProductLabel.PROCESSED,
       stock: 8.625,
       price: 25.0,
       purchase_price: 15.0,
@@ -493,9 +539,203 @@ describe('PATCH /api/v1/products/[id]', () => {
 
     expect(getData.product.stock).toBe(8.625);
     expect(getData.product.stock.toString()).toMatch(/^\d+\.\d{3}$/);
+    expect(getData.product.label).toBe(ProductLabel.PROCESSED);
 
     const decimalPlaces = (getData.product.stock.toString().split('.')[1] || '')
       .length;
     expect(decimalPlaces).toBe(3);
+  });
+
+  it('should update product with different label categories', async () => {
+    const labelTestCases = [
+      { label: ProductLabel.DAIRY, expected: ProductLabel.DAIRY },
+      { label: ProductLabel.MEATS, expected: ProductLabel.MEATS },
+      { label: ProductLabel.HAMBURGERS, expected: ProductLabel.HAMBURGERS },
+      { label: ProductLabel.PROCESSED, expected: ProductLabel.PROCESSED },
+    ];
+
+    for (const testCase of labelTestCases) {
+      const updatedProduct: Omit<Product, 'id' | 'profit_margin'> = {
+        img: 'label-update-test.jpg',
+        name: `Updated ${ProductLabel[testCase.label]} Product`,
+        description: `Testing ${ProductLabel[testCase.label]} label update`,
+        maker: 'Label Update Maker',
+        metric: ProductMetric.UNIT,
+        label: testCase.label,
+        stock: 10.0,
+        price: 50.0,
+        purchase_price: 30.0,
+      };
+
+      const response = await fetch(
+        `${apiUrl}/api/v1/products/${createdProductWithLabelId}`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updatedProduct),
+        }
+      );
+
+      expect(response.status).toBe(200);
+
+      const getResponse = await fetch(
+        `${apiUrl}/api/v1/products/${createdProductWithLabelId}`
+      );
+      const getData = await getResponse.json();
+
+      expect(getData.product.label).toBe(testCase.expected);
+      expect(getData.product.name).toBe(
+        `Updated ${ProductLabel[testCase.label]} Product`
+      );
+    }
+  });
+
+  it('should successfully change label from one category to another', async () => {
+    const updatedProduct: Omit<Product, 'id' | 'profit_margin'> = {
+      img: 'label-change-test.jpg',
+      name: 'Label Change Test Product',
+      description: 'Testing label category change',
+      maker: 'Label Change Maker',
+      metric: ProductMetric.KG,
+      label: ProductLabel.DAIRY,
+      stock: 12.0,
+      price: 40.0,
+      purchase_price: 25.0,
+    };
+
+    const response = await fetch(
+      `${apiUrl}/api/v1/products/${createdProductWithLabelId}`,
+      {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedProduct),
+      }
+    );
+
+    expect(response.status).toBe(200);
+
+    const getResponse = await fetch(
+      `${apiUrl}/api/v1/products/${createdProductWithLabelId}`
+    );
+    const getData = await getResponse.json();
+
+    expect(getData.product.label).toBe(ProductLabel.DAIRY);
+    expect(getData.product.label).toBe(0);
+    expect(getData.product.name).toBe('Label Change Test Product');
+  });
+
+  it('should validate that label is required field', async () => {
+    const productWithoutLabel = {
+      img: 'test.jpg',
+      name: 'Test Product',
+      description: 'Test',
+      maker: 'Test Maker',
+      metric: ProductMetric.UNIT,
+
+      stock: 10,
+      price: 20.0,
+      purchase_price: 15.0,
+    };
+
+    const response = await fetch(
+      `${apiUrl}/api/v1/products/${createdProductId}`,
+      {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(productWithoutLabel),
+      }
+    );
+
+    expect(response.status).toBe(400);
+
+    const data = await response.json();
+    expect(data.error).toBe('Invalid data');
+    expect(data.details).toContain('Label must be a number');
+  });
+
+  it('should accept label value 0 (DAIRY) in updates', async () => {
+    const updatedProduct: Omit<Product, 'id' | 'profit_margin'> = {
+      img: 'zero-label-update.jpg',
+      name: 'Zero Label Update Test',
+      description: 'Testing update with label value 0',
+      maker: 'Zero Label Maker',
+      metric: ProductMetric.UNIT,
+      label: ProductLabel.DAIRY,
+      stock: 15.0,
+      price: 30.0,
+      purchase_price: 18.0,
+    };
+
+    const response = await fetch(
+      `${apiUrl}/api/v1/products/${createdProductId}`,
+      {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedProduct),
+      }
+    );
+
+    expect(response.status).toBe(200);
+
+    const getResponse = await fetch(
+      `${apiUrl}/api/v1/products/${createdProductId}`
+    );
+    const getData = await getResponse.json();
+
+    expect(getData.product.label).toBe(0);
+    expect(getData.product.label).toBe(ProductLabel.DAIRY);
+    expect(getData.product.name).toBe('Zero Label Update Test');
+  });
+
+  it('should preserve label consistency across multiple updates', async () => {
+    const firstUpdate: Omit<Product, 'id' | 'profit_margin'> = {
+      img: 'consistency-test-1.jpg',
+      name: 'Consistency Test 1',
+      description: 'First consistency test',
+      maker: 'Consistency Maker',
+      metric: ProductMetric.G,
+      label: ProductLabel.PROCESSED,
+      stock: 8.0,
+      price: 25.0,
+      purchase_price: 15.0,
+    };
+
+    await fetch(`${apiUrl}/api/v1/products/${createdProductId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(firstUpdate),
+    });
+
+    const secondUpdate: Omit<Product, 'id' | 'profit_margin'> = {
+      img: 'consistency-test-2.jpg',
+      name: 'Consistency Test 2',
+      description: 'Second consistency test',
+      maker: 'Consistency Maker 2',
+      metric: ProductMetric.KG,
+      label: ProductLabel.PROCESSED,
+      stock: 12.0,
+      price: 35.0,
+      purchase_price: 20.0,
+    };
+
+    const response = await fetch(
+      `${apiUrl}/api/v1/products/${createdProductId}`,
+      {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(secondUpdate),
+      }
+    );
+
+    expect(response.status).toBe(200);
+
+    const getResponse = await fetch(
+      `${apiUrl}/api/v1/products/${createdProductId}`
+    );
+    const getData = await getResponse.json();
+
+    expect(getData.product.label).toBe(ProductLabel.PROCESSED);
+    expect(getData.product.name).toBe('Consistency Test 2');
+    expect(getData.product.maker).toBe('Consistency Maker 2');
   });
 });

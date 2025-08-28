@@ -1,7 +1,11 @@
 import { waitForAllServices } from 'tests/orchestrator';
 import { getApiEndpoint } from 'tests/utils';
 
-import { Product, ProductMetric } from '../../../../../src/constants/types';
+import {
+  Product,
+  ProductMetric,
+  ProductLabel,
+} from '../../../../../src/constants/types';
 
 describe('GET /api/v1/products', () => {
   const apiUrl = getApiEndpoint();
@@ -29,6 +33,7 @@ describe('GET /api/v1/products', () => {
         description: 'First test product',
         maker: 'Test Maker',
         metric: ProductMetric.UNIT,
+        label: ProductLabel.DAIRY,
         stock: 10.5,
         price: 100.5,
         purchase_price: 80.0,
@@ -39,6 +44,7 @@ describe('GET /api/v1/products', () => {
         description: 'Second test product',
         maker: 'Another Maker',
         metric: ProductMetric.KG,
+        label: ProductLabel.MEATS,
         stock: 5.75,
         price: 100.0,
         purchase_price: 70.0,
@@ -49,6 +55,7 @@ describe('GET /api/v1/products', () => {
         description: 'Third test product',
         maker: 'Yet Another Maker',
         metric: ProductMetric.L,
+        label: ProductLabel.HAMBURGERS,
         stock: 20.25,
         price: 200.99,
         purchase_price: 150.5,
@@ -97,6 +104,7 @@ describe('GET /api/v1/products', () => {
       expect(foundProduct.stock).toBe(productsToCreate[i].stock);
       expect(foundProduct.img).toBe(productsToCreate[i].img);
       expect(foundProduct.price).toBe(productsToCreate[i].price);
+      expect(foundProduct.label).toBe(productsToCreate[i].label);
 
       if (productsToCreate[i].purchase_price !== undefined) {
         expect(foundProduct.purchase_price).toBe(
@@ -129,6 +137,7 @@ describe('GET /api/v1/products', () => {
     expect(product).toHaveProperty('metric');
     expect(product).toHaveProperty('stock');
     expect(product).toHaveProperty('price');
+    expect(product).toHaveProperty('label');
 
     expect(product).toHaveProperty('purchase_price');
     expect(product).toHaveProperty('profit_margin');
@@ -141,6 +150,11 @@ describe('GET /api/v1/products', () => {
     expect(typeof product.metric).toBe('number');
     expect(typeof product.stock).toBe('number');
     expect(typeof product.price).toBe('number');
+
+    if (product.label !== undefined) {
+      expect(typeof product.label).toBe('number');
+      expect(Object.values(ProductLabel)).toContain(product.label);
+    }
 
     if (product.purchase_price !== undefined) {
       expect(typeof product.purchase_price).toBe('number');
@@ -310,6 +324,7 @@ describe('GET /api/v1/products', () => {
       description: 'Product without purchase price',
       maker: 'No Profit Maker',
       metric: ProductMetric.UNIT,
+      label: ProductLabel.PROCESSED,
       stock: 15,
       price: 50.0,
       purchase_price: 0,
@@ -333,6 +348,7 @@ describe('GET /api/v1/products', () => {
     expect(createdProduct).toBeDefined();
     expect(createdProduct.purchase_price).toBe(0);
     expect(createdProduct.profit_margin).toBe(50);
+    expect(createdProduct.label).toBe(ProductLabel.PROCESSED);
   });
 
   it('should handle products with zero purchase_price correctly', async () => {
@@ -342,6 +358,7 @@ describe('GET /api/v1/products', () => {
       description: 'Product with zero purchase price',
       maker: 'Zero Cost Maker',
       metric: ProductMetric.UNIT,
+      label: ProductLabel.HAMBURGERS,
       stock: 10,
       price: 25.0,
       purchase_price: 0,
@@ -365,6 +382,7 @@ describe('GET /api/v1/products', () => {
     expect(createdProduct).toBeDefined();
     expect(createdProduct.purchase_price).toBe(0);
     expect(createdProduct.profit_margin).toBe(25.0);
+    expect(createdProduct.label).toBe(ProductLabel.HAMBURGERS);
   });
 
   it('should return products with 3 decimal places precision in stock field', async () => {
@@ -374,6 +392,7 @@ describe('GET /api/v1/products', () => {
       description: 'Product with 3 decimal places for list test',
       maker: 'Decimal List Maker',
       metric: ProductMetric.KG,
+      label: ProductLabel.DAIRY,
       stock: 15.375,
       price: 45.0,
       purchase_price: 30.0,
@@ -397,10 +416,147 @@ describe('GET /api/v1/products', () => {
     expect(createdProduct).toBeDefined();
     expect(createdProduct.stock).toBe(15.375);
     expect(createdProduct.stock.toString()).toMatch(/^\d+\.\d{3}$/);
+    expect(createdProduct.label).toBe(ProductLabel.DAIRY);
 
     expect(Number.isFinite(createdProduct.stock)).toBe(true);
     const decimalPlaces = (createdProduct.stock.toString().split('.')[1] || '')
       .length;
     expect(decimalPlaces).toBeLessThanOrEqual(3);
+  });
+
+  it('should create and return products with different label categories', async () => {
+    const productsWithLabels: Omit<Product, 'id' | 'profit_margin'>[] = [
+      {
+        name: 'Test Dairy Product',
+        img: 'dairy.jpg',
+        description: 'Dairy product test',
+        maker: 'Dairy Maker',
+        metric: ProductMetric.L,
+        label: ProductLabel.DAIRY,
+        stock: 10.0,
+        price: 30.0,
+        purchase_price: 20.0,
+      },
+      {
+        name: 'Test Meat Product',
+        img: 'meat.jpg',
+        description: 'Meat product test',
+        maker: 'Meat Maker',
+        metric: ProductMetric.KG,
+        label: ProductLabel.MEATS,
+        stock: 5.0,
+        price: 50.0,
+        purchase_price: 35.0,
+      },
+      {
+        name: 'Test Hamburger Product',
+        img: 'hamburger.jpg',
+        description: 'Hamburger product test',
+        maker: 'Burger Maker',
+        metric: ProductMetric.UNIT,
+        label: ProductLabel.HAMBURGERS,
+        stock: 20.0,
+        price: 25.0,
+        purchase_price: 15.0,
+      },
+      {
+        name: 'Test Processed Product',
+        img: 'processed.jpg',
+        description: 'Processed product test',
+        maker: 'Processed Maker',
+        metric: ProductMetric.G,
+        label: ProductLabel.PROCESSED,
+        stock: 8.0,
+        price: 40.0,
+        purchase_price: 25.0,
+      },
+    ];
+
+    const createdProducts = [];
+
+    for (const product of productsWithLabels) {
+      const createResponse = await fetch(`${apiUrl}/api/v1/products`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(product),
+      });
+
+      expect(createResponse.status).toBe(201);
+      const createData = await createResponse.json();
+      createdProducts.push(createData.id);
+    }
+
+    const response = await fetch(`${apiUrl}/api/v1/products`);
+    const data = await response.json();
+
+    const dairyProduct = data.products.find(
+      (p: Product) => p.name === 'Test Dairy Product'
+    );
+    const meatProduct = data.products.find(
+      (p: Product) => p.name === 'Test Meat Product'
+    );
+    const hamburgerProduct = data.products.find(
+      (p: Product) => p.name === 'Test Hamburger Product'
+    );
+    const processedProduct = data.products.find(
+      (p: Product) => p.name === 'Test Processed Product'
+    );
+
+    expect(dairyProduct).toBeDefined();
+    expect(dairyProduct.label).toBe(ProductLabel.DAIRY);
+
+    expect(meatProduct).toBeDefined();
+    expect(meatProduct.label).toBe(ProductLabel.MEATS);
+
+    expect(hamburgerProduct).toBeDefined();
+    expect(hamburgerProduct.label).toBe(ProductLabel.HAMBURGERS);
+
+    expect(processedProduct).toBeDefined();
+    expect(processedProduct.label).toBe(ProductLabel.PROCESSED);
+  });
+
+  it('should not be able to create a new product without label', async () => {
+    const productWithoutLabel: Omit<Product, 'id' | 'profit_margin' | 'label'> =
+      {
+        name: 'Test Product Without Label',
+        img: 'no-label.jpg',
+        description: 'Product without label test',
+        maker: 'No Label Maker',
+        metric: ProductMetric.UNIT,
+        stock: 12.0,
+        price: 35.0,
+        purchase_price: 20.0,
+      };
+
+    const createResponse = await fetch(`${apiUrl}/api/v1/products`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(productWithoutLabel),
+    });
+
+    expect(createResponse.status).toBe(400);
+
+    const response = await fetch(`${apiUrl}/api/v1/products`);
+    const data = await response.json();
+
+    const createdProduct = data.products.find(
+      (p: Product) => p.name === 'Test Product Without Label'
+    );
+
+    expect(createdProduct).toBeUndefined();
+  });
+
+  it('should validate label values are within ProductLabel enum', async () => {
+    const response = await fetch(`${apiUrl}/api/v1/products`);
+    const data = await response.json();
+
+    data.products.forEach((product: Product) => {
+      if (product.label !== undefined) {
+        expect(Object.values(ProductLabel)).toContain(product.label);
+        expect(typeof product.label).toBe('number');
+        expect(product.label).toBeGreaterThanOrEqual(0);
+        expect(product.label).toBeLessThanOrEqual(3);
+      }
+    });
   });
 });

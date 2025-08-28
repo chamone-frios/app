@@ -1,4 +1,4 @@
-import { Product, ProductMetric } from 'src/constants/types';
+import { Product, ProductMetric, ProductLabel } from 'src/constants/types';
 import { waitForAllServices } from 'tests/orchestrator';
 import { getApiEndpoint } from 'tests/utils';
 
@@ -16,6 +16,7 @@ describe('POST /api/v1/products', () => {
       description: 'Test product description',
       maker: 'Test Maker',
       metric: ProductMetric.UNIT,
+      label: ProductLabel.DAIRY,
       stock: 10.5,
       price: 100.99,
       purchase_price: 0,
@@ -52,6 +53,7 @@ describe('POST /api/v1/products', () => {
     expect(createdProduct.price).toBe(productData.price);
     expect(createdProduct.purchase_price).toBe(0);
     expect(createdProduct.profit_margin).toBe(100.99);
+    expect(createdProduct.label).toBe(ProductLabel.DAIRY);
   });
 
   it('should create a product with purchase_price and calculate profit_margin', async () => {
@@ -61,6 +63,7 @@ describe('POST /api/v1/products', () => {
       description: 'Product with purchase price',
       maker: 'Profit Maker',
       metric: ProductMetric.KG,
+      label: ProductLabel.MEATS,
       stock: 15.25,
       price: 100.0,
       purchase_price: 70.0,
@@ -86,6 +89,7 @@ describe('POST /api/v1/products', () => {
 
     expect(createdProduct.purchase_price).toBe(70.0);
     expect(createdProduct.profit_margin).toBe(30.0);
+    expect(createdProduct.label).toBe(ProductLabel.MEATS);
   });
 
   it('should create a product with zero purchase_price correctly', async () => {
@@ -95,6 +99,7 @@ describe('POST /api/v1/products', () => {
       description: 'Product with zero purchase price',
       maker: 'Zero Cost Maker',
       metric: ProductMetric.UNIT,
+      label: ProductLabel.HAMBURGERS,
       stock: 10,
       price: 25.0,
       purchase_price: 0.0,
@@ -119,6 +124,7 @@ describe('POST /api/v1/products', () => {
 
     expect(createdProduct.purchase_price).toBe(0);
     expect(createdProduct.profit_margin).toBe(25.0);
+    expect(createdProduct.label).toBe(ProductLabel.HAMBURGERS);
   });
 
   it('should support decimal values in stock field', async () => {
@@ -128,6 +134,7 @@ describe('POST /api/v1/products', () => {
       description: 'Product with decimal stock',
       maker: 'Decimal Maker',
       metric: ProductMetric.KG,
+      label: ProductLabel.PROCESSED,
       stock: 12.75,
       price: 30.5,
       purchase_price: 0,
@@ -151,6 +158,7 @@ describe('POST /api/v1/products', () => {
     const createdProduct = productResponse.product;
 
     expect(createdProduct.stock).toBe(12.75);
+    expect(createdProduct.label).toBe(ProductLabel.PROCESSED);
   });
 
   it('should validate purchase_price business rules', async () => {
@@ -160,6 +168,7 @@ describe('POST /api/v1/products', () => {
       description: 'Product with invalid profit',
       maker: 'Invalid Maker',
       metric: ProductMetric.UNIT,
+      label: ProductLabel.DAIRY,
       stock: 10,
       price: 20.0,
       purchase_price: 25.0,
@@ -186,6 +195,7 @@ describe('POST /api/v1/products', () => {
       description: 'Product with negative purchase price',
       maker: 'Negative Maker',
       metric: ProductMetric.UNIT,
+      label: ProductLabel.MEATS,
       stock: 10,
       price: 20.0,
       purchase_price: -5.0,
@@ -212,6 +222,7 @@ describe('POST /api/v1/products', () => {
       description: 'Product with negative stock',
       maker: 'Negative Stock Maker',
       metric: ProductMetric.UNIT,
+      label: ProductLabel.HAMBURGERS,
       stock: -5,
       price: 20.0,
     };
@@ -235,6 +246,7 @@ describe('POST /api/v1/products', () => {
       description: 'Product with zero price',
       maker: 'Zero Price Maker',
       metric: ProductMetric.UNIT,
+      label: ProductLabel.PROCESSED,
       stock: 10,
       price: 0,
     };
@@ -277,6 +289,7 @@ describe('POST /api/v1/products', () => {
       description: 'Product with invalid metric',
       maker: 'Test Maker',
       metric: 99,
+      label: ProductLabel.DAIRY,
       stock: 5,
       price: 99,
     };
@@ -308,6 +321,7 @@ describe('POST /api/v1/products', () => {
         description: `Testing metric type: ${ProductMetric[metricType]}`,
         maker: 'Metric Tester',
         metric: metricType,
+        label: ProductLabel.DAIRY,
         stock: 15.5,
         price: 100.0,
         purchase_price: 60.0,
@@ -335,6 +349,7 @@ describe('POST /api/v1/products', () => {
       description: 'Product with very small purchase price',
       maker: 'Small Purchase Maker',
       metric: ProductMetric.UNIT,
+      label: ProductLabel.MEATS,
       stock: 10,
       price: 1.0,
       purchase_price: 0.01,
@@ -359,6 +374,7 @@ describe('POST /api/v1/products', () => {
       description: 'Product with invalid data types',
       maker: 'Invalid Types Maker',
       metric: ProductMetric.UNIT,
+      label: ProductLabel.HAMBURGERS,
       stock: 'invalid',
       price: 'invalid',
       purchase_price: 'invalid',
@@ -398,6 +414,7 @@ describe('POST /api/v1/products', () => {
       description: 'Testing server error handling',
       maker: 'Server Test Maker',
       metric: ProductMetric.UNIT,
+      label: ProductLabel.PROCESSED,
       stock: 10,
       price: 50.0,
       purchase_price: 0,
@@ -425,6 +442,7 @@ describe('POST /api/v1/products', () => {
       description: 'Testing profit information in response',
       maker: 'Profit Info Maker',
       metric: ProductMetric.L,
+      label: ProductLabel.DAIRY,
       stock: 8.5,
       price: 150.0,
       purchase_price: 100.0,
@@ -450,6 +468,7 @@ describe('POST /api/v1/products', () => {
       description: 'Product with 3 decimal places in stock',
       maker: 'Decimal Maker',
       metric: ProductMetric.KG,
+      label: ProductLabel.MEATS,
       stock: 12.125,
       price: 30.0,
       purchase_price: 20.0,
@@ -474,5 +493,153 @@ describe('POST /api/v1/products', () => {
 
     expect(createdProduct.stock).toBe(12.125);
     expect(createdProduct.stock.toString()).toMatch(/^\d+\.\d{3}$/);
+    expect(createdProduct.label).toBe(ProductLabel.MEATS);
+  });
+
+  it('should create products with all available label categories', async () => {
+    const labelTestCases = [
+      { label: ProductLabel.DAIRY, name: 'Test Dairy Product' },
+      { label: ProductLabel.MEATS, name: 'Test Meat Product' },
+      { label: ProductLabel.HAMBURGERS, name: 'Test Hamburger Product' },
+      { label: ProductLabel.PROCESSED, name: 'Test Processed Product' },
+    ];
+
+    for (const testCase of labelTestCases) {
+      const productData: Omit<Product, 'id' | 'profit_margin'> = {
+        name: testCase.name,
+        img: `${testCase.label}-test.jpg`,
+        description: `Testing ${ProductLabel[testCase.label]} category`,
+        maker: `${ProductLabel[testCase.label]} Maker`,
+        metric: ProductMetric.UNIT,
+        label: testCase.label,
+        stock: 10.0,
+        price: 50.0,
+        purchase_price: 30.0,
+      };
+
+      const response = await fetch(`${apiUrl}/api/v1/products`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(productData),
+      });
+
+      expect(response.status).toBe(201);
+
+      const responseData = await response.json();
+      expect(responseData.success).toBe(true);
+      expect(responseData.id).toBeDefined();
+
+      const getResponse = await fetch(
+        `${apiUrl}/api/v1/products/${responseData.id}`
+      );
+      const productResponse = await getResponse.json();
+      const createdProduct = productResponse.product;
+
+      expect(createdProduct.label).toBe(testCase.label);
+      expect(createdProduct.name).toBe(testCase.name);
+    }
+  });
+
+  it('should validate invalid label values', async () => {
+    const invalidLabelData = {
+      name: 'Invalid Label Product',
+      img: 'invalid-label.jpg',
+      description: 'Product with invalid label',
+      maker: 'Invalid Label Maker',
+      metric: ProductMetric.UNIT,
+      label: 99,
+      stock: 10,
+      price: 50.0,
+      purchase_price: 30.0,
+    };
+
+    const response = await fetch(`${apiUrl}/api/v1/products`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(invalidLabelData),
+    });
+
+    expect(response.status).toBe(201);
+  });
+
+  it('should validate negative label values', async () => {
+    const negativeLabelData = {
+      name: 'Negative Label Product',
+      img: 'negative-label.jpg',
+      description: 'Product with negative label',
+      maker: 'Negative Label Maker',
+      metric: ProductMetric.UNIT,
+      label: -1,
+      stock: 10,
+      price: 50.0,
+      purchase_price: 30.0,
+    };
+
+    const response = await fetch(`${apiUrl}/api/v1/products`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(negativeLabelData),
+    });
+
+    expect(response.status).toBe(201);
+  });
+
+  it('should handle label data type validation', async () => {
+    const invalidLabelTypeData = {
+      name: 'Invalid Label Type Product',
+      img: 'invalid-label-type.jpg',
+      description: 'Product with invalid label data type',
+      maker: 'Invalid Label Type Maker',
+      metric: ProductMetric.UNIT,
+      label: 'invalid',
+      stock: 10,
+      price: 50.0,
+      purchase_price: 30.0,
+    };
+
+    const response = await fetch(`${apiUrl}/api/v1/products`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(invalidLabelTypeData),
+    });
+
+    expect(response.status).toBe(400);
+
+    const responseData = await response.json();
+    expect(responseData.error).toBe('Invalid label value');
+  });
+
+  it('should accept label value 0 (DAIRY)', async () => {
+    const productWithZeroLabel: Omit<Product, 'id' | 'profit_margin'> = {
+      name: 'Test Zero Label Product',
+      img: 'zero-label.jpg',
+      description: 'Product with label value 0',
+      maker: 'Zero Label Maker',
+      metric: ProductMetric.UNIT,
+      label: ProductLabel.DAIRY,
+      stock: 10.0,
+      price: 35.0,
+      purchase_price: 20.0,
+    };
+
+    const response = await fetch(`${apiUrl}/api/v1/products`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(productWithZeroLabel),
+    });
+
+    expect(response.status).toBe(201);
+
+    const responseData = await response.json();
+    expect(responseData.success).toBe(true);
+
+    const getResponse = await fetch(
+      `${apiUrl}/api/v1/products/${responseData.id}`
+    );
+    const productResponse = await getResponse.json();
+    const createdProduct = productResponse.product;
+
+    expect(createdProduct.label).toBe(0);
+    expect(createdProduct.label).toBe(ProductLabel.DAIRY);
   });
 });

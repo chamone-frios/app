@@ -5,6 +5,13 @@ export enum ProductMetric {
   L = 3,
 }
 
+export enum ProductLabel {
+  DAIRY = 0,
+  MEATS = 1,
+  HAMBURGERS = 2,
+  PROCESSED = 3,
+}
+
 export type Product = {
   id: string;
   name: string;
@@ -12,6 +19,7 @@ export type Product = {
   description: string;
   maker: string;
   metric: ProductMetric;
+  label: ProductLabel;
   stock: number;
   price: number;
   purchase_price: number;
@@ -56,6 +64,7 @@ export type OrderItem = {
   product_description: string;
   product_maker: string;
   product_metric: ProductMetric;
+  product_label?: ProductLabel;
   product_img?: string;
   unit_price: number;
   quantity: number;

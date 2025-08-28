@@ -1,4 +1,9 @@
-import { CreateOrderRequest, ProductMetric } from 'src/constants/types';
+import {
+  CreateOrderRequest,
+  Product,
+  ProductLabel,
+  ProductMetric,
+} from 'src/constants/types';
 import { waitForAllServices } from 'tests/orchestrator';
 import { getApiEndpoint } from 'tests/utils';
 
@@ -28,7 +33,10 @@ describe('GET /api/v1/orders/client/[id]', () => {
     const clientData = await clientResponse.json();
     createdClientId = clientData.id;
 
-    const productToCreate = {
+    const productToCreate: Omit<
+      Product,
+      'id' | 'profit_margin' | 'purchase_price'
+    > = {
       name: 'Test Product for Client Orders',
       img: 'test-client-orders.jpg',
       description: 'Product for testing client orders',
@@ -36,6 +44,7 @@ describe('GET /api/v1/orders/client/[id]', () => {
       metric: ProductMetric.UNIT,
       stock: 100.5,
       price: 50.0,
+      label: ProductLabel.DAIRY,
     };
 
     const productResponse = await fetch(`${apiUrl}/api/v1/products`, {
@@ -47,7 +56,7 @@ describe('GET /api/v1/orders/client/[id]', () => {
     const productData = await productResponse.json();
     testProductId = productData.id;
 
-    const productWithProfitToCreate = {
+    const productWithProfitToCreate: Omit<Product, 'id' | 'profit_margin'> = {
       name: 'Test Product With Profit for Client Orders',
       img: 'test-profit-client-orders.jpg',
       description: 'Product with profit for testing client orders',
@@ -56,6 +65,7 @@ describe('GET /api/v1/orders/client/[id]', () => {
       stock: 50.25,
       price: 80.0,
       purchase_price: 50.0,
+      label: ProductLabel.MEATS,
     };
 
     const productWithProfitResponse = await fetch(`${apiUrl}/api/v1/products`, {

@@ -11,6 +11,7 @@ const createProduct = async (req: NextApiRequest, res: NextApiResponse) => {
       !body.img ||
       !body.description ||
       !body.maker ||
+      body.label === undefined ||
       body.metric === undefined ||
       body.stock === undefined ||
       body.price === undefined
@@ -23,6 +24,12 @@ const createProduct = async (req: NextApiRequest, res: NextApiResponse) => {
     if (!(body.metric in ProductMetric)) {
       return res.status(400).json({
         error: 'Invalid metric value',
+      });
+    }
+
+    if (typeof body.label !== 'number') {
+      return res.status(400).json({
+        error: 'Invalid label value',
       });
     }
 
@@ -60,6 +67,7 @@ const createProduct = async (req: NextApiRequest, res: NextApiResponse) => {
       metric: body.metric,
       stock: body.stock,
       price: body.price,
+      label: body.label,
       purchase_price: body.purchase_price,
     });
 
