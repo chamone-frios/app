@@ -41,7 +41,7 @@ const insertOrder = async (orderData: InsertOrderInput): Promise<string> => {
 
     for (const item of items) {
       const productQuery = `
-        SELECT id, name, description, maker, metric, img, price, stock, purchase_price, profit_margin
+        SELECT id, name, description, maker, metric, img, price, stock, purchase_price, profit_margin, label
         FROM products
         WHERE id = $1
       `;
@@ -144,6 +144,7 @@ const insertOrder = async (orderData: InsertOrderInput): Promise<string> => {
           product_id,
           product_name,
           product_description,
+          product_label,
           product_maker,
           product_metric,
           product_img,
@@ -155,7 +156,7 @@ const insertOrder = async (orderData: InsertOrderInput): Promise<string> => {
           total_profit,
           created_at
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, NOW())
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, NOW())
         RETURNING *;
       `;
 
@@ -165,6 +166,7 @@ const insertOrder = async (orderData: InsertOrderInput): Promise<string> => {
         productInfo.id,
         productInfo.name,
         productInfo.description,
+        productInfo?.label ?? -1,
         productInfo.maker,
         productInfo.metric,
         productInfo.img,

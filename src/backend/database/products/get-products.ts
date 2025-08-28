@@ -3,7 +3,8 @@ import { query } from 'src/integrations/database';
 
 const getProduct = async ({ id }: { id: string }): Promise<Product> => {
   const queryString = `
-    SELECT id, name, img, description, maker, metric, stock, price, purchase_price, profit_margin
+    SELECT id, name, img, description, maker, metric, stock, price, purchase_price, profit_margin,
+           label
     FROM products
     WHERE id = $1
   `;
@@ -25,6 +26,7 @@ const getProduct = async ({ id }: { id: string }): Promise<Product> => {
       img: row.img,
       description: row.description,
       maker: row.maker,
+      label: row.label,
       metric: ProductMetric[metric],
       stock: parseFloat(row.stock),
       price: parseFloat(row.price),
@@ -42,7 +44,7 @@ const getProduct = async ({ id }: { id: string }): Promise<Product> => {
 
 const getProducts = async (): Promise<Product[]> => {
   const queryString = `
-    SELECT id, name, img, description, maker, metric, stock, price, purchase_price, profit_margin
+    SELECT id, name, img, description, maker, metric, stock, price, purchase_price, profit_margin, label
     FROM products
     ORDER BY name ASC
   `;
@@ -60,6 +62,7 @@ const getProducts = async (): Promise<Product[]> => {
         img: row.img,
         description: row.description,
         maker: row.maker,
+        label: row.label,
         metric: ProductMetric[metric],
         stock: parseFloat(row.stock),
         price: parseFloat(row.price),

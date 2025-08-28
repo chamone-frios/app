@@ -25,6 +25,12 @@ const updateProductById = async (
     if (!product.maker || typeof product.maker !== 'string')
       validationErrors.push('Maker must be a text');
 
+    if (
+      (!product.label && product.label !== 0) ||
+      typeof product.label !== 'number'
+    )
+      validationErrors.push('Label must be a number');
+
     const validMetrics = Object.values(ProductMetric);
     if (product.metric === undefined || !validMetrics.includes(product.metric))
       validationErrors.push(
@@ -74,6 +80,7 @@ const updateProductById = async (
         metric: product.metric,
         stock: product.stock,
         price: product.price,
+        label: product.label,
         purchase_price: product.purchase_price,
       },
     });

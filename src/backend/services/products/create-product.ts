@@ -11,6 +11,7 @@ const createProduct = async (req: NextApiRequest, res: NextApiResponse) => {
       !body.img ||
       !body.description ||
       !body.maker ||
+      body.label === undefined ||
       body.metric === undefined ||
       body.stock === undefined ||
       body.price === undefined
@@ -60,6 +61,7 @@ const createProduct = async (req: NextApiRequest, res: NextApiResponse) => {
       metric: body.metric,
       stock: body.stock,
       price: body.price,
+      label: body.label,
       purchase_price: body.purchase_price,
     });
 
