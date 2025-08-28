@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { Card, CardContent, Typography } from '@mui/material';
 import { Stack } from '@mui/system';
 import { Product } from 'src/constants/types';
-import { getMetricLabel } from 'src/utils';
+import { getMetricLabel, getProductLabel } from 'src/utils';
 import { formatNumber, numberToCurrency } from 'src/utils/number';
 
 import { CardFields } from './card-fields';
@@ -50,6 +50,7 @@ const ProductCard = ({ product, onDelete, onEdit }: ProductCardProps) => {
           {product.description}
         </Typography>
         <CardFields label="Fabricante:" value={product.maker} />
+        <CardFields label="Categoria:" value={getProductLabel(product.label)} />
         <CardFields
           label="Estoque:"
           value={`${formatNumber({ number: product.stock })} ${getMetricLabel(product.metric)}`}

@@ -14,7 +14,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { Product, ProductMetric } from 'src/constants/types';
+import { Product, ProductLabel, ProductMetric } from 'src/constants/types';
 import { getMetricLabel } from 'src/utils';
 import { formatDecimalInputs, numberToCurrency } from 'src/utils/number';
 
@@ -103,6 +103,7 @@ const ProductForm = ({
       stock: Number(product.stock),
       metric: Number(product.metric),
       price: Number(product.price),
+      label: Number(product.label),
       purchase_price: Number(product.purchase_price),
       img: product.name.replace(/\s/g, '-').toLowerCase(),
     });
@@ -134,6 +135,35 @@ const ProductForm = ({
           required
           fullWidth
         />
+        <FormControl fullWidth>
+          <FormLabel>Categoria do Produto</FormLabel>
+          <RadioGroup
+            value={product.label}
+            onChange={(e) => onValueChange(e.target.value, 'label')}
+            row
+          >
+            <FormControlLabel
+              value={ProductLabel.DAIRY}
+              control={<Radio />}
+              label="Laticínios"
+            />
+            <FormControlLabel
+              value={ProductLabel.MEATS}
+              control={<Radio />}
+              label="Carnes"
+            />
+            <FormControlLabel
+              value={ProductLabel.HAMBURGERS}
+              control={<Radio />}
+              label="Hambúrguers"
+            />
+            <FormControlLabel
+              value={ProductLabel.PROCESSED}
+              control={<Radio />}
+              label="Embutidos"
+            />
+          </RadioGroup>
+        </FormControl>
         <TextField
           label="Descrição"
           value={product.description}

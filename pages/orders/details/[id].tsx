@@ -10,7 +10,6 @@ import {
   Button,
 } from '@mui/material';
 import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 import { getOrder } from 'src/backend/database';
 import { OrderWithItems } from 'src/constants/types';
 import { http } from 'src/frontend/api/http';
@@ -22,7 +21,7 @@ import {
   OrderStatusModal,
 } from 'src/frontend/components';
 import { useIsNextLoading, useReceipt } from 'src/frontend/hooks';
-import { getMetricLabel, numberToCurrency } from 'src/utils';
+import { getMetricLabel, getProductLabel, numberToCurrency } from 'src/utils';
 import { formatNumber } from 'src/utils/number';
 
 type OrderDetailsProps = {
@@ -150,15 +149,11 @@ const OrderDetails = ({ order }: OrderDetailsProps) => {
               />
               <CardFields
                 label="Horário:"
-                value={format(new Date(order.created_at), 'HH:mm', {
-                  locale: ptBR,
-                })}
+                value={format(new Date(order.created_at), 'HH:mm')}
               />
               <CardFields
                 label="Data:"
-                value={format(new Date(order.created_at), 'dd/MM/yyyy, eeee', {
-                  locale: ptBR,
-                })}
+                value={format(new Date(order.created_at), 'dd/MM/yyyy, eeee')}
               />
               <CardFields
                 label="Taxas adicionais:"
@@ -200,6 +195,10 @@ const OrderDetails = ({ order }: OrderDetailsProps) => {
                         <CardFields
                           label="Quantidade:"
                           value={`${formatNumber({ number: item.quantity })} ${getMetricLabel(item.product_metric)}`}
+                        />
+                        <CardFields
+                          label="Categoria:"
+                          value={getProductLabel(item.product_label)}
                         />
                         <CardFields
                           label="Lucro total:"
