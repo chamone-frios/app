@@ -332,7 +332,7 @@ describe('GET /api/v1/orders/client/[id]', () => {
     expect(orderWithProfitItems.total_profit).toBeGreaterThan(0);
     expect(orderWithProfitItems.profit_margin_percentage).toBeGreaterThan(0);
 
-    expect(orderWithProfitItems.total_profit).toBeCloseTo(125, 1);
+    expect(orderWithProfitItems.total_profit).toBeCloseTo(110, 1);
   });
 
   it('should return zero profit data for orders without profit items', async () => {
@@ -356,7 +356,7 @@ describe('GET /api/v1/orders/client/[id]', () => {
       expect(order.total_purchase_cost).toBe(0);
 
       expect(order.total_profit).toBeGreaterThan(0);
-      expect(order.total_profit).toBe(order.subtotal);
+      expect(order.total_profit).toBe(order.total);
 
       expect(order.profit_margin_percentage).toBe(100);
     });
@@ -377,15 +377,13 @@ describe('GET /api/v1/orders/client/[id]', () => {
       expect(order.profit_margin_percentage).toBeGreaterThanOrEqual(0);
       expect(order.profit_margin_percentage).toBeLessThanOrEqual(100);
 
-      if (order.subtotal > 0) {
-        const expectedPercentage = (order.total_profit / order.subtotal) * 100;
+      if (order.total > 0) {
+        const expectedPercentage = (order.total_profit / order.total) * 100;
         expect(order.profit_margin_percentage).toBeCloseTo(
           expectedPercentage,
           1
         );
       }
-
-      expect(order.total_profit).toBeLessThanOrEqual(order.subtotal);
 
       if (order.discount > 0) {
         expect(order.total).toBeLessThan(order.subtotal);

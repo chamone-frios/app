@@ -334,7 +334,7 @@ describe('GET /api/v1/orders/[id]', () => {
     expect(order.total).toBe(148.5);
 
     expect(order.total_purchase_cost).toBe(0);
-    expect(order.total_profit).toBe(151.0);
+    expect(order.total_profit).toBe(148.5);
     expect(order.profit_margin_percentage).toBe(100);
   });
 
@@ -356,8 +356,8 @@ describe('GET /api/v1/orders/[id]', () => {
 
     expect(order.subtotal).toBe(150.0);
     expect(order.total_purchase_cost).toBe(90.0);
-    expect(order.total_profit).toBe(60.0);
-    expect(order.profit_margin_percentage).toBe(40.0);
+    expect(order.total_profit).toBe(55.0);
+    expect(order.profit_margin_percentage).toBeCloseTo(37.93, 1);
 
     expect(order.total).toBe(145.0);
   });
@@ -672,8 +672,8 @@ describe('GET /api/v1/orders/[id]', () => {
     expect(order.profit_margin_percentage).toBeGreaterThanOrEqual(0);
     expect(order.profit_margin_percentage).toBeLessThanOrEqual(100);
 
-    if (order.subtotal > 0) {
-      const expectedPercentage = (order.total_profit / order.subtotal) * 100;
+    if (order.total > 0) {
+      const expectedPercentage = (order.total_profit / order.total) * 100;
       expect(order.profit_margin_percentage).toBeCloseTo(expectedPercentage, 1);
     }
 
