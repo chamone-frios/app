@@ -28,7 +28,6 @@ const insertOrder = async (orderData: InsertOrderInput): Promise<string> => {
 
     let subtotal = 0;
     let totalPurchaseCost = 0;
-    let totalProfit = 0;
 
     const orderItems: Array<{
       productInfo: Product;
@@ -70,7 +69,6 @@ const insertOrder = async (orderData: InsertOrderInput): Promise<string> => {
       const totalProfitItem = unitProfit * item.quantity;
 
       totalPurchaseCost += unitPurchasePrice * item.quantity;
-      totalProfit += totalProfitItem;
 
       orderItems.push({
         productInfo,
@@ -83,8 +81,10 @@ const insertOrder = async (orderData: InsertOrderInput): Promise<string> => {
     }
 
     const total = subtotal - discount + tax;
-    const profitMarginPercentage =
-      subtotal > 0 ? (totalProfit / subtotal) * 100 : 0;
+
+    const totalProfit = total - totalPurchaseCost;
+
+    const profitMarginPercentage = total > 0 ? (totalProfit / total) * 100 : 0;
 
     const orderSql = `
       INSERT INTO orders (
