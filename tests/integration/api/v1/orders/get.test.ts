@@ -506,7 +506,7 @@ describe('GET /api/v1/orders', () => {
     expect(order).toBeDefined();
 
     expect(order.total_purchase_cost).toBe(0);
-    expect(order.total_profit).toBe(50.0);
+    expect(order.total_profit).toBe(45.0);
     expect(order.profit_margin_percentage).toBe(100);
     expect(order.subtotal).toBe(50.0);
   });
@@ -536,8 +536,8 @@ describe('GET /api/v1/orders', () => {
 
     expect(order.subtotal).toBe(80.0);
     expect(order.total_purchase_cost).toBe(50.0);
-    expect(order.total_profit).toBe(30.0);
-    expect(order.profit_margin_percentage).toBe(37.5);
+    expect(order.total_profit).toBe(20.0);
+    expect(order.profit_margin_percentage).toBeCloseTo(28.57, 1);
   });
 
   it('should handle decimal quantities in profit calculations', async () => {
@@ -665,8 +665,8 @@ describe('GET /api/v1/orders', () => {
       expect(order.profit_margin_percentage).toBeGreaterThanOrEqual(0);
       expect(order.profit_margin_percentage).toBeLessThanOrEqual(100);
 
-      if (order.subtotal > 0) {
-        const expectedPercentage = (order.total_profit / order.subtotal) * 100;
+      if (order.total > 0) {
+        const expectedPercentage = (order.total_profit / order.total) * 100;
         expect(order.profit_margin_percentage).toBeCloseTo(
           expectedPercentage,
           1
@@ -753,8 +753,8 @@ describe('GET /api/v1/orders', () => {
 
     expect(order.subtotal).toBe(65.0);
     expect(order.total_purchase_cost).toBe(25.0);
-    expect(order.total_profit).toBe(40.0);
-    expect(order.profit_margin_percentage).toBeCloseTo(61.54, 1);
+    expect(order.total_profit).toBe(35.0);
+    expect(order.profit_margin_percentage).toBeCloseTo(58.33, 1);
   });
 
   it('should verify product label snapshot behavior in order items', async () => {

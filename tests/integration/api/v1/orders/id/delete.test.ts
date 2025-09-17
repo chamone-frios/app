@@ -181,7 +181,7 @@ describe('DELETE /api/v1/orders/[id]', () => {
 
     expect(order.subtotal).toBe(200.0);
     expect(order.total_purchase_cost).toBe(125.0);
-    expect(order.total_profit).toBe(75.0);
+    expect(order.total_profit).toBe(65.0);
 
     const deleteResponse = await fetch(`${apiUrl}/api/v1/orders/${orderId}`, {
       method: 'DELETE',
@@ -218,7 +218,7 @@ describe('DELETE /api/v1/orders/[id]', () => {
 
     expect(order.subtotal).toBe(130.0);
     expect(order.total_purchase_cost).toBe(50.0);
-    expect(order.total_profit).toBe(80.0);
+    expect(order.total_profit).toBe(75.0);
 
     const deleteResponse = await fetch(`${apiUrl}/api/v1/orders/${orderId}`, {
       method: 'DELETE',
@@ -256,7 +256,7 @@ describe('DELETE /api/v1/orders/[id]', () => {
 
     expect(order.subtotal).toBe(255.0);
     expect(order.total_purchase_cost).toBe(112.5);
-    expect(order.total_profit).toBe(142.5);
+    expect(order.total_profit).toBe(140.5);
     expect(order.items.length).toBe(2);
 
     const deleteResponse = await fetch(`${apiUrl}/api/v1/orders/${orderId}`, {

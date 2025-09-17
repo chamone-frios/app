@@ -224,8 +224,8 @@ describe('POST /api/v1/orders', () => {
 
     expect(order.subtotal).toBe(160.0);
     expect(order.total_purchase_cost).toBe(100.0);
-    expect(order.total_profit).toBe(60.0);
-    expect(order.profit_margin_percentage).toBe(37.5);
+    expect(order.total_profit).toBe(50.0);
+    expect(order.profit_margin_percentage).toBeCloseTo(33.33, 1);
   });
 
   it('should create an order with mixed profit and non-profit items', async () => {
@@ -267,7 +267,7 @@ describe('POST /api/v1/orders', () => {
 
     expect(order.subtotal).toBe(130.0);
     expect(order.total_purchase_cost).toBe(50.0);
-    expect(order.total_profit).toBe(80.0);
+    expect(order.total_profit).toBe(75.0);
   });
 
   it('should create an order and preserve product label information in order items', async () => {
