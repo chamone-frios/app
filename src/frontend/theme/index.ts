@@ -11,7 +11,11 @@ import { digitalScheme } from './theme-digital';
 import type { midasVariants } from './base';
 import type { commonMidasColors, digitalBase, thema } from './theme-digital';
 
-export type { SxProps, ThemeOptions } from '@mui/material/styles';
+export type {
+  SxProps,
+  ThemeOptions,
+  TypographyVariant,
+} from '@mui/material/styles';
 
 declare module '@mui/material/styles' {
   interface TypographyVariants {
@@ -135,13 +139,13 @@ declare module '@mui/material/styles/createTypography' {
   interface TypographyOptions
     extends Partial<
       Record<midasVariants, TypographyStyleOptions> &
-        Record<Variant, TypographyStyleOptions> &
+        Record<TypographyVariant, TypographyStyleOptions> &
         FontStyleOptions
     > {}
 
   interface Typography
     extends Record<midasVariants, TypographyStyleOptions>,
-      Record<Variant, TypographyStyle>,
+      Record<TypographyVariant, TypographyStyle>,
       FontStyle,
       TypographyUtils {}
 }

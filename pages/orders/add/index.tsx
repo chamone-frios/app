@@ -70,16 +70,24 @@ const AddOrder = ({ clients, products }: AddOrderProps) => {
         {getAlertMessage()}
       </Alert>
       {isNextLoading ? (
-        <Stack alignItems="center" justifyContent="center" height="300px">
+        <Stack
+          sx={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '300px',
+          }}
+        >
           <CircularProgress />
         </Stack>
       ) : isMissingInfo ? (
         clients.length === 0 ? (
           <Stack
-            alignItems="center"
-            justifyContent="center"
             spacing={4}
-            height="300px"
+            sx={{
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '300px',
+            }}
           >
             <Typography>
               Para criar um pedido, é necessário ter clientes cadastrados! 👨‍🍳
@@ -94,10 +102,12 @@ const AddOrder = ({ clients, products }: AddOrderProps) => {
           </Stack>
         ) : (
           <Stack
-            alignItems="center"
-            justifyContent="center"
             spacing={4}
-            height="300px"
+            sx={{
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '300px',
+            }}
           >
             <Typography>
               Para criar um pedido, é necessário ter produtos cadastrados! 🧀

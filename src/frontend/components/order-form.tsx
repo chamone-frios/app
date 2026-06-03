@@ -198,7 +198,7 @@ const OrderForm = ({
 
   return (
     <Stack spacing={4}>
-      <Stack direction="row" width="100%" justifyContent="end">
+      <Stack direction="row" sx={{ width: '100%', justifyContent: 'end' }}>
         <Button
           variant="contained"
           color="primary"
@@ -209,7 +209,7 @@ const OrderForm = ({
       </Stack>
       <Divider />
       <Typography variant="h6">Informações do pedido</Typography>
-      <Stack gap={6}>
+      <Stack spacing={6}>
         <FormControl fullWidth>
           <Autocomplete
             noOptionsText="Nenhum cliente encontrado"
@@ -230,9 +230,9 @@ const OrderForm = ({
           )}
         </FormControl>
         <Stack
-          padding={4}
-          gap={4}
+          spacing={4}
           sx={(theme) => ({
+            padding: theme.spacing(4),
             border: `1px solid ${theme.palette.grey[100]}`,
             borderRadius: theme.spacing(3),
           })}
@@ -244,13 +244,13 @@ const OrderForm = ({
                 Adicione produtos ao pedido
               </Typography>
             )}
-            <Stack gap={4}>
+            <Stack spacing={4}>
               <Intersperse
                 elements={order.items.map((item, index) => (
-                  <Stack gap={3} marginTop={2}>
+                  <Stack spacing={3} sx={{ marginTop: 2 }}>
                     <Stack
                       direction="row"
-                      gap={3}
+                      spacing={3}
                       key={`product-item-${index}`}
                     >
                       <FormControl fullWidth>
@@ -362,29 +362,29 @@ const OrderForm = ({
           rows={2}
         />
       </Stack>
-      <Stack alignItems="flex-end" gap={3} sx={{ paddingTop: 4 }}>
+      <Stack spacing={3} sx={{ alignItems: 'flex-end', paddingTop: 4 }}>
         <Stack
-          width="100%"
-          padding={3}
-          gap={3}
+          spacing={3}
           sx={(theme) => ({
+            width: '100%',
+            padding: theme.spacing(3),
             border: `1px solid ${theme.palette.grey[100]}`,
             borderRadius: theme.spacing(3),
           })}
         >
-          <Stack direction="row" justifyContent="space-between">
+          <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
             <Typography>Total do pedido:</Typography>
             <Typography
-              fontWeight={600}
+              sx={{ fontWeight: 600 }}
               color={total < 0 ? 'error' : 'textPrimary'}
             >
               {numberToCurrency({ number: total })}
             </Typography>
           </Stack>
-          <Stack direction="row" justifyContent="space-between">
+          <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
             <Typography>Lucro do pedido:</Typography>
             <Typography
-              fontWeight={600}
+              sx={{ fontWeight: 600 }}
               color={
                 totalProfit === 0
                   ? 'textPrimary'

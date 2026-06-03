@@ -47,12 +47,15 @@ type StatusProps = {
 
 const Status = ({ label, color, icon }: StatusProps) => (
   <Typography
-    gap={2}
-    display="flex"
+    component="span"
     color={color}
-    fontSize="inherit"
-    alignItems="center"
-    justifyContent="center"
+    sx={{
+      display: 'inline-flex',
+      gap: 2,
+      fontSize: 'inherit',
+      alignItems: 'center',
+      justifyContent: 'center',
+    }}
   >
     {icon}
     {label}

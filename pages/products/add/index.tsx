@@ -56,7 +56,13 @@ const AddProduct = () => {
         {getAlertMessage()}
       </Alert>
       {isNextLoading ? (
-        <Stack alignItems="center" justifyContent="center" height="300px">
+        <Stack
+          sx={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '300px',
+          }}
+        >
           <CircularProgress />
         </Stack>
       ) : (

@@ -68,7 +68,7 @@ const ProductList = ({ products: initialProducts }: ProductListProps) => {
         <Typography variant="hero-sm">Produtos</Typography>
         <Typography>Esses são nossos produtos! 🧀</Typography>
         {products.length > 0 && (
-          <Stack direction="row-reverse" width="100%">
+          <Stack direction="row-reverse" sx={{ width: '100%' }}>
             <Button
               variant="contained"
               color="primary"
@@ -80,17 +80,25 @@ const ProductList = ({ products: initialProducts }: ProductListProps) => {
         )}
       </Stack>
       <Divider />
-      <Stack height="100%" gap={4} flex={1}>
+      <Stack sx={{ height: '100%', flex: 1 }} spacing={4}>
         {isLoading ? (
-          <Stack alignItems="center" justifyContent="center" height="300px">
+          <Stack
+            sx={{
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '300px',
+            }}
+          >
             <CircularProgress />
           </Stack>
         ) : !products || products.length === 0 ? (
           <Stack
-            alignItems="center"
-            justifyContent="center"
             spacing={4}
-            height="300px"
+            sx={{
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '300px',
+            }}
           >
             <Typography>Nenhum produto cadastrado 😭</Typography>
             <Button

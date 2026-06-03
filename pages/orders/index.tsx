@@ -64,7 +64,7 @@ const OrdersList = ({ orders: initialOrders }: OrdersListProps) => {
         <Typography variant="hero-sm">Últimos pedidos</Typography>
         <Typography>Esses são os ultimos pedidos feitos! 📦</Typography>
         {orders.length > 0 && (
-          <Stack direction="row-reverse" width="100%">
+          <Stack direction="row-reverse" sx={{ width: '100%' }}>
             <Button
               variant="contained"
               color="primary"
@@ -76,17 +76,25 @@ const OrdersList = ({ orders: initialOrders }: OrdersListProps) => {
         )}
       </Stack>
       <Divider />
-      <Stack height="100%" gap={4}>
+      <Stack sx={{ height: '100%' }} spacing={4}>
         {isLoading ? (
-          <Stack alignItems="center" justifyContent="center" height="300px">
+          <Stack
+            sx={{
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '300px',
+            }}
+          >
             <CircularProgress />
           </Stack>
         ) : !orders || orders.length === 0 ? (
           <Stack
-            alignItems="center"
-            justifyContent="center"
             spacing={4}
-            height="300px"
+            sx={{
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '300px',
+            }}
           >
             <Typography>Nenhum pedido cadastrado 😭</Typography>
             <Button

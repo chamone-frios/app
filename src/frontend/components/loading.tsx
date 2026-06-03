@@ -25,7 +25,9 @@ const Loading = () => {
   if (!isLoading) return null;
 
   return (
-    <Stack alignItems="center" justifyContent="center" height="400px">
+    <Stack
+      sx={{ alignItems: 'center', justifyContent: 'center', height: '400px' }}
+    >
       <CircularProgress />
     </Stack>
   );

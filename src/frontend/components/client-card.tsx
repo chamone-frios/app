@@ -31,7 +31,10 @@ const ClientCard = ({ client, onDelete, onEdit }: ClientCardProps) => {
   return (
     <Card key={client.id}>
       <CardContent>
-        <Stack width="100%" direction="row" justifyContent="space-between">
+        <Stack
+          direction="row"
+          sx={{ width: '100%', justifyContent: 'space-between' }}
+        >
           <Stack>
             <Typography gutterBottom variant="h6" sx={{ mb: 0 }}>
               {client.name}

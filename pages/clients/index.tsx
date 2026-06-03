@@ -68,7 +68,7 @@ const ClientList = ({ clients: initialClients }: ClientListProps) => {
         <Typography variant="hero-sm">Clientes</Typography>
         <Typography>Esses são nossos clients! 👨‍🍳</Typography>
         {clients.length > 0 && (
-          <Stack direction="row-reverse" width="100%">
+          <Stack direction="row-reverse" sx={{ width: '100%' }}>
             <Button
               variant="contained"
               color="primary"
@@ -80,17 +80,25 @@ const ClientList = ({ clients: initialClients }: ClientListProps) => {
         )}
       </Stack>
       <Divider />
-      <Stack height="100%" gap={4}>
+      <Stack sx={{ height: '100%' }} spacing={4}>
         {isLoading ? (
-          <Stack alignItems="center" justifyContent="center" height="300px">
+          <Stack
+            sx={{
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '300px',
+            }}
+          >
             <CircularProgress />
           </Stack>
         ) : !clients || clients.length === 0 ? (
           <Stack
-            alignItems="center"
-            justifyContent="center"
             spacing={4}
-            height="300px"
+            sx={{
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '300px',
+            }}
           >
             <Typography>Nenhum cliente cadastrado 😭</Typography>
             <Button

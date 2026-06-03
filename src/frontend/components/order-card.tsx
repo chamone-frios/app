@@ -57,10 +57,9 @@ const OrderCard = ({ order, onDelete }: OrderCardProps) => {
       <Card key={order.id}>
         <CardContent>
           <Stack
-            width="100%"
             direction="row"
-            justifyContent="space-between"
-            gap={2}
+            spacing={2}
+            sx={{ width: '100%', justifyContent: 'space-between' }}
           >
             <Stack>
               <Typography gutterBottom variant="h6" sx={{ mb: 0 }}>

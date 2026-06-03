@@ -32,15 +32,19 @@ const DeleteModal = ({
         borderRadius: 24,
       }}
     >
-      <Typography variant="h6" component="h2" fontWeight={600} gutterBottom>
+      <Typography
+        variant="h6"
+        component="h2"
+        gutterBottom
+        sx={{ fontWeight: 600 }}
+      >
         Confirmar deleção
       </Typography>
       {children}
       <Stack
         direction="row"
         spacing={4}
-        marginTop={6}
-        justifyContent="flex-end"
+        sx={{ marginTop: 6, justifyContent: 'flex-end' }}
       >
         <Button onClick={onClose} variant="outlined">
           Voltar

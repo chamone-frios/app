@@ -80,7 +80,7 @@ const OrderDetails = ({ order }: OrderDetailsProps) => {
       <Stack spacing={4}>
         <Typography variant="hero-sm">Detalhamento</Typography>
         <Typography>Veja os detalhes aqui! 📋</Typography>
-        <Stack direction="row-reverse" width="100%">
+        <Stack direction="row-reverse" sx={{ width: '100%' }}>
           <Button
             variant="contained"
             color="primary"
@@ -92,23 +92,35 @@ const OrderDetails = ({ order }: OrderDetailsProps) => {
         </Stack>
       </Stack>
       <Divider />
-      <Stack height="100%">
+      <Stack sx={{ height: '100%' }}>
         {isNextLoading ? (
-          <Stack alignItems="center" justifyContent="center" height="300px">
+          <Stack
+            sx={{
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '300px',
+            }}
+          >
             <CircularProgress />
           </Stack>
         ) : !order ? (
-          <Stack alignItems="center" justifyContent="center" height="300px">
+          <Stack
+            sx={{
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '300px',
+            }}
+          >
             <Typography variant="hero-sm">Pedido não encontrado.</Typography>
             <Typography variant="hero-sm">❌</Typography>
           </Stack>
         ) : (
-          <Stack gap={5}>
+          <Stack spacing={5}>
             <Stack
               sx={{ borderBottom: '1px dashed #e0e0e0', paddingBottom: 4 }}
             >
-              <Stack direction="row" justifyContent="space-between">
-                <Typography variant="h6" fontWeight={600}>
+              <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
+                <Typography variant="h6" sx={{ fontWeight: 600 }}>
                   {`Pedido de ${order.client_name}`}
                 </Typography>
                 <Menu id={order.id} items={menuItems} />
@@ -117,8 +129,10 @@ const OrderDetails = ({ order }: OrderDetailsProps) => {
                 <CardFields label="Observações:" value={order.notes} />
               )}
             </Stack>
-            <Stack gap={1}>
-              <Typography fontWeight={600}>Informações do cliente:</Typography>
+            <Stack spacing={1}>
+              <Typography sx={{ fontWeight: 600 }}>
+                Informações do cliente:
+              </Typography>
               <CardFields label="Nome do cliente:" value={order.client_name} />
               <CardFields
                 label="Tipo de estabelecimento:"
@@ -141,8 +155,8 @@ const OrderDetails = ({ order }: OrderDetailsProps) => {
                 }
               />
             </Stack>
-            <Stack gap={1}>
-              <Typography fontWeight={600}>Informações:</Typography>
+            <Stack spacing={1}>
+              <Typography sx={{ fontWeight: 600 }}>Informações:</Typography>
               <CardFields
                 label="Status:"
                 value={<OrderStatusLabel status={status} />}
@@ -173,23 +187,25 @@ const OrderDetails = ({ order }: OrderDetailsProps) => {
                 value={numberToCurrency({ number: order.total })}
               />
             </Stack>
-            <Stack gap={1}>
-              <Typography fontWeight={600}>Produtos comprados:</Typography>
-              <Stack gap={2}>
+            <Stack spacing={1}>
+              <Typography sx={{ fontWeight: 600 }}>
+                Produtos comprados:
+              </Typography>
+              <Stack spacing={2}>
                 {order.items.length > 0 ? (
                   order.items.map((item) => (
                     <Stack
                       key={item.product_id}
                       direction="row"
-                      padding={3}
-                      gap={3}
+                      spacing={3}
                       sx={(theme) => ({
+                        padding: theme.spacing(3),
                         border: `1px solid ${theme.palette.grey[100]}`,
                         borderRadius: theme.spacing(3),
                       })}
                     >
-                      <Stack gap={1}>
-                        <Typography fontWeight={600}>
+                      <Stack spacing={1}>
+                        <Typography sx={{ fontWeight: 600 }}>
                           {item.product_name}
                         </Typography>
                         <CardFields
