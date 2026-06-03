@@ -50,7 +50,7 @@ const EditClient = ({ client, error: serverError }: EditClientProps) => {
         <Alert severity="error">
           {serverError || 'Cliente não encontrado'}
         </Alert>
-        <Stack direction="row" justifyContent="flex-start">
+        <Stack direction="row" sx={{ justifyContent: 'flex-start' }}>
           <Button onClick={() => router.push('/clients')}>
             Voltar para a lista
           </Button>
@@ -78,7 +78,13 @@ const EditClient = ({ client, error: serverError }: EditClientProps) => {
         {getAlertMessage()}
       </Alert>
       {isNextLoading ? (
-        <Stack alignItems="center" justifyContent="center" height="300px">
+        <Stack
+          sx={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '300px',
+          }}
+        >
           <CircularProgress />
         </Stack>
       ) : (

@@ -54,7 +54,9 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
         <CssBaseline />
         <PageWrapper>
           {isNextLoading ? (
-            <Stack alignItems="center" justifyContent="center" flex={1}>
+            <Stack
+              sx={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}
+            >
               <CircularProgress />
             </Stack>
           ) : (

@@ -82,7 +82,7 @@ const ClientForm = ({
 
   return (
     <Stack spacing={4}>
-      <Stack direction="row" width="100%" justifyContent="end">
+      <Stack direction="row" sx={{ width: '100%', justifyContent: 'end' }}>
         <Button
           variant="contained"
           color="primary"
@@ -93,7 +93,7 @@ const ClientForm = ({
       </Stack>
       <Divider />
       <Typography variant="h6">Informações do cliente</Typography>
-      <Stack gap={6}>
+      <Stack spacing={6}>
         <TextField
           label="Nome"
           value={client.name}
@@ -135,7 +135,7 @@ const ClientForm = ({
           placeholder="ex: https://maps.google.com/..."
         />
       </Stack>
-      <Stack alignItems="flex-end" sx={{ paddingTop: 4 }}>
+      <Stack sx={{ alignItems: 'flex-end', paddingTop: 4 }}>
         <Button variant="contained" onClick={handleSubmit} disabled={isLoading}>
           {isLoading ? <CircularProgress size={20} /> : submitButtonText}
         </Button>

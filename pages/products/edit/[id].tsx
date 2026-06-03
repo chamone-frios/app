@@ -50,7 +50,7 @@ const EditProduct = ({ product, error: serverError }: EditProductProps) => {
         <Alert severity="error">
           {serverError || 'Produto não encontrado'}
         </Alert>
-        <Stack direction="row" justifyContent="flex-start">
+        <Stack direction="row" sx={{ justifyContent: 'flex-start' }}>
           <Button onClick={() => router.push('/products')}>
             Voltar para a lista
           </Button>
@@ -78,7 +78,13 @@ const EditProduct = ({ product, error: serverError }: EditProductProps) => {
         {getAlertMessage()}
       </Alert>
       {isNextLoading ? (
-        <Stack alignItems="center" justifyContent="center" height="300px">
+        <Stack
+          sx={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '300px',
+          }}
+        >
           <CircularProgress />
         </Stack>
       ) : (

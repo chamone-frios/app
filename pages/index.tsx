@@ -10,7 +10,9 @@ const Index = () => {
         <Typography>A distribuidora mais pica de BH 🤙</Typography>
       </Stack>
       <Divider />
-      <Stack alignItems="center" justifyContent="center" height="300px">
+      <Stack
+        sx={{ alignItems: 'center', justifyContent: 'center', height: '300px' }}
+      >
         <Image
           alt="Chamone Frios"
           src="/assets/logo.png"

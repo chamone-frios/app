@@ -81,17 +81,22 @@ const OrderStatusModal = ({
             borderRadius: 24,
           }}
         >
-          <Typography variant="h6" component="h2" fontWeight={600} gutterBottom>
+          <Typography
+            variant="h6"
+            component="h2"
+            sx={{ fontWeight: 600 }}
+            gutterBottom
+          >
             Atualize o status do pedido
           </Typography>
-          <Stack direction="row" gap={2} marginBottom={4}>
+          <Stack direction="row" spacing={2} sx={{ marginBottom: 4 }}>
             <Typography>O status atual é</Typography>
-            <Typography color={color} fontWeight={600}>
+            <Typography color={color} sx={{ fontWeight: 600 }}>
               {label}.
             </Typography>
           </Stack>
           <Typography>Atualize o status do pedido para:</Typography>
-          <Stack direction="row" gap={2}>
+          <Stack direction="row" spacing={2}>
             {currentStatus !== OrderStatus.PENDING && (
               <Button
                 variant="outlined"
@@ -126,8 +131,7 @@ const OrderStatusModal = ({
           <Stack
             direction="row"
             spacing={4}
-            marginTop={6}
-            justifyContent="flex-end"
+            sx={{ marginTop: 6, justifyContent: 'flex-end' }}
           >
             <Button onClick={onClose} variant="outlined" loading={isLoading}>
               Cancelar

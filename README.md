@@ -6,7 +6,7 @@ Distribuidora MM App
 
 To run this project, you will need the following:
 
-- Node.js >= 20.0.0
+- Node.js >= 24.0.0
 - npm >= 8.0.0
 - Yarn >= 1.22.22
 - Docker

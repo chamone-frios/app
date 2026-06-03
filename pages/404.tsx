@@ -13,7 +13,9 @@ const Page404 = () => {
         <Typography>Verifique se digitou corretamente</Typography>
       </Stack>
       <Divider />
-      <Stack alignItems="center" justifyContent="center" height="300px">
+      <Stack
+        sx={{ alignItems: 'center', justifyContent: 'center', height: '300px' }}
+      >
         <Image
           src="/assets/404.png"
           alt="Página não encontrada"
